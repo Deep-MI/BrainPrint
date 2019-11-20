@@ -31,9 +31,9 @@ original BrainPrint scripts, with the following goals and changes:
 Use the following code to download, build and install a package from this 
 repository into your local Python package directory:
 
-`pip3 install --user git+https://github.com/reuter-lab/BrainPrint-python.git@master#egg=brainprintpython`
+`pip3 install --user git+https://github.com/reuter-lab/BrainPrint-python.git@freesurfer-module#egg=brainprintpython`
 
 Use the following code to install the package in editable mode to a location of
 your choice:
 
-`pip3 install --user --src /my/preferred/location --editable git+https://github.com/reuter-lab/BrainPrint-python.git@master#egg=brainprintpython`
+`pip3 install --user --src /my/preferred/location --editable git+https://github.com/reuter-lab/BrainPrint-python.git@freesurfer-module#egg=brainprintpython`
