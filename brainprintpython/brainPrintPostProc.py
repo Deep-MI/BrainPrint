@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 """
-pyPostProc - a script for the post-processing of pyBrainPrint results
+brainPrintPostProc - a script for the post-processing of brainPrint results
 
 """
 
@@ -18,77 +18,77 @@ def get_help():
 
     HELPTEXT = """
     SUMMARY
-    
-    Postprocessing of brainPrint results. This includes (any subset of) a) surface 
-    and / or volume normalization of eigenvalues, b) linear reweighting of the 
+
+    Postprocessing of brainPrint results. This includes (any subset of) a) surface
+    and / or volume normalization of eigenvalues, b) linear reweighting of the
     eigenvalues, and c) the computation of lateral shape asymmetries. For a
-    description of these methods, see [3]. 
-    
-    Briefly, surface / volume normalization multiplies the eigenvalues by the 
-    corresponding volume or surface area, taken to the power of (2/d), where d is 
+    description of these methods, see [3].
+
+    Briefly, surface / volume normalization multiplies the eigenvalues by the
+    corresponding volume or surface area, taken to the power of (2/d), where d is
     '2' for surfaces, and '3' for volumes (see 'NORMALIZATION' for details).
-    
-    Linear reweighting is a scaling of each eigenvalue by its index, i.e. 
+
+    Linear reweighting is a scaling of each eigenvalue by its index, i.e.
     EV1reweighted = EV1/1, EV2reweighted = EV2 / 2, ... EVnreweighted = EVn / n.
-    
-    Lateral asymmetry consists of the computation of Euclidean, Mahalanobis, or MCD 
+
+    Lateral asymmetry consists of the computation of Euclidean, Mahalanobis, or MCD
     distances between bilateral (left-right) structures.
-    
+
     Data need to be processed with the pyBrainPrint.py script prior to applying
     the current script. The current script has been developed and tested for the
     pyBrainPrint.py script version 1.21 and Python 2.7. The 'sklearn' package is
     required for the computation of MCD distances.
-    
-    
+
+
     INPUTS
-    
+
     Required inputs are either:
-    
+
     --file=<file> : a csv file that was produced by the pyBrainPrint.py script.
                     This option will run the script in single-subject mode.
-    
+
     or
-    
+
     --list=<file> : a text file containing a list of files that were produced by
                     the pyBrainPrint.py script. This will run the script in group
                     mode.
-    
+
     but not both. According to the chosen option, the script will run in either
     single-subject mode or in group mode.
-    
+
     - Single-subject mode means that the analysis can be run with a single input
       file.
-    
+
     - Group mode means that the analysis can be run with multiple input files at
       once.
-    
+
     If it is intended to run an analysis of lateral shape asymmetries, this may
     require the computation of covariance matrices across subjects unless either
     the --covfile=<...> or the --asy=euc argument is specified. In this case (i.e.,
     neither is a covariance file specified nor are euclidean distances used), it
     will be necessary run the script in group mode so that a covariance matrix can
     be computed internally.
-    
+
     It is assumed that multiple input files, if present, share exactly the same
     number, order, and labels of eigenvalues and brain structures.
-    
+
     Optional inputs are one or more of the following:
-    
+
     --vol=<value>      : perform surface (2D) and/or volume (3D) normalization;
                          requires one of the following values:
                          - 1: perform default normalization, see below for a
                               description
                          - 2: perform 2D normalization (surface) for all structures
                          - 3: perform 3D normalization (volumne) for all structures
-    
+
     --lin              : perform linear reweighting
-    
+
     --asy=<value>      : compute lateral shape asymmetries; requires one of the
                          following values:
                          - euc: euclidean distance
                          - mah: mahalanobis distance
                          - mcd: robust distance (minimum covariance determinant)
-    
+
     --covfile=<file>   : covariance matrix for Mahalanobis or MCD distance
                          computation. This is can be any comma-separated text file
                          without header that contains an m x n matrix, where m is
@@ -102,31 +102,31 @@ def get_help():
                          cov(EV1,EV1), cov(EV1,EV2), cov(EV2,EV2), cov(EV1,EV3),
                          cov(EV2,EV3), cov(EV3,EV3), ..., cov(EVk-1,EVk),
                          cov(EVk,EVk) for k eigenvalues.
-    
+
     --out=<directory> :  common output directory where all individual results will
                          be stored. This requires that each input file must have a
                          unique filename in order to avoid duplicate filenames
                          within the same directory. If this option is specified, no
                          output will be written into the original input directories.
-    
+
     --outcov=<dir>    :  output directory for writing the covariance matrices. If
                          not specified, all calculations will be internal and
                          nothing will be written to file.
-    
-    
+
+
     OUTPUTS
-    
+
     The program will output (a subset of) normalized eigenvalues, reweighted
     eigenvalues and asymmetry measures (distances). Outputs will be written into
     each subject's original input directory, unless the --out option is specified.
     In that case, a common ouptput directory will be used for all data.
-    
-    
+
+
     NORMALIZATION
-    
+
     If both --vol and --lin are present, surface / volume normalization is done
     first, and linear reweighting is done second.
-    
+
     Default surface / volume normalization means that, in general, surface
     normalization will be used, since the brainPrint scripts primarily operates on
     surfaces; the only exception are the left and right white and pial, for which
@@ -134,59 +134,59 @@ def get_help():
     --do3d option was supplied for the brainPrint scripts. For this 3D analysis,
     volume normalization will be used. The script will use the variable name to
     determine which normalization should be used.
-    
-    
+
+
     EXAMPLE
-    
+
     The recommended way to postprocess the pyBrainPrint.py results is to perform
     default normalization and linear reweighting prior to lateral shape asymmetry
     analysis. This results in the following sequence of processing steps:
-    
+
     a) example for a single subject using euclidean distance.
-    
+
     The following will perform default normalization, reweighting and asymmetry
     calculation using euclidean distances for a single subject. This does not
     require a covariance file.
-    
+
     pyPostProc --file=/path/to/subject-directory/brainPrintOutputFile.csv
     --vol=1 --lin --asy=euc
-    
+
     b) example for a single subject using Mahalanobis distance.
-    
+
     The following will perform default normalization, reweighting and asymmetry
     calculation using the Mahalanobis distance for a single subject. This requires
     that a covariance file is supplied:
-    
+
     pyPostProc --file=/path/to/subject-directory/brainPrintOutputFile.csv
     --vol=1 --lin --asy=mah --covfile=/path/to/covarianceFile.csv
-    
+
     c) example for multiple subjects
-    
+
     The following will perform default normalization, reweighting and asymmetry
     calculation using the Mahalanobis distance for multiple subjects. The covariance
     will be computed ad hoc:
-    
+
     pyPostProc --list=/path/to/list-of-brainPrintOutputFiles.txt --vol=1
     --lin --asy=mah --out=/path/to/output-directory
-    
-    
+
+
     REFERENCES
-    
+
     Always cite [1] as it describes the method. If you do statistical shape
     analysis you may also want to cite [2] as it discusses medical applications.
     The methods used within this script originate from [3].
-    
+
     [1] M. Reuter, F.-E. Wolter and N. Peinecke.
     Laplace-Beltrami spectra as "Shape-DNA" of surfaces and solids.
     Computer-Aided Design 38 (4), pp.342-366, 2006.
     http://dx.doi.org/10.1016/j.cad.2005.10.011
-    
+
     [2] M. Reuter, F.-E. Wolter, M. Shenton, M. Niethammer.
     Laplace-Beltrami Eigenvalues and Topological Features of Eigenfunctions for
     Statistical Shape Analysis.
     Computer-Aided Design 41 (10), pp.739-755, 2009.
     http://dx.doi.org/10.1016/j.cad.2009.02.007
-    
+
     [3] C. Wachinger, P. Golland, W. Kremen, B. Fischl, M. Reuter, for the
     Alzheimer's Disease Neuroimaging Initiative.
     BrainPrint: A Discriminative Characterization of Brain Morphology.
@@ -195,7 +195,6 @@ def get_help():
     """
 
     return HELPTEXT
-
 
 # ------------------------------------------------------------------------------
 # show history
@@ -226,7 +225,6 @@ def show_history():
     """
 
     return REVISIONS
-
 
 # ------------------------------------------------------------------------------
 # parse_options
@@ -280,7 +278,6 @@ def parse_options():
 
     # return options
     return (options)
-
 
 # --------------------------------------------------------------------------
 # check options
@@ -409,13 +406,12 @@ def check_options(options):
     # return
     return options
 
-
 # ------------------------------------------------------------------------------
 # compute_PostProc
 
 def compute_postproc(options):
     """
-    main function to post-process brainprint results 
+    main function to post-process brainprint results
     """
 
     # ==========================================================================
@@ -428,7 +424,7 @@ def compute_postproc(options):
     import numpy as np
     import scipy.spatial.distance as di
     from io import open
-    
+
     # ==========================================================================
     # SETTINGS
 
@@ -799,6 +795,38 @@ def compute_postproc(options):
 
     return (data)
 
+# ------------------------------------------------------------------------------
+# run brainPrintPostProc (as a funtcion)
+
+def run_postproc(options=None, file=None, list=None, vol=0, lin=False, asy=None, covfile=None, out=None, outcov=None):
+
+    # imports
+    import os
+
+    # get options
+    if options is None:
+
+        class options:
+            pass
+
+        options.file = file
+        options.list = list
+        options.vol = vol
+        options.lin = lin
+        options.asy = asy
+        options.covfile = covfile
+        options.out = out
+        options.outcov = outcov
+
+    # --------------------------------------------------------------------------
+    # check options
+
+    options = check_options(options)
+
+    # --------------------------------------------------------------------------
+    # run main function
+
+    compute_postproc(options)
 
 # ==============================================================================
 # MAIN PART

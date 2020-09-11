@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-pyBrainPrint - a script to compute ShapeDNA of FreeSurfer structures
+brainPrint - a script to compute ShapeDNA of FreeSurfer structures
 
 """
 
@@ -17,19 +15,19 @@ def get_help():
     """
 
     HELPTEXT = """
-    
+
     fs_brainprint.py V2.0
     Author: Martin Reuter, 2015
-    
+
     SUMMARY
-    
+
     Computes the BrainPrint for a FreeSurfer subject.
-    
+
     The BrainPrint consists of the shape descriptors (Shape-DNA) [1]
     of a selection of both cortical and subcortical structures [2].
-    
+
     Here is a list of structures and FreeSurfer aseg label ids:
-    
+
     CorpusCallosum                  [251, 252, 253, 254, 255]
     Cerebellum                      [7, 8, 16, 46, 47]
     Ventricles                      [4, 5, 14, 24, 31, 43, 44, 63]
@@ -60,45 +58,45 @@ def get_help():
     Right-Amygdala                  54
     Right-Accumbens-area            58
     Right-VentralDC                 60
-    
+
     And the following cortical structures:
-    
+
     lh-white-2d    (left white matter surface triangles)
     lh-pial-2d     (left pial surface triangles)
     rh-white-2d    (same for right hemisphere ...)
     rh-pial-2d
-    
+
     Processing of the cortical structures can be skipped (--skipcortex).
-    
+
     Implicit Inputs:
     The mri/aseg.mgz and mri/norm.mgz should be available.
     Also surf/?h.pial and surf/?h.white need to be
     available unless --skipcortex is passed. norm.mgz is not
     absolutely necessary but highly recommended to fix the labels
     and obtain improved meshes.
-    
+
     Output:
     The brainprint CSV table containing column headers for the
     structures, a row of areas, a row of volumes and N rows of
     the first N eigenvalues for each structure.
-    
+
     REFERENCES
     ==========
-    
+
     If used for a publication, please cite both [1] for the shape
     descriptor method and [2] for the application to brain MRI and
     definiton of the BrainPrint.
-    
+
     [1] M. Reuter, F.-E. Wolter and N. Peinecke.
     Laplace-Beltrami spectra as "Shape-DNA" of surfaces and solids.
     Computer-Aided Design 38 (4), pp.342-366, 2006.
     http://dx.doi.org/10.1016/j.cad.2005.10.011
-    
+
     [2] C. Wachinger, P. Golland, W. Kremen, B. Fischl, M. Reuter.
     BrainPrint: A discriminative characterization of brain morphology.
     NeuroImage Volume 109, pp.232-248, 2015.
     http://dx.doi.org/10.1016/j.neuroimage.2015.01.032
-    
+
     """
 
     return HELPTEXT
@@ -106,6 +104,7 @@ def get_help():
 # ------------------------------------------------------------------------------
 # parse options
 
+# parse_options
 def parse_options():
     """
     command line options parser: initiate the option parser and return the parsed object
@@ -147,8 +146,8 @@ def parse_options():
 
     return parser, options
 
-
-def check_options(parser, options):
+# check_options
+def check_options(options):
     """
     a function to evaluate input options and set some defaults
     """
@@ -156,28 +155,25 @@ def check_options(parser, options):
     # imports
     import os
     import sys
+    import errno
 
     # WITHOUT FREESURFER DO NOTHING
     fshome = os.getenv('FREESURFER_HOME')
     if fshome is None:
-        parser.print_help()
         print('\nERROR: Environment variable FREESURFER_HOME not set.', flush=True)
         print('        You need to source FreeSurfer 6.0 or newer.\n', flush=True)
         sys.exit(1)
 
     if options.sdir is None:
-        parser.print_help()
         print('\nERROR: specify subjects directory via --sdir\n', flush=True)
         sys.exit(1)
 
     if options.sid is None:
-        parser.print_help()
         print('\nERROR: Specify --sid\n', flush=True)
         sys.exit(1)
 
     subjdir = os.path.join(options.sdir, options.sid)
     if not os.path.exists(subjdir):
-        parser.print_help()
         print('\nERROR: cannot find sid in subjects directory\n', flush=True)
         sys.exit(1)
 
@@ -186,12 +182,17 @@ def check_options(parser, options):
     try:
         os.mkdir(options.outdir)
     except OSError as e:
-        if e.errno != os.errno.EEXIST:
+        if e.errno != errno.EEXIST:
             raise e
         pass
 
-    return options
+    # convert options to dictionary
 
+    dictOptions = dict(sdir=options.sdir, sid=options.sid, outdir=options.outdir, num=options.num, evec=options.evec, skipcortex=options.skipcortex)
+
+    # return
+
+    return dictOptions
 
 # ------------------------------------------------------------------------------
 # auxiliary functions
@@ -213,7 +214,6 @@ def run_cmd(cmd, err_msg):
     if retcode != 0:
         print('ERROR: ' + err_msg, flush=True)
         sys.exit(1)
-
 
 def get_ev(evfile):
     """
@@ -251,14 +251,13 @@ def get_ev(evfile):
                 evals.insert(0, area)
                 return evals
 
-
 def write_ev(options, structures, evmat):
     """
     writes EV files
     """
 
     # write final csv
-    outfile = options.brainprint
+    outfile = options["brainprint"]
     text_file = open(outfile, "w")
     text_file.write((','.join(structures)) + '\n')
     evstrans = list(zip(*evmat))
@@ -266,9 +265,42 @@ def write_ev(options, structures, evmat):
         text_file.write("%s\n" % ','.join(["%.8e" % it for it in item]))
     text_file.close()
 
+# ------------------------------------------------------------------------------
+# run brainPrint (as a funtcion)
+
+def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=False, skipcortex=True):
+
+    # imports
+    import os
+
+    # get options
+    if options is None:
+
+        class options:
+            pass
+
+        options.sdir=sdir
+        options.sid=sid
+        options.outdir=outdir
+        options.num=num
+        options.evec=evec
+        options.skipcortex=skipcortex
+
+    # check options
+    options = check_options(options)
+
+    # set options
+    options["bcond"] = 1
+    options["brainprint"] = os.path.join(options["outdir"], options["sid"] + '.brainprint.csv')
+
+    # run shapeDNA
+    structures, evmat = compute_brainprint(options)
+
+    # write EVs
+    write_ev(options, structures, evmat)
 
 # ------------------------------------------------------------------------------
-# compute shapeDNA
+# compute brainPrint
 
 def compute_brainprint(options):
     """
@@ -278,7 +310,7 @@ def compute_brainprint(options):
     # imports
     import os
     import subprocess
-    from brainprintpython import pyShapeDNA
+    from lapy import ShapeDNA, TriaIO, FuncIO
 
     # define structures
 
@@ -306,7 +338,7 @@ def compute_brainprint(options):
 
     cortex_2d = ['lh-white-2d', 'lh-pial-2d', 'rh-white-2d', 'rh-pial-2d']
 
-    if not options.skipcortex:
+    if not options["skipcortex"]:
         structures = structures + cortex_2d
 
     labels = [[251, 252, 253, 254, 255], [7, 8, 16, 46, 47], [4, 5, 14, 24, 31, 43, 44, 63],
@@ -337,29 +369,35 @@ def compute_brainprint(options):
         print("Aseg label id str " + astring + "\n", flush=True)
 
         surfnameo = 'aseg.final.' + astring + '.vtk'
-        asegsurfo = os.path.join(options.outdir, surfnameo)
+        asegsurfo = os.path.join(options["outdir"], surfnameo)
         failed = False
 
-        ev = list()
-        options.asegid = astring.split('_')
-        options.outsurf = asegsurfo
+        evals = list()
+        options['asegid'] = astring.split('_')
+        options['outsurf'] = asegsurfo
 
         try:
-            procsurf = pyShapeDNA.get_aseg_surf(options)
-            v, t, ev, evec = pyShapeDNA.compute_shapeDNA_tria(procsurf, options)
-            pyShapeDNA.write_ev(v, t, ev, evec, options)
+            # convert to string
+            options['asegid'] = [ str(i) for i in options['asegid'] ]
+
+            # generate surfaces
+            procsurf = ShapeDNA.get_aseg_surf(options)
+
+            # run ShapeDNA
+            tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
+
         except subprocess.CalledProcessError as e:
             print('Error occured, skipping label ' + astring, flush=True)
             failed = True
 
-        if len(ev)==0 or failed:
-            ev = ['NaN'] * (options.num + 2)
+        if len(evals)==0 or failed:
+            evals = ['NaN'] * (options["num"] + 2)
 
-        evmat.append(ev)
+        evmat.append(evals)
 
     # if skip cortex, return here
 
-    if options.skipcortex:
+    if options["skipcortex"]:
         return structures, evmat
 
     # process 2D Surfaces
@@ -371,28 +409,33 @@ def compute_brainprint(options):
             print("\n\n===========================================================", flush=True)
             print("2D Cortical Surface " + surfname + "\n", flush=True)
 
-            outsurf = os.path.join(options.sdir, options.sid, 'surf', surfname)
+            outsurf = os.path.join(options["sdir"], options["sid"], 'surf', surfname)
             failed = False
 
-            ev = list()
-            options.surf = outsurf
-            options.outsurf = outsurf+'.vtk'
+            evals = list()
+            options['surf'] = outsurf
+            options['outsurf'] = outsurf+'.vtk'
 
             try:
-                procsurf = pyShapeDNA.get_surf_surf(options)
-                v, t, ev, evec = pyShapeDNA.compute_shapeDNA_tria(procsurf, options)
-                pyShapeDNA.write_ev(v, t, ev, evec, options)
+                # convert to string
+                options['asegid'] = [ str(i) for i in options['asegid'] ]
+
+                # generate surfaces
+                procsurf = ShapeDNA.get_aseg_surf(options)
+
+                # run ShapeDNA
+                tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
+
             except subprocess.CalledProcessError as e:
                 print('Error occured, skipping 2D surface ' + surfname, flush=True)
                 failed = True
 
-            if len(ev)==0 or failed:
-                ev = ['NaN'] * (options.num + 2)
+            if len(evals)==0 or failed:
+                evals = ['NaN'] * (options["num"] + 2)
 
-            evmat.append(ev)
+            evmat.append(evals)
 
     return structures, evmat
-
 
 # ------------------------------------------------------------------------------
 # main function
@@ -400,7 +443,6 @@ def compute_brainprint(options):
 if __name__ == "__main__":
 
     # imports
-    import os
     import warnings
 
     # settings
@@ -409,15 +451,5 @@ if __name__ == "__main__":
     # parse command line options
     parser, options = parse_options()
 
-    # check options
-    options = check_options(parser, options)
-
-    # set options
-    options.bcond = 1
-    options.brainprint = os.path.join(options.outdir, options.sid+'.brainprint.csv')
-
-    # run shapeDNA
-    structures, evmat = compute_brainprint(options)
-
-    # write EVs
-    write_ev(options, structures, evmat)
+    # run brainPrint
+    run_brainprint(options)
