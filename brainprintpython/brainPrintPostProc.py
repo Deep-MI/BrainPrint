@@ -3,6 +3,7 @@
 """
 brainPrintPostProc - a script for the post-processing of brainPrint results
 
+type 'brainPrintPostProc.get_help()' for info.
 """
 
 # ==============================================================================
@@ -11,7 +12,7 @@ brainPrintPostProc - a script for the post-processing of brainPrint results
 # ------------------------------------------------------------------------------
 # get help
 
-def get_help():
+def get_help(print_help=True):
     """
     a function that returns a help text
     """
@@ -194,7 +195,10 @@ def get_help():
     http://dx.doi:10.1016/j.neuroimage.2015.01.032.
     """
 
-    return HELPTEXT
+    if print_help is True:
+        print(HELPTEXT)
+    else:
+        return HELPTEXT
 
 # ------------------------------------------------------------------------------
 # show history
@@ -239,7 +243,7 @@ def parse_options():
     import optparse
 
     #
-    parser = optparse.OptionParser(usage=get_help())
+    parser = optparse.OptionParser(usage=get_help(print_help=False))
 
     # help text
     h_file = 'a csv file that was produced by the pyBrainPrint.py script'

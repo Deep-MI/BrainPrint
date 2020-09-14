@@ -1,6 +1,7 @@
 """
 brainPrint - a script to compute ShapeDNA of FreeSurfer structures
 
+type 'brainPrint.get_help()' for info.
 """
 
 # ==============================================================================
@@ -9,7 +10,7 @@ brainPrint - a script to compute ShapeDNA of FreeSurfer structures
 # ------------------------------------------------------------------------------
 # help function
 
-def get_help():
+def get_help(print_help=True):
     """
     a function to retrieve a help message
     """
@@ -99,7 +100,10 @@ def get_help():
 
     """
 
-    return HELPTEXT
+    if print_help is True:
+        print(HELPTEXT)
+    else:
+        return HELPTEXT
 
 # ------------------------------------------------------------------------------
 # parse options
@@ -114,12 +118,12 @@ def parse_options():
     import optparse
 
     # parse
-    parser = optparse.OptionParser(usage=get_help())
+    parser = optparse.OptionParser(usage=get_help(print_help=False))
 
     # help text
     h_sid = '(REQUIRED) subject ID (FS processed directory inside the subjects directory)'
     h_sdir = '(REQUIRED) FS subjects directory'
-    h_outdir = 'Output directory (default: <sdir>/<sid>/brainprint/ )'
+    h_outdir = 'Output directory (default: <sdir>/<sid>/brainprint)'
     h_num = 'Number of eigenvalues/vectors to compute (default: 50)'
     h_evec = 'Switch on eigenvector computation (default: off)'
     h_skipcortex = 'Skip cortical surfaces (default: off)'
@@ -157,24 +161,29 @@ def check_options(options):
     import sys
     import errno
 
-    # WITHOUT FREESURFER DO NOTHING
+    # check if there are any inputs
+    if len(sys.argv) == 1:
+        print(get_help())
+        sys.exit(0)
+
+    #
     fshome = os.getenv('FREESURFER_HOME')
     if fshome is None:
-        print('\nERROR: Environment variable FREESURFER_HOME not set.', flush=True)
-        print('        You need to source FreeSurfer 6.0 or newer.\n', flush=True)
+        print('\nERROR: Environment variable FREESURFER_HOME not set.')
+        print('       You need to source FreeSurfer 6.0 or newer.\n')
         sys.exit(1)
 
     if options.sdir is None:
-        print('\nERROR: specify subjects directory via --sdir\n', flush=True)
+        print('\nERROR: specify subjects directory via --sdir\n')
         sys.exit(1)
 
     if options.sid is None:
-        print('\nERROR: Specify --sid\n', flush=True)
+        print('\nERROR: Specify --sid\n')
         sys.exit(1)
 
     subjdir = os.path.join(options.sdir, options.sid)
     if not os.path.exists(subjdir):
-        print('\nERROR: cannot find sid in subjects directory\n', flush=True)
+        print('\nERROR: cannot find sid in subjects directory\n')
         sys.exit(1)
 
     if options.outdir is None:
@@ -208,11 +217,11 @@ def run_cmd(cmd, err_msg):
     import subprocess
 
     # run cmd
-    print('#@# Command: ' + cmd + '\n', flush=True)
+    print('#@# Command: ' + cmd + '\n')
     args = shlex.split(cmd)
     retcode = subprocess.call(args)
     if retcode != 0:
-        print('ERROR: ' + err_msg, flush=True)
+        print('ERROR: ' + err_msg)
         sys.exit(1)
 
 def get_ev(evfile):
@@ -365,8 +374,8 @@ def compute_brainprint(options):
         else:
             astring = str(lab)
 
-        print("\n\n===========================================================", flush=True)
-        print("Aseg label id str " + astring + "\n", flush=True)
+        print("\n\n===========================================================")
+        print("Aseg label id str " + astring + "\n")
 
         surfnameo = 'aseg.final.' + astring + '.vtk'
         asegsurfo = os.path.join(options["outdir"], surfnameo)
@@ -387,7 +396,7 @@ def compute_brainprint(options):
             tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
 
         except subprocess.CalledProcessError as e:
-            print('Error occured, skipping label ' + astring, flush=True)
+            print('Error occured, skipping label ' + astring)
             failed = True
 
         if len(evals)==0 or failed:
@@ -406,8 +415,8 @@ def compute_brainprint(options):
         for typeSurf in ['white', 'pial']:
 
             surfname = hem + '.' + typeSurf
-            print("\n\n===========================================================", flush=True)
-            print("2D Cortical Surface " + surfname + "\n", flush=True)
+            print("\n\n===========================================================")
+            print("2D Cortical Surface " + surfname + "\n")
 
             outsurf = os.path.join(options["sdir"], options["sid"], 'surf', surfname)
             failed = False
@@ -427,7 +436,7 @@ def compute_brainprint(options):
                 tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
 
             except subprocess.CalledProcessError as e:
-                print('Error occured, skipping 2D surface ' + surfname, flush=True)
+                print('Error occured, skipping 2D surface ' + surfname)
                 failed = True
 
             if len(evals)==0 or failed:
