@@ -4,7 +4,7 @@ This is the `brainprintpython` package, a derivative of the original
 [BrainPrint](https://github.com/Deep-MI/BrainPrint) scripts, with the following
 goals and changes:
 
-## Goals
+### Goals
 
 - provide a Python-only version of the BrainPrint scripts (except some
   Freesurfer dependencies)
@@ -21,13 +21,15 @@ goals and changes:
 - revision, and, where possible, simplification and reduction of the original
   code base for easier maintainability
 
-## Changes
+### Changes
 
 - no more support for analyses of cortical parcellation or label files
 - no more Python 2.x compatibility
 - currently no more support for tetrahedral meshes
 
-## Usage from the command line
+## Usage
+
+### From the command line
 
 The toolbox consists of two python scripts, `brainPrint.py` and `brainPrintPostProc.py`.
 Both scripts can be run directly from the command line as well as from within
@@ -96,7 +98,7 @@ Options:
                        necessary
 ```
 
-## Use as a python package
+### As a python package
 
 As an alternative to their command-line usage, the BrainPrint scripts can also
 be run within a pure python environment, i.e. installed and imported as a
@@ -111,20 +113,20 @@ analysis:
 ```
 import lapy
 from brainprintpython import brainPrint
-from brainprintpython import brainPrintPostProc
 brainPrint.run_brainprintPostProc(sdir="/my/subjects/directory", sid="my_subject_id")
 ```
 
 See `help(brainPrint)` and `brainPrint.get_help()` for further usage info and
 additional options.
 
-Use the `run_brainprint` function from the `brainprint` module to run an
-analysis:
+Use the `run_postproc` function from the `brainPrintPostProc` module to do the
+post-processing:
 
 ```
 import lapy
-brainPrint.run_brainprint(file="/my/brainprint/output")
-brainPrint.run_brainprint(list="/my/list/of/brainprint/outputs")
+from brainprintpython import brainPrintPostProc
+brainPrintPostProc.run_postproc(file="/my/brainprint/output")
+brainPrintPostProc.run_postproc(list="/my/list/of/brainprint/outputs")
 ```
 
 See `help(brainPrintPostProc)` and `brainPrintPostProc.get_help()` for
@@ -132,7 +134,7 @@ further usage info and additional options.
 
 ## Installation
 
-Use the following code to download, build and install a package from this s
+Use the following code to download, build and install a package from this
 repository into your local Python package directory:
 
 `pip3 install --user git+https://github.com/reuter-lab/BrainPrint-python.git@freesurfer-module#egg=brainprintpython`
@@ -147,7 +149,7 @@ to run the scripts.
 
 ## Requirements
 
-- The (LaPy)[https://github.com/Deep-MI/LaPy] package must be installed.
+- The [LaPy](https://github.com/Deep-MI/LaPy) package must be installed.
 
 - A working installation of Freesurfer 6.0 must be sourced.
 
