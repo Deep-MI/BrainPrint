@@ -1,44 +1,23 @@
 # BrainPrint-python
 
 This is the `brainprintpython` package, a derivative of the original
-[BrainPrint](https://github.com/Deep-MI/BrainPrint) scripts, with the following
-goals and changes:
-
-### Goals
-
-- provide a Python-only version of the BrainPrint scripts (except some
-  Freesurfer dependencies)
-- integration of the `lapy` package
-- remove dependencies on third-party software (shapeDNA binaries, gmsh, meshfix)
-- provide a light-weight version of the original scripts that contains only the
-  most frequently used submodules
-- integrate the post-processing module (for computing distances etc.)
-- create a fully modularized package whose functions can be called from other
-  python scripts without the need of spawning subprocesses, while still
-  maintaining the command-line interface of the scripts
-- provide additional files (setup.py, LICENSE, README) so that it can be
-  packaged and distributed as a stand-alone Python package
-- revision, and, where possible, simplification and reduction of the original
-  code base for easier maintainability
-
-### Changes
-
-- no more support for analyses of cortical parcellation or label files
-- no more Python 2.x compatibility
-- currently no more support for tetrahedral meshes
+[BrainPrint](https://github.com/Deep-MI/BrainPrint) scripts, with the primary
+goal to provide a Python-only version of the BrainPrint scripts (except some
+Freesurfer dependencies), to integrate of the `lapy` package, and to remove
+dependencies on third-party software (shapeDNA binaries, gmsh, meshfix).
 
 ## Usage
 
-### From the command line
+### Usage from the command line
 
-The toolbox consists of two python scripts, `brainPrint.py` and `brainPrintPostProc.py`.
+The toolbox consists of two Python scripts, `brainPrint.py` and `brainPrintPostProc.py`.
 Both scripts can be run directly from the command line as well as from within
 a Python environment.
 
 The `brainPrint.py` script is used for the per-subject computation of the
 individual BrainPrint descriptor. Its usage and options are summarized below;
-detailed info is available by calling the script with the `--help` argument
-from the command line.
+detailed info is available by calling the script without any arguments from the
+command line.
 
 ```
 python3 brainPrint.py --sdir <directory> --subjects SubjectID  [--num=<int>]
@@ -63,11 +42,11 @@ Output parameters:
 
 The `brainPrintPostProc.py` script is used for post-processing of a set of
 individual BrainPrint results. Its usage and options are summarized below;
-detailed info is available by calling the script with the `--help` argument
-from the command line.
+detailed info is available by calling the script without any arguments from the
+command line.
 
 ```
-python3 brainPrint.py --file <file> OR --list <file> [--vol=<int>] [--lin]
+python3 brainPrintPostProc.py --file <file> OR --list <file> [--vol=<int>] [--lin]
                     [--asy=<euc|mah|mcd>] [--covfile=<file>] [--out=<directory>]
                     [--outcov=<directory>] [-h] [--help]
 
@@ -98,14 +77,14 @@ Options:
                        necessary
 ```
 
-### As a python package
+### Usage as a Python package
 
 As an alternative to their command-line usage, the BrainPrint scripts can also
-be run within a pure python environment, i.e. installed and imported as a
-python package.
+be run within a pure Python environment, i.e. installed and imported as a
+Python package.
 
 Use `import brainprintpython` (or sth. equivalent) to import the package within
-a python environment.
+a Python environment.
 
 Use the `run_brainprint` function from the `brainprint` module to run an
 analysis:
@@ -113,7 +92,7 @@ analysis:
 ```
 import lapy
 from brainprintpython import brainPrint
-brainPrint.run_brainprintPostProc(sdir="/my/subjects/directory", sid="my_subject_id")
+brainPrint.run_brainprint(sdir="/my/subjects/directory", sid="my_subject_id")
 ```
 
 See `help(brainPrint)` and `brainPrint.get_help()` for further usage info and
@@ -125,8 +104,8 @@ post-processing:
 ```
 import lapy
 from brainprintpython import brainPrintPostProc
-brainPrintPostProc.run_postproc(file="/my/brainprint/output")
-brainPrintPostProc.run_postproc(list="/my/list/of/brainprint/outputs")
+brainPrintPostProc.run_postproc(file="/my/brainprint/output") # for a single subject
+brainPrintPostProc.run_postproc(list="/my/list/of/brainprint/outputs") # for multiple subjects
 ```
 
 See `help(brainPrintPostProc)` and `brainPrintPostProc.get_help()` for
@@ -155,8 +134,17 @@ to run the scripts.
 
 - At least one structural MR image that was processed with Freesurfer 6.0.
 
+## Changes
+
+There are some changes in functionality in comparison to the original [BrainPrint](https://github.com/Deep-MI/BrainPrint)
+scripts:
+
+- currently no support for tetrahedral meshes
+- currently no support for analyses of cortical parcellation or label files
+- no more Python 2.x compatibility
+
 ## References
 
 If you use this software for a publication please cite:
 
-[1] BrainPrint: a discriminative characterization of brain morphology. Wachinger C, Golland P, Kremen W, Fischl B, Reuter M Neuroimage. 2015;109:232-48. http://dx.doi.org/10.1016/j.neuroimage.2015.01.032 http://www.ncbi.nlm.nih.gov/pubmed/25613439
+[1] BrainPrint: a discriminative characterization of brain morphology. Wachinger C, Golland P, Kremen W, Fischl B, Reuter M. Neuroimage. 2015;109:232-48. http://dx.doi.org/10.1016/j.neuroimage.2015.01.032 http://www.ncbi.nlm.nih.gov/pubmed/25613439
