@@ -17,10 +17,12 @@ def get_help(print_help=True):
 
     HELPTEXT = """
 
-    fs_brainprint.py V2.0
+    brainPrint.py
     Author: Martin Reuter, 2015
 
+    =======
     SUMMARY
+    =======
 
     Computes the BrainPrint for a FreeSurfer subject.
 
@@ -81,6 +83,47 @@ def get_help(print_help=True):
     structures, a row of areas, a row of volumes and N rows of
     the first N eigenvalues for each structure.
 
+    ==================
+    COMMAND-LINE USAGE
+    ==================
+
+    python3 brainPrint.py --sdir <directory> --subjects SubjectID  [--num=<int>]
+                          [--evec] [--skipcortex] [--outdir <directory>] [-h]
+
+    Options:
+      -h, --help         show this help message and exit
+
+    Required options:
+      --sid=SID        (REQUIRED) subject ID (FS processed directory inside the
+                       subjects directory)
+      --sdir=SDIR      (REQUIRED) FS subjects directory
+
+    Processing directives:
+      --num=NUM        Number of eigenvalues/vectors to compute (default: 50)
+      --evec           Switch on eigenvector computation (default: off)
+      --skipcortex     Skip cortical surfaces (default: off)
+
+    Output parameters:
+      --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)
+
+    ============
+    PYTHON USAGE
+    ============
+
+    As an alternative to the command-line usage described above, individual
+    functions can also be called within a Python environment as follows:
+
+    import lapy
+    from brainprintpython import brainPrint
+    brainPrint.run_brainprintPostProc(sdir="/my/subjects/directory", sid="my_subject_id")
+
+    Additional options are num=<int>, evec=<bool>, skipcortex=<bool>, and
+    outdir=<string>.
+
+    See `help(brainPrint)` and `brainPrint.get_help()` for further usage info
+    and additional options.
+    
+    ==========
     REFERENCES
     ==========
 
@@ -118,7 +161,7 @@ def parse_options():
     import optparse
 
     # parse
-    parser = optparse.OptionParser(usage=get_help(print_help=False))
+    parser = optparse.OptionParser()
 
     # help text
     h_sid = '(REQUIRED) subject ID (FS processed directory inside the subjects directory)'
@@ -162,8 +205,8 @@ def check_options(options):
     import errno
 
     # check if there are any inputs
-    if len(sys.argv) == 1:
-        print(get_help())
+    if options.sdir is None and options.sid is None:
+        get_help(print_help=True)
         sys.exit(0)
 
     #
@@ -277,7 +320,10 @@ def write_ev(options, structures, evmat):
 # ------------------------------------------------------------------------------
 # run brainPrint (as a funtcion)
 
-def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=False, skipcortex=True):
+def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=False, skipcortex=False):
+    """
+    a function to run a BrainPrint analysis
+    """
 
     # imports
     import os

@@ -18,7 +18,13 @@ def get_help(print_help=True):
     """
 
     HELPTEXT = """
+
+    brainPrintPostProc.py
+    Author: Kersten Diers, 2017
+
+    =======
     SUMMARY
+    =======
 
     Postprocessing of brainPrint results. This includes (any subset of) a) surface
     and / or volume normalization of eigenvalues, b) linear reweighting of the
@@ -40,8 +46,9 @@ def get_help(print_help=True):
     pyBrainPrint.py script version 1.21 and Python 2.7. The 'sklearn' package is
     required for the computation of MCD distances.
 
-
-    INPUTS
+    ==================
+    COMMAND-LINE USAGE
+    ==================
 
     Required inputs are either:
 
@@ -114,16 +121,36 @@ def get_help(print_help=True):
                          not specified, all calculations will be internal and
                          nothing will be written to file.
 
+    ============
+    PYTHON USAGE
+    ============
 
+    As an alternative to the command-line usage described above, individual
+    functions can also be called within a Python environment as follows:
+
+    import lapy
+    from brainprintpython import brainPrintPostProc
+    brainPrintPostProc.run_postproc(file="/my/brainprint/output") # for a single subject
+    brainPrintPostProc.run_postproc(list="/my/list/of/brainprint/outputs") # for multiple subjects
+
+    Additional options are vol=<int>, lin=<bool>, asy=<string>, covfile=<string>,
+    out=<string>, and outcov=<string>.
+
+    See `help(brainPrintPostProc)` and `brainPrintPostProc.get_help()` for
+    further usage info and additional options.
+
+    =======
     OUTPUTS
+    =======
 
     The program will output (a subset of) normalized eigenvalues, reweighted
     eigenvalues and asymmetry measures (distances). Outputs will be written into
     each subject's original input directory, unless the --out option is specified.
     In that case, a common ouptput directory will be used for all data.
 
-
+    =============
     NORMALIZATION
+    =============
 
     If both --vol and --lin are present, surface / volume normalization is done
     first, and linear reweighting is done second.
@@ -136,8 +163,9 @@ def get_help(print_help=True):
     volume normalization will be used. The script will use the variable name to
     determine which normalization should be used.
 
-
+    =======
     EXAMPLE
+    =======
 
     The recommended way to postprocess the pyBrainPrint.py results is to perform
     default normalization and linear reweighting prior to lateral shape asymmetry
@@ -149,7 +177,7 @@ def get_help(print_help=True):
     calculation using euclidean distances for a single subject. This does not
     require a covariance file.
 
-    pyPostProc --file=/path/to/subject-directory/brainPrintOutputFile.csv
+    brainPrintPostProc.py --file=/path/to/subject-directory/brainPrintOutputFile.csv
     --vol=1 --lin --asy=euc
 
     b) example for a single subject using Mahalanobis distance.
@@ -158,7 +186,7 @@ def get_help(print_help=True):
     calculation using the Mahalanobis distance for a single subject. This requires
     that a covariance file is supplied:
 
-    pyPostProc --file=/path/to/subject-directory/brainPrintOutputFile.csv
+    brainPrintPostProc.py --file=/path/to/subject-directory/brainPrintOutputFile.csv
     --vol=1 --lin --asy=mah --covfile=/path/to/covarianceFile.csv
 
     c) example for multiple subjects
@@ -167,11 +195,12 @@ def get_help(print_help=True):
     calculation using the Mahalanobis distance for multiple subjects. The covariance
     will be computed ad hoc:
 
-    pyPostProc --list=/path/to/list-of-brainPrintOutputFiles.txt --vol=1
+    brainPrintPostProc.py --list=/path/to/list-of-brainPrintOutputFiles.txt --vol=1
     --lin --asy=mah --out=/path/to/output-directory
 
-
+    ==========
     REFERENCES
+    ==========
 
     Always cite [1] as it describes the method. If you do statistical shape
     analysis you may also want to cite [2] as it discusses medical applications.
@@ -193,6 +222,7 @@ def get_help(print_help=True):
     BrainPrint: A Discriminative Characterization of Brain Morphology.
     NeuroImage 109, pp.232-248, 2015.
     http://dx.doi:10.1016/j.neuroimage.2015.01.032.
+
     """
 
     if print_help is True:
@@ -243,7 +273,7 @@ def parse_options():
     import optparse
 
     #
-    parser = optparse.OptionParser(usage=get_help(print_help=False))
+    parser = optparse.OptionParser()
 
     # help text
     h_file = 'a csv file that was produced by the pyBrainPrint.py script'
@@ -276,8 +306,8 @@ def parse_options():
     (options, args) = parser.parse_args()
 
     # check if there are any inputs
-    if len(sys.argv) == 1:
-        print(get_help())
+    if options.file is None and options.list is None:
+        get_help(print_help=True)
         sys.exit(0)
 
     # return options
