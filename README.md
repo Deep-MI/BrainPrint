@@ -1,26 +1,23 @@
-# BrainPrint-python
+Deep-MI# BrainPrint
 
-This is the `brainprintpython` package, a derivative of the original
-[BrainPrint](https://github.com/Deep-MI/BrainPrint) scripts, with the primary
-goal to provide a Python-only version of the BrainPrint scripts (except some
-Freesurfer dependencies), to integrate of the `lapy` package, and to remove
-dependencies on third-party software (shapeDNA binaries, gmsh, meshfix).
+This is the `brainprint` python package, a derivative of the original
+[BrainPrint](https://github.com/Deep-MI/BrainPrint-legacy) scripts, with the primary goal to provide a Python-only version of the original BrainPrint scripts (except some Freesurfer dependencies), to integrate the [LaPy](https://github.com/Deep-MI/LaPy) package, and to remove dependencies on third-party software (shapeDNA binaries, gmsh, meshfix). As a result, some functionality of the original BrainPrint scripts is no longer maintained (no more support of tetrahedral meshes; no more support of cortical parcellations or label files).
 
 ## Usage
 
 ### Usage from the command line
 
-The toolbox consists of two Python scripts, `brainPrint.py` and `brainPrintPostProc.py`.
+The toolbox consists of two Python scripts, `brainprint.py` and `brainprint_postproc.py`.
 Both scripts can be run directly from the command line as well as from within
 a Python environment.
 
-The `brainPrint.py` script is used for the per-subject computation of the
-individual BrainPrint descriptor. Its usage and options are summarized below;
+The `brainprint.py` script is used for the per-subject computation of the
+individual brainprint descriptor. Its usage and options are summarized below;
 detailed info is available by calling the script without any arguments from the
 command line.
 
 ```
-python3 brainPrint.py --sdir <directory> --subjects SubjectID  [--num=<int>]
+python3 brainprint.py --sdir <directory> --subjects SubjectID  [--num=<int>]
                     [--evec] [--skipcortex] [--outdir <directory>] [-h]
 
 Options:
@@ -40,13 +37,13 @@ Output parameters:
   --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)
 ```
 
-The `brainPrintPostProc.py` script is used for post-processing of a set of
+The `brainprint_postproc.py` script is used for post-processing of a set of
 individual BrainPrint results. Its usage and options are summarized below;
 detailed info is available by calling the script without any arguments from the
 command line.
 
 ```
-python3 brainPrintPostProc.py --file <file> OR --list <file> [--vol=<int>] [--lin]
+python3 brainprint_postproc.py --file <file> OR --list <file> [--vol=<int>] [--lin]
                     [--asy=<euc|mah|mcd>] [--covfile=<file>] [--out=<directory>]
                     [--outcov=<directory>] [-h] [--help]
 
@@ -56,10 +53,10 @@ Options:
   Required options::
     use EITHER --file OR --list (but not both)
 
-    --file=FILE        a csv file that was produced by the pyBrainPrint.py
+    --file=FILE        a csv file that was produced by the brainprint.py
                        script
     --list=LIST        a text file with a list of csv files that were produced
-                       by the pyBrainPrint.py script
+                       by the brainprint.py script
 
   Processing options::
     use --help for details
@@ -83,7 +80,7 @@ As an alternative to their command-line usage, the BrainPrint scripts can also
 be run within a pure Python environment, i.e. installed and imported as a
 Python package.
 
-Use `import brainprintpython` (or sth. equivalent) to import the package within
+Use `import brainprint` (or sth. equivalent) to import the package within
 a Python environment.
 
 Use the `run_brainprint` function from the `brainprint` module to run an
@@ -91,24 +88,24 @@ analysis:
 
 ```
 import lapy
-from brainprintpython import brainPrint
-brainPrint.run_brainprint(sdir="/my/subjects/directory", sid="my_subject_id")
+from brainprint import brainprint
+brainprint.run_brainprint(sdir="/my/subjects/directory", sid="my_subject_id")
 ```
 
-See `help(brainPrint)` and `brainPrint.get_help()` for further usage info and
+See `help(brainprint)` and `brainprint.get_help()` for further usage info and
 additional options.
 
-Use the `run_postproc` function from the `brainPrintPostProc` module to do the
+Use the `run_postproc` function from the `brainprint_postproc` module to do the
 post-processing:
 
 ```
 import lapy
-from brainprintpython import brainPrintPostProc
-brainPrintPostProc.run_postproc(file="/my/brainprint/output") # for a single subject
-brainPrintPostProc.run_postproc(list="/my/list/of/brainprint/outputs") # for multiple subjects
+from brainprint import brainprint_postproc
+brainprint_postproc.run_postproc(file="/my/brainprint/output") # for a single subject
+brainprint_postproc.run_postproc(list="/my/list/of/brainprint/outputs") # for multiple subjects
 ```
 
-See `help(brainPrintPostProc)` and `brainPrintPostProc.get_help()` for
+See `help(brainprint_postproc)` and `brainprint_postproc.get_help()` for
 further usage info and additional options.
 
 ## Installation
@@ -116,12 +113,12 @@ further usage info and additional options.
 Use the following code to download, build and install a package from this
 repository into your local Python package directory:
 
-`pip3 install --user git+https://github.com/reuter-lab/BrainPrint-python.git@freesurfer-module#egg=brainprintpython`
+`pip3 install --user git+https://github.com/Deep-MI/BrainPrint-python.git@freesurfer-module#egg=brainprint`
 
 Use the following code to install the package in editable mode to a location of
 your choice:
 
-`pip3 install --user --src /my/preferred/location --editable git+https://github.com/reuter-lab/BrainPrint-python.git@freesurfer-module#egg=brainprintpython`
+`pip3 install --user --src /my/preferred/location --editable git+https://github.com/Deep-MI/BrainPrint-python.git@freesurfer-module#egg=brainprint`
 
 You may need to add your local Python package directory to your $PATH in order
 to run the scripts.
@@ -129,14 +126,12 @@ to run the scripts.
 ## Requirements
 
 - The [LaPy](https://github.com/Deep-MI/LaPy) package must be installed.
-
 - A working installation of Freesurfer 6.0 must be sourced.
-
 - At least one structural MR image that was processed with Freesurfer 6.0.
 
 ## Changes
 
-There are some changes in functionality in comparison to the original [BrainPrint](https://github.com/Deep-MI/BrainPrint)
+There are some changes in functionality in comparison to the original [BrainPrint](https://github.com/Deep-MI/BrainPrint-legacy)
 scripts:
 
 - currently no support for tetrahedral meshes
@@ -148,3 +143,5 @@ scripts:
 If you use this software for a publication please cite:
 
 [1] BrainPrint: a discriminative characterization of brain morphology. Wachinger C, Golland P, Kremen W, Fischl B, Reuter M. Neuroimage. 2015;109:232-48. http://dx.doi.org/10.1016/j.neuroimage.2015.01.032 http://www.ncbi.nlm.nih.gov/pubmed/25613439
+
+[2] Laplace-Beltrami spectra as 'Shape-DNA' of surfaces and solids. Reuter M, Wolter F-E, Peinecke N Computer-Aided Design. 2006;38(4):342-366. http://dx.doi.org/10.1016/j.cad.2005.10.011

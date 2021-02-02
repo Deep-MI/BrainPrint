@@ -8,18 +8,18 @@ with open("README.md", "r") as fh:
 # see: https://pip.pypa.io/en/stable/reference/pip_install for a description how to use pip install in conjunction with a git repository
 
 setuptools.setup(
-    name="brainprintpython",
+    name="brainprint",
     version="0.1",
     author="Kersten Diers, Martin Reuter",
     author_email="kersten.diers@dzne.de",
     description="A light-weight package derived from the BrainPrint scripts",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/reuter-lab/BrainPrint-python",
-    #package_dir={'': 'src'}, 
+    url="https://github.com/Deep-MI/BrainPrint-python",
+    #package_dir={'': 'src'},
     packages=setuptools.find_packages(),
     # see https://pypi.org/classifiers/
-    classifiers=[ 
+    classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT"
