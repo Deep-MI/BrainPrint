@@ -41,9 +41,9 @@ def get_help(print_help=True):
     Lateral asymmetry consists of the computation of Euclidean, Mahalanobis, or MCD
     distances between bilateral (left-right) structures.
 
-    Data need to be processed with the pyBrainPrint.py script prior to applying
+    Data need to be processed with the brainprint.py script prior to applying
     the current script. The current script has been developed and tested for the
-    pyBrainPrint.py script version 1.21 and Python 2.7. The 'sklearn' package is
+    brainprint.py script version 1.21 and Python 2.7. The 'sklearn' package is
     required for the computation of MCD distances.
 
     ==================
@@ -52,13 +52,13 @@ def get_help(print_help=True):
 
     Required inputs are either:
 
-    --file=<file> : a csv file that was produced by the pyBrainPrint.py script.
+    --file=<file> : a csv file that was produced by the brainprint.py script.
                     This option will run the script in single-subject mode.
 
     or
 
     --list=<file> : a text file containing a list of files that were produced by
-                    the pyBrainPrint.py script. This will run the script in group
+                    the brainprint.py script. This will run the script in group
                     mode.
 
     but not both. According to the chosen option, the script will run in either
@@ -167,7 +167,7 @@ def get_help(print_help=True):
     EXAMPLE
     =======
 
-    The recommended way to postprocess the pyBrainPrint.py results is to perform
+    The recommended way to postprocess the brainprint.py results is to perform
     default normalization and linear reweighting prior to lateral shape asymmetry
     analysis. This results in the following sequence of processing steps:
 
@@ -276,8 +276,8 @@ def parse_options():
     parser = optparse.OptionParser()
 
     # help text
-    h_file = 'a csv file that was produced by the pyBrainPrint.py script'
-    h_list = 'a text file with a list of csv files that were produced by the pyBrainPrint.py script'
+    h_file = 'a csv file that was produced by the brainprint.py script'
+    h_list = 'a text file with a list of csv files that were produced by the brainprint.py script'
 
     h_vol = 'perform default (VOL=1), surface (VOL=2), or volume (VOL=3) normalization'
     h_lin = 'perform linear reweighting'
