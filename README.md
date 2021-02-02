@@ -1,4 +1,4 @@
-Deep-MI# BrainPrint
+# BrainPrint
 
 This is the `brainprint` python package, a derivative of the original
 [BrainPrint](https://github.com/Deep-MI/BrainPrint-legacy) scripts, with the primary goal to provide a Python-only version of the original BrainPrint scripts (except some Freesurfer dependencies), to integrate the [LaPy](https://github.com/Deep-MI/LaPy) package, and to remove dependencies on third-party software (shapeDNA binaries, gmsh, meshfix). As a result, some functionality of the original BrainPrint scripts is no longer maintained (no more support of tetrahedral meshes; no more support of cortical parcellations or label files).
