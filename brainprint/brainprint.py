@@ -115,7 +115,7 @@ def get_help(print_help=True):
 
     import lapy
     from brainprint import brainprint
-    brainprint.run_brainprint_postproc(sdir="/my/subjects/directory", sid="my_subject_id")
+    brainprint.run_brainprintPostProc(sdir="/my/subjects/directory", sid="my_subject_id")
 
     Additional options are num=<int>, evec=<bool>, skipcortex=<bool>, and
     outdir=<string>.
@@ -365,6 +365,7 @@ def compute_brainprint(options):
     # imports
     import os
     import subprocess
+    import numpy as np
     from lapy import ShapeDNA, TriaIO, FuncIO
 
     # define structures
@@ -441,6 +442,9 @@ def compute_brainprint(options):
             # run ShapeDNA
             tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
 
+            # prepend area, volume to evals
+            evals = np.concatenate((np.array(tria.area(), ndmin=1), np.array(tria.volume(), ndmin=1), evals))
+
         except subprocess.CalledProcessError as e:
             print('Error occured, skipping label ' + astring)
             failed = True
@@ -480,6 +484,9 @@ def compute_brainprint(options):
 
                 # run ShapeDNA
                 tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
+
+                # prepend area, volume to evalSize
+                evals = np.concatenate((np.array(tria.area(), ndmin=1), np.array(tria.volume(), ndmin=1), evals))
 
             except subprocess.CalledProcessError as e:
                 print('Error occured, skipping 2D surface ' + surfname)
