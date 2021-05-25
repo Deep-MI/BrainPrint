@@ -88,20 +88,23 @@ def get_help(print_help=True):
     ==================
 
     python3 brainprint.py --sdir <directory> --subjects SubjectID  [--num=<int>]
-                          [--evec] [--skipcortex] [--outdir <directory>] [-h]
+                          [--evec] [--skipcortex] [--norm] [--reweight]
+                          [--outdir <directory>] [--help] [--more-help]
 
     Options:
-      -h, --help         show this help message and exit
+      --help           show this help message and exit
 
     Required options:
-      --sid=SID        (REQUIRED) subject ID (FS processed directory inside the
+      --sid=SID        Subject ID (FreeSurfer-processed directory inside the
                        subjects directory)
-      --sdir=SDIR      (REQUIRED) FS subjects directory
+      --sdir=SDIR      FreeSurfer subjects directory
 
     Processing directives:
       --num=NUM        Number of eigenvalues/vectors to compute (default: 50)
       --evec           Switch on eigenvector computation (default: off)
       --skipcortex     Skip cortical surfaces (default: off)
+      --norm           Switch on eigenvalue normalization (default: off)
+      --reweight       Switch on eigenvalue reweighting (default: off)
 
     Output parameters:
       --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)
@@ -115,13 +118,21 @@ def get_help(print_help=True):
 
     import lapy
     from brainprint import brainprint
-    brainprint.run_brainprintPostProc(sdir="/my/subjects/directory", sid="my_subject_id")
+    brainprint.run_brainprint(sdir="/my/subjects/directory", sid="my_subject_id")
 
-    Additional options are num=<int>, evec=<bool>, skipcortex=<bool>, and
-    outdir=<string>.
+    Additional options are num=<int>, evec=<bool>, skipcortex=<bool>,
+    norm=<bool>, reweight=<bool>, and outdir=<string>.
 
     See `help(brainprint)` and `brainprint.get_help()` for further usage info
     and additional options.
+
+    =============
+    REQUIREMENTS
+    ============
+
+    The script requires the lapy package, which can be installed from
+    https://github.com/Deep-MI/LaPy using
+    pip3 install --user git+https://github.com/Deep-MI/LaPy.git.
 
     ==========
     REFERENCES
@@ -152,16 +163,18 @@ def get_help(print_help=True):
 # parse options
 
 # parse_options
-def parse_options():
+def _parse_options():
     """
     command line options parser: initiate the option parser and return the parsed object
     """
 
     # imports
-    import optparse
+    import sys
+    import argparse
 
-    # parse
-    parser = optparse.OptionParser()
+    # setup parser
+    parser = argparse.ArgumentParser(description="This program conducts a brainprint analysis of FreeSurfer output.",
+        add_help=False)
 
     # help text
     h_sid = '(REQUIRED) subject ID (FS processed directory inside the subjects directory)'
@@ -170,31 +183,84 @@ def parse_options():
     h_num = 'Number of eigenvalues/vectors to compute (default: 50)'
     h_evec = 'Switch on eigenvector computation (default: off)'
     h_skipcortex = 'Skip cortical surfaces (default: off)'
+    h_norm = 'Switch on eigenvalue normalization (default: off)'
+    h_rwt = 'Switch on eigenvalue reweighting (default: off)'
 
-    # required options
-    group = optparse.OptionGroup(parser, "Required options")
-    group.add_option('--sid', dest='sid', help=h_sid)
-    group.add_option('--sdir', dest='sdir', help=h_sdir)
-    parser.add_option_group(group)
 
-    # processing directives
-    group = optparse.OptionGroup(parser, "Processing directives")
-    group.add_option('--num', dest='num', help=h_num, default=50, type='int')
-    group.add_option('--evec', dest='evec', help=h_evec, default=False, action='store_true')
-    group.add_option('--skipcortex', dest='skipcortex', help=h_skipcortex, default=False, action='store_true')
-    parser.add_option_group(group)
+    # required arguments
+    required = parser.add_argument_group('Required arguments')
+
+    required.add_argument('--sid', dest='sid', help=h_sid, default=None,
+        metavar="<string>", required=False)
+    required.add_argument('--sdir', dest="sdir", help=h_sdir, default=None,
+        metavar="<directory>", required=False)
+
+    # optional arguments
+    optional = parser.add_argument_group('Processing directives')
+
+    optional.add_argument('--outputdir', dest="outputdir", help="Directory where the results will be written. If not given, a subfolder within each subject's directory will be created.",
+        default=None, metavar="<directory>", required=False)
+
+
+    optional.add_argument('--num', dest='num', help=h_num, default=50,
+        metavar="<num>", type=int, required=False)
+    optional.add_argument('--evec', dest='evec', help=h_evec, default=False,
+        action='store_true', required=False)
+    optional.add_argument('--skipcortex', dest='skipcortex', help=h_skipcortex,
+        default=False, action='store_true', required=False)
+    optional.add_argument('--norm', dest='norm', help=h_norm, default=False,
+        action='store_true', required=False)
+    optional.add_argument('--reweight', dest='rwt', help=h_rwt, default=False,
+        action='store_true', required=False)
+
 
     # output options
-    group = optparse.OptionGroup(parser, "Output parameters")
-    group.add_option('--outdir', dest='outdir', help=h_outdir)
-    parser.add_option_group(group)
+    output = parser.add_argument_group("Output parameters")
 
-    options, args = parser.parse_args()
+    output.add_argument('--outdir', dest='outdir', help=h_outdir, default=None,
+        metavar="<directory>", required=False)
 
-    return parser, options
+    # define help
+    help = parser.add_argument_group('Getting help')
+
+    help.add_argument('--help', help="Display this help message and exit",
+        action='help')
+    help.add_argument('--more-help', dest='more_help', help="Display extensive help message and exit",
+        default=False, action="store_true", required=False)
+
+    # --------------------------------------------------------------------------
+    #
+
+    # check if there are any inputs; if not, print help and exit
+    if len(sys.argv) == 1:
+        args = parser.parse_args(['--help'])
+    else:
+        args = parser.parse_args()
+
+    # return extensive helptext
+    if args.more_help is True:
+        get_help()
+        sys.exit(0)
+
+    # check for required arguments print help and exit
+    if args.sid is None:
+        print("ERROR: the --sid argument is required, exiting. Use --help to see details.")
+        sys.exit(1)
+
+    if args.sdir is None:
+        print("ERROR: the --sdir argument is required, exiting. Use --help to see details.")
+        sys.exit(1)
+
+    # convert options to dict
+    options = dict(sdir=args.sdir, sid=args.sid, outdir=args.outdir,
+        num=args.num, evec=args.evec, skipcortex=args.skipcortex,
+        norm=args.norm, rwt=args.rwt)
+
+    # return
+    return options
 
 # check_options
-def check_options(options):
+def _check_options(options):
     """
     a function to evaluate input options and set some defaults
     """
@@ -205,51 +271,40 @@ def check_options(options):
     import errno
 
     # check if there are any inputs
-    if options.sdir is None and options.sid is None:
+    if options["sdir"] is None and options["sid"] is None:
         get_help(print_help=True)
         sys.exit(0)
 
     #
-    fshome = os.getenv('FREESURFER_HOME')
-    if fshome is None:
-        print('\nERROR: Environment variable FREESURFER_HOME not set.')
-        print('       You need to source FreeSurfer 6.0 or newer.\n')
-        sys.exit(1)
-
-    if options.sdir is None:
+    if options["sdir"] is None:
         print('\nERROR: specify subjects directory via --sdir\n')
         sys.exit(1)
 
-    if options.sid is None:
+    if options["sid"] is None:
         print('\nERROR: Specify --sid\n')
         sys.exit(1)
 
-    subjdir = os.path.join(options.sdir, options.sid)
+    subjdir = os.path.join(options["sdir"], options["sid"])
     if not os.path.exists(subjdir):
         print('\nERROR: cannot find sid in subjects directory\n')
         sys.exit(1)
 
-    if options.outdir is None:
-        options.outdir = os.path.join(subjdir, 'brainprint')
+    if options["outdir"] is None:
+        options["outdir"] = os.path.join(subjdir, 'brainprint')
     try:
-        os.mkdir(options.outdir)
+        os.mkdir(options["outdir"])
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise e
         pass
 
-    # convert options to dictionary
-
-    dictOptions = dict(sdir=options.sdir, sid=options.sid, outdir=options.outdir, num=options.num, evec=options.evec, skipcortex=options.skipcortex)
-
     # return
-
-    return dictOptions
+    return options
 
 # ------------------------------------------------------------------------------
 # auxiliary functions
 
-def run_cmd(cmd, err_msg):
+def _run_cmd(cmd, err_msg):
     """
     execute the command
     """
@@ -267,7 +322,7 @@ def run_cmd(cmd, err_msg):
         print('ERROR: ' + err_msg)
         sys.exit(1)
 
-def get_ev(evfile):
+def _get_ev(evfile):
     """
     returns string list of area, volume and evals
     """
@@ -303,7 +358,7 @@ def get_ev(evfile):
                 evals.insert(0, area)
                 return evals
 
-def write_ev(options, structures, evmat):
+def _write_ev(options, structures, evmat):
     """
     writes EV files
     """
@@ -318,46 +373,54 @@ def write_ev(options, structures, evmat):
     text_file.close()
 
 # ------------------------------------------------------------------------------
-# run brainprint (as a funtcion)
+# image and surface processing functions
 
-def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=False, skipcortex=False):
+# creates a surface from the aseg and label info and writes it to the outdir
+def _get_aseg_surf(options):
     """
-    a function to run a BrainPrint analysis
+    a function to create a surface from the aseg and label files
     """
 
     # imports
     import os
+    import uuid
 
-    # get options
-    if options is None:
-
-        class options:
-            pass
-
-        options.sdir=sdir
-        options.sid=sid
-        options.outdir=outdir
-        options.num=num
-        options.evec=evec
-        options.skipcortex=skipcortex
-
-    # check options
-    options = check_options(options)
-
-    # set options
-    options["bcond"] = 1
-    options["brainprint"] = os.path.join(options["outdir"], options["sid"] + '.brainprint.csv')
-
-    # run shapeDNA
-    structures, evmat = compute_brainprint(options)
-
-    # write EVs
-    write_ev(options, structures, evmat)
+    #
+    astring = ' '.join(options["asegid"])
+    subjdir = os.path.join(options["sdir"], options["sid"])
+    aseg = os.path.join(subjdir, 'mri', 'aseg.mgz')
+    norm = os.path.join(subjdir, 'mri', 'norm.mgz')
+    tmpname = 'aseg.' + str(uuid.uuid4())
+    segf = os.path.join(options["outdir"], tmpname + '.mgz')
+    segsurf = os.path.join(options["outdir"], tmpname + '.surf')
+    # binarize on selected labels (creates temp segf)
+    # always binarize first, otherwise pretess may scale aseg if labels are larger than 255 (e.g. aseg+aparc, bug in mri_pretess?)
+    cmd = 'mri_binarize --i ' + aseg + ' --match ' + astring + ' --o ' + segf
+    _run_cmd(cmd, 'mri_binarize failed.')
+    ptinput = segf
+    ptlabel = '1'
+    # if norm exist, fix label (pretess)
+    if os.path.isfile(norm):
+        cmd = 'mri_pretess ' + ptinput + ' ' + ptlabel + ' ' + norm + ' ' + segf
+        _run_cmd(cmd, 'mri_pretess failed.')
+    else:
+        if not os.path.isfile(segf):
+            # cp segf if not exist yet (it exists already if we combined labels above)
+            cmd = 'cp ' + ptinput + ' ' + segf
+            _run_cmd(cmd, 'cp segmentation file failed.')
+    # runs marching cube to extract surface
+    cmd = 'mri_mc ' + segf + ' ' + ptlabel + ' ' + segsurf
+    _run_cmd(cmd, 'mri_mc failed?')
+    # convert to vtk
+    cmd = 'mris_convert ' + segsurf + ' ' + options["outsurf"]
+    _run_cmd(cmd, 'mris_convert failed.')
+    # return surf name
+    return options["outsurf"]
 
 # ------------------------------------------------------------------------------
 # compute brainprint
 
-def compute_brainprint(options):
+def _compute_brainprint(options):
     """
     a function to compute shapeDNA descriptors for several structures
     """
@@ -366,7 +429,7 @@ def compute_brainprint(options):
     import os
     import subprocess
     import numpy as np
-    from lapy import ShapeDNA, TriaIO, FuncIO
+    from lapy import ShapeDNA, TriaIO
 
     # define structures
 
@@ -437,13 +500,20 @@ def compute_brainprint(options):
             options['asegid'] = [ str(i) for i in options['asegid'] ]
 
             # generate surfaces
-            procsurf = ShapeDNA.get_aseg_surf(options)
+            procsurf = _get_aseg_surf(options)
+
+            # read surface
+            tria = TriaIO.import_vtk(procsurf)
 
             # run ShapeDNA
-            tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
+            evDict = ShapeDNA.compute_shapedna(tria,
+                k=options["num"], lump=options["lump"],
+                aniso=options["aniso"],
+                aniso_smooth=options["aniso_smooth"],
+                norm=options["norm"], rwt=options["rwt"])
 
             # prepend area, volume to evals
-            evals = np.concatenate((np.array(tria.area(), ndmin=1), np.array(tria.volume(), ndmin=1), evals))
+            evals = np.concatenate((np.array(tria.area(), ndmin=1), np.array(tria.volume(), ndmin=1), evDict["Eigenvalues"]))
 
         except subprocess.CalledProcessError as e:
             print('Error occured, skipping label ' + astring)
@@ -456,48 +526,100 @@ def compute_brainprint(options):
 
     # if skip cortex, return here
 
-    if options["skipcortex"]:
-        return structures, evmat
+    if options["skipcortex"] is False:
 
-    # process 2D Surfaces
+        # process 2D Surfaces
 
-    for hem in ['lh', 'rh']:
-        for typeSurf in ['white', 'pial']:
+        for hem in ['lh', 'rh']:
+            for typeSurf in ['white', 'pial']:
 
-            surfname = hem + '.' + typeSurf
-            print("\n\n===========================================================")
-            print("2D Cortical Surface " + surfname + "\n")
+                surfname = hem + '.' + typeSurf
+                print("\n\n===========================================================")
+                print("2D Cortical Surface " + surfname + "\n")
 
-            outsurf = os.path.join(options["sdir"], options["sid"], 'surf', surfname)
-            failed = False
+                outsurf = os.path.join(options["sdir"], options["sid"], 'surf', surfname)
+                failed = False
 
-            evals = list()
-            options['surf'] = outsurf
-            options['outsurf'] = outsurf+'.vtk'
+                evals = list()
+                options['surf'] = outsurf
+                options['outsurf'] = outsurf + '.vtk'
 
-            try:
-                # convert to string
-                options['asegid'] = [ str(i) for i in options['asegid'] ]
+                try:
+                    # convert to string
+                    options['asegid'] = [ str(i) for i in options['asegid'] ]
 
-                # generate surfaces
-                procsurf = ShapeDNA.get_aseg_surf(options)
+                    # generate surfaces
+                    procsurf = _get_aseg_surf(options)
 
-                # run ShapeDNA
-                tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
+                    # read surface
+                    tria = TriaIO.import_vtk(procsurf)
 
-                # prepend area, volume to evalSize
-                evals = np.concatenate((np.array(tria.area(), ndmin=1), np.array(tria.volume(), ndmin=1), evals))
+                    # run ShapeDNA
+                    evDict = ShapeDNA.compute_shapedna(tria,
+                        k=options["num"], lump=options["lump"],
+                        aniso=options["aniso"],
+                        aniso_smooth=options["aniso_smooth"],
+                        norm=options["norm"], rwt=options["rwt"])
 
-            except subprocess.CalledProcessError as e:
-                print('Error occured, skipping 2D surface ' + surfname)
-                failed = True
+                    # prepend area, volume to evals
+                    evals = np.concatenate((np.array(tria.area(), ndmin=1), np.array(tria.volume(), ndmin=1), evDict["Eigenvalues"]))
 
-            if len(evals)==0 or failed:
-                evals = ['NaN'] * (options["num"] + 2)
+                except subprocess.CalledProcessError as e:
+                    print('Error occured, skipping 2D surface ' + surfname)
+                    failed = True
 
-            evmat.append(evals)
+                if len(evals)==0 or failed:
+                    evals = ['NaN'] * (options["num"] + 2)
+
+                evmat.append(evals)
 
     return structures, evmat
+
+# ------------------------------------------------------------------------------
+# run brainprint (as a function)
+
+def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=False, skipcortex=False, norm=False, reweight=False):
+    """
+    a function to run a BrainPrint analysis
+    """
+
+    # imports
+    import os
+    import sys
+    import importlib
+
+    # get options
+    if options is None:
+
+        options = { "sdir" : sdir, "sid" : sid, "outdir" : outdir, "num" : num,
+            "evec" : evec, "skipcortex" : skipcortex, "norm" : norm,
+            "rwt" : reweight }
+
+    # check options
+    options = _check_options(options)
+
+    # check dependencies
+    if importlib.util.find_spec("lapy") is None:
+        print("ERROR: could not find the lapy package, exiting.")
+        sys.exit(1)
+
+    # check Freesurfer
+    if os.getenv('FREESURFER_HOME') is None:
+        print('ERROR: Environment variable FREESURFER_HOME not set.')
+        sys.exit(1)
+
+    # set non-changeable default options
+    options["bcond"] = 1
+    options["lump"] = False
+    options["aniso"] = None
+    options["aniso_smooth"] = 10
+    options["brainprint"] = os.path.join(options["outdir"], options["sid"] + '.brainprint.csv')
+
+    # run shapeDNA
+    structures, evmat = _compute_brainprint(options)
+
+    # write EVs
+    _write_ev(options, structures, evmat)
 
 # ------------------------------------------------------------------------------
 # main function
@@ -511,7 +633,7 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore', '.*negative int.*')
 
     # parse command line options
-    parser, options = parse_options()
+    options = _parse_options()
 
     # run brainprint
     run_brainprint(options)
