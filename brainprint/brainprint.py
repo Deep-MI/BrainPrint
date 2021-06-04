@@ -311,7 +311,7 @@ def _check_options(options):
 # ------------------------------------------------------------------------------
 # auxiliary functions
 
-def _run_cmd(cmd, err_msg):
+def _run_cmd(cmd, err_msg, expected_retcode=[0]):
     """
     execute the command
     """
@@ -325,7 +325,7 @@ def _run_cmd(cmd, err_msg):
     print('#@# Command: ' + cmd + '\n')
     args = shlex.split(cmd)
     retcode = subprocess.call(args)
-    if retcode != 0:
+    if (retcode in expected_retcode) is False:
         print('ERROR: ' + err_msg)
         sys.exit(1)
 
@@ -667,9 +667,17 @@ def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=
         print("ERROR: could not find the lapy package, exiting.")
         sys.exit(1)
 
-    # check Freesurfer
+    # check FreeSurfer
     if os.getenv('FREESURFER_HOME') is None:
         print('ERROR: Environment variable FREESURFER_HOME not set.')
+        sys.exit(1)
+
+    # check FreeSurfer
+    try:
+        cmd = 'mri_binarize'
+        _run_cmd(cmd, 'mri_binarize failed.', expected_retcode=[1])
+    except:
+        print('ERROR: could not find / run FreeSurfer binaries.')
         sys.exit(1)
 
     # set non-changeable default options
