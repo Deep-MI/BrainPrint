@@ -25,25 +25,32 @@ detailed info is available by calling the script without any arguments from the
 command line.
 
 ```
-python3 brainprint.py --sdir <directory> --sid <SubjectID>  [--num=<int>]
-                    [--evec] [--skipcortex] [--norm] [--reweight]
-                    [--outdir <directory>] [--help] [--more-help]
+python3 brainprint.py --sdir <directory> --sid <SubjectID>  [--num <num>]
+                    [--evec] [--skipcortex] [--norm <surface|volume|geometry|none> ]
+                    [--reweight] [--asymmetry] [--outdir <directory>] [--help]
+                    [--more-help]
 
 Options:
   --help           Show this help message and exit
   --more-help      Show extensive help message and exit
 
 Required options:
-  --sid=SID        Subject ID (FreeSurfer-processed directory inside the
+  --sid <SubjectID>
+                   Subject ID (FreeSurfer-processed directory inside the
                    subjects directory)
-  --sdir=SDIR      FreeSurfer subjects directory
+  --sdir <directory>
+                   FreeSurfer subjects directory
 
 Processing directives:
-  --num=NUM        Number of eigenvalues/vectors to compute (default: 50)
+  --num <num>      Number of eigenvalues/vectors to compute (default: 50)
   --evec           Switch on eigenvector computation (default: off)
   --skipcortex     Skip cortical surfaces (default: off)
-  --norm           Switch on eigenvalue normalization (default: off)
+  --norm <surface|volume|geometry|none>
+                   Switch on eigenvalue normalization; will be either surface,
+                   volume, or determined by the geometry of the object. Use
+                   "none" or leave out entirely to skip normalization.
   --reweight       Switch on eigenvalue reweighting (default: off)
+  --asymmetry      Perform left-right asymmetry calculation (default: off)
 
 Output parameters:
   --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)
@@ -67,6 +74,10 @@ from brainprint import brainprint
 brainprint.run_brainprint(sdir="/my/subjects/directory", sid="my_subject_id")
 ```
 
+Additional options are `num=<int>`, `evec=<bool>`, `skipcortex=<bool>`,
+`norm=<"surface"|"volume"|"geometry"|"none">`, `reweight=<bool>`, and
+`outdir=<string>`.
+
 See `help(brainprint)` and `brainprint.get_help()` for further usage info and
 additional options.
 
@@ -74,7 +85,8 @@ additional options.
 
 The script will create an output directory that contains a csv table with
 values for the area, volume, and first n eigenvalues per each FreeSurfer
-structure.
+structure. An additional output file will be created if the asymmetry
+calculation is performed.
 
 ## Installation
 
