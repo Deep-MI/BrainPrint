@@ -300,6 +300,9 @@ def _check_options(options):
         options["outdir"] = os.path.join(subjdir, 'brainprint')
     try:
         os.mkdir(options["outdir"])
+        os.mkdir(os.path.join(options["outdir"], "eigenvectors"))
+        os.mkdir(os.path.join(options["outdir"], "surfaces"))
+        os.mkdir(os.path.join(options["outdir"], "temp"))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise e
@@ -380,7 +383,9 @@ def _write_ev(options, evMat, evecMat, dstMat):
     # optionally write evec
     if options["evec"] is True:
         for i in evecMat.keys():
-            pd.DataFrame(evecMat[i]).to_csv(os.path.splitext(options["brainprint"])[0] + "_" + i + ".csv")
+            pd.DataFrame(evecMat[i]).to_csv(os.path.join(
+                os.path.dirname(options["brainprint"]), 'eigenvectors',
+                os.path.basename(os.path.splitext(options["brainprint"])[0]) + ".evecs-" + i + ".csv"))
 
     # write distances
     pd.DataFrame([dstMat]).to_csv(os.path.splitext(options["brainprint"])[0] + ".asymmetry.csv")
@@ -404,8 +409,8 @@ def _get_aseg_surf(options):
     aseg = os.path.join(subjdir, 'mri', 'aseg.mgz')
     norm = os.path.join(subjdir, 'mri', 'norm.mgz')
     tmpname = 'aseg.' + str(uuid.uuid4())
-    segf = os.path.join(options["outdir"], tmpname + '.mgz')
-    segsurf = os.path.join(options["outdir"], tmpname + '.surf')
+    segf = os.path.join(options["outdir"], 'temp', tmpname + '.mgz')
+    segsurf = os.path.join(options["outdir"], 'temp', tmpname + '.surf')
     # binarize on selected labels (creates temp segf)
     # always binarize first, otherwise pretess may scale aseg if labels are
     # larger than 255 (e.g. aseg+aparc, bug in mri_pretess?)
@@ -502,7 +507,7 @@ def _compute_brainprint(options):
 
         #
         options['asegid'] = aseg_labels[aseg_labels_i]
-        options['outsurf'] = os.path.join(options["outdir"], 'aseg.final.' + '_'.join(aseg_labels[aseg_labels_i]) + '.vtk')
+        options['outsurf'] = os.path.join(options["outdir"], 'surfaces', 'aseg.final.' + '_'.join(aseg_labels[aseg_labels_i]) + '.vtk')
 
         # generate surfaces
         surfaces[aseg_labels_i] = _get_aseg_surf(options)
@@ -530,8 +535,8 @@ def _compute_brainprint(options):
 
                 # convert to vtk and append to list of structures
                 surf = read_geometry.read_geometry(os.path.join(options["sdir"], options["sid"], 'surf', cortical_labels[cortical_labels_i]))
-                TriaIO.export_vtk(TriaMesh(v=surf[0], t=surf[1]), os.path.join(options["outdir"], cortical_labels[cortical_labels_i] + '.vtk'))
-                surfaces[cortical_labels_i] = os.path.join(options["outdir"], cortical_labels[cortical_labels_i] + '.vtk')
+                TriaIO.export_vtk(TriaMesh(v=surf[0], t=surf[1]), os.path.join(options["outdir"], 'surfaces', cortical_labels[cortical_labels_i] + '.vtk'))
+                surfaces[cortical_labels_i] = os.path.join(options["outdir"], 'surfaces', cortical_labels[cortical_labels_i] + '.vtk')
 
     # compute shape dna
 
