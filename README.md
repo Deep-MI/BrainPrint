@@ -84,9 +84,9 @@ additional options.
 ## Output
 
 The script will create an output directory that contains a csv table with
-values for the area, volume, and first n eigenvalues per each FreeSurfer
-structure. An additional output file will be created if the asymmetry
-calculation is performed.
+values (in that order) for the area, volume, and first n eigenvalues per each
+FreeSurfer structure. An additional output file will be created if the
+asymmetry calculation is performed.
 
 ## Installation
 

@@ -218,7 +218,7 @@ def _parse_options():
         metavar=" <surface|volume|geometry|none>", required=False)
     optional.add_argument('--reweight', dest='rwt', help=h_rwt, default=False,
         action='store_true', required=False)
-    optional.add_argument('--asymmetry', dest='asym', help=h_asym,
+    optional.add_argument('--asymmetry', dest='asymmetry', help=h_asym,
         default=False, action='store_true', required=False)
 
     # output options
@@ -261,7 +261,7 @@ def _parse_options():
     # convert options to dict
     options = dict(sdir=args.sdir, sid=args.sid, outdir=args.outdir,
         num=args.num, evec=args.evec, skipcortex=args.skipcortex,
-        norm=args.norm, rwt=args.rwt)
+        norm=args.norm, rwt=args.rwt, asymmetry=args.asymmetry)
 
     # return
     return options
@@ -368,27 +368,32 @@ def _get_ev(evfile):
                 evals.insert(0, area)
                 return evals
 
-def _write_ev(options, evMat, evecMat, dstMat):
+def _write_ev(options, evMat, evecMat=None, dstMat=None):
     """
     writes EV files
     """
 
     # imports
     import os
+    import numpy as np
     import pandas as pd
 
-    # write final csv
-    pd.DataFrame(evMat).sort_index(axis=1).to_csv(options["brainprint"])
+    # write final csv (keep in mind that evMat contains area and volume as
+    # first two entries)
+    df = pd.DataFrame(evMat).sort_index(axis=1)
+    df.index =  [ "area",  "volume"] + [ "ev" + str(x) for x in np.arange(options["num"])]
+    df.to_csv(options["brainprint"], index=True)
 
     # optionally write evec
-    if options["evec"] is True:
+    if options["evec"] is True and evecMat is not None:
         for i in evecMat.keys():
             pd.DataFrame(evecMat[i]).to_csv(os.path.join(
                 os.path.dirname(options["brainprint"]), 'eigenvectors',
-                os.path.basename(os.path.splitext(options["brainprint"])[0]) + ".evecs-" + i + ".csv"))
+                os.path.basename(os.path.splitext(options["brainprint"])[0]) + ".evecs-" + i + ".csv"), index=True)
 
     # write distances
-    pd.DataFrame([dstMat]).to_csv(os.path.splitext(options["brainprint"])[0] + ".asymmetry.csv")
+    if options["asymmetry"] is True and dstMat is not None:
+        pd.DataFrame([dstMat]).to_csv(os.path.splitext(options["brainprint"])[0] + ".asymmetry.csv", index=False)
 
 # ------------------------------------------------------------------------------
 # image and surface processing functions
@@ -632,13 +637,16 @@ def _compute_asymmetry(options, evMat):
     if options["skipcortex"] is False:
         structures_left_right = structures_left_right + cortex_2d_left_right
 
+    # keep in mind that evMat contains area and volume as first two entries,
+    # hence [2:]
+
     dst = dict()
 
     for i in range(len(structures_left_right)):
         dst[structures_left_right[i]["left"] + "_" +
             structures_left_right[i]["right"]] = ShapeDNA.compute_distance(
-                evMat[structures_left_right[i]["left"]],
-                evMat[structures_left_right[i]["right"]],
+                evMat[structures_left_right[i]["left"]][2:],
+                evMat[structures_left_right[i]["right"]][2:],
                 dist=options["distance"])
 
     #
@@ -662,7 +670,7 @@ def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=
 
         options = { "sdir" : sdir, "sid" : sid, "outdir" : outdir, "num" : num,
             "evec" : evec, "skipcortex" : skipcortex, "norm" : norm,
-            "rwt" : reweight, "asym" : asymmetry }
+            "rwt" : reweight, "asymmetry" : asymmetry }
 
     # check options
     options = _check_options(options)
@@ -679,8 +687,8 @@ def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=
 
     # check FreeSurfer
     try:
-        cmd = 'mri_binarize'
-        _run_cmd(cmd, 'mri_binarize failed.', expected_retcode=[1])
+        cmd = 'mri_binarize -version'
+        _run_cmd(cmd, 'mri_binarize failed.', expected_retcode=[0])
     except:
         print('ERROR: could not find / run FreeSurfer binaries.')
         sys.exit(1)
@@ -693,14 +701,23 @@ def run_brainprint(options=None, sdir=None, sid=None, outdir=None, num=50, evec=
     options["brainprint"] = os.path.join(options["outdir"], options["sid"] + '.brainprint.csv')
     options["distance"] = "euc"
 
-    # compute brainprint
+    # compute brainprint (keep in mind that evMat contains area and volume as
+    # first two entries)
     evMat, evecMat = _compute_brainprint(options)
 
     # compute asymmetry
-    dstMat = _compute_asymmetry(options, evMat)
+    if options["asymmetry"] is True:
+        dstMat = _compute_asymmetry(options, evMat)
+    else:
+        dstMat = None
 
     # write EVs
     _write_ev(options, evMat, evecMat, dstMat)
+
+    # return
+    print("Returning matrices for eigenvalues, eigenvectors, and (optionally) distances.")
+    print("The eigenvalue matrix contains area and volume as first two rows.")
+    return evMat, evecMat, dstMat
 
 # ------------------------------------------------------------------------------
 # main function
