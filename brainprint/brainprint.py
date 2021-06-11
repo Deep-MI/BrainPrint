@@ -465,22 +465,21 @@ def compute_brainprint(options):
         for typeSurf in ['white', 'pial']:
 
             surfname = hem + '.' + typeSurf
+
             print("\n\n===========================================================")
             print("2D Cortical Surface " + surfname + "\n")
 
-            outsurf = os.path.join(options["sdir"], options["sid"], 'surf', surfname)
+            options['surf'] = os.path.join(options["sdir"], options["sid"], 'surf', surfname)
+            options['outsurf'] = outsurf = os.path.join(options["outdir"], surfname + '.final.vtk')
+
             failed = False
 
             evals = list()
-            options['surf'] = outsurf
-            options['outsurf'] = outsurf+'.vtk'
 
             try:
-                # convert to string
-                options['asegid'] = [ str(i) for i in options['asegid'] ]
 
                 # generate surfaces
-                procsurf = ShapeDNA.get_aseg_surf(options)
+                procsurf = ShapeDNA.get_surf_surf(options)
 
                 # run ShapeDNA
                 tria, evals, evecs = ShapeDNA.compute_shapeDNA_tria(procsurf, options)
