@@ -10,8 +10,6 @@ original BrainPrint-legacy scripts is no longer maintained (currently no
 support of tetrahedral meshes and no support of cortical parcellations or
 label files).
 
-**Note that this branch is the development version that is under active development.**
-
 ## Usage
 
 ### Usage from the command line
