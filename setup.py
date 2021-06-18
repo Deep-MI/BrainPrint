@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="brainprint",
-    version="0.1",
+    version="0.2",
     author="Kersten Diers, Martin Reuter",
     author_email="kersten.diers@dzne.de",
     description="A light-weight package derived from the BrainPrint scripts",
