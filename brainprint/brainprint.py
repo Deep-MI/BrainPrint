@@ -393,7 +393,6 @@ def _write_ev(options, evMat, evecMat=None, dstMat=None):
 
     # write distances
     if options["asymmetry"] is True and dstMat is not None:
-        import pdb; pdb.set_trace()
         pd.DataFrame([dstMat]).to_csv(os.path.splitext(options["brainprint"])[0] + ".asymmetry.csv", index=False, na_rep="NaN")
 
 # ------------------------------------------------------------------------------
