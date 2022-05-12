@@ -382,18 +382,19 @@ def _write_ev(options, evMat, evecMat=None, dstMat=None):
     # first two entries)
     df = pd.DataFrame(evMat).sort_index(axis=1)
     df.index =  [ "area",  "volume"] + [ "ev" + str(x) for x in np.arange(options["num"])]
-    df.to_csv(options["brainprint"], index=True)
+    df.to_csv(options["brainprint"], index=True, na_rep="NaN")
 
     # optionally write evec
     if options["evec"] is True and evecMat is not None:
         for i in evecMat.keys():
             pd.DataFrame(evecMat[i]).to_csv(os.path.join(
                 os.path.dirname(options["brainprint"]), 'eigenvectors',
-                os.path.basename(os.path.splitext(options["brainprint"])[0]) + ".evecs-" + i + ".csv"), index=True)
+                os.path.basename(os.path.splitext(options["brainprint"])[0]) + ".evecs-" + i + ".csv"), index=True, na_rep="NaN")
 
     # write distances
     if options["asymmetry"] is True and dstMat is not None:
-        pd.DataFrame([dstMat]).to_csv(os.path.splitext(options["brainprint"])[0] + ".asymmetry.csv", index=False)
+        import pdb; pdb.set_trace()
+        pd.DataFrame([dstMat]).to_csv(os.path.splitext(options["brainprint"])[0] + ".asymmetry.csv", index=False, na_rep="NaN")
 
 # ------------------------------------------------------------------------------
 # image and surface processing functions
@@ -565,6 +566,10 @@ def _compute_brainprint(options):
             evMat[surfaces_i] = evDict["Eigenvalues"]
             evecMat[surfaces_i] = evDict["Eigenvectors"]
 
+            # orient if necessary
+            if not tria.is_oriented():
+                tria.orient_()
+
             # normalize
             if options["norm"] == "surface":
                 evMat[surfaces_i] = ShapeDNA.normalize_ev(geom=tria, evals=evMat[surfaces_i], method="surface")
@@ -643,11 +648,16 @@ def _compute_asymmetry(options, evMat):
     dst = dict()
 
     for i in range(len(structures_left_right)):
-        dst[structures_left_right[i]["left"] + "_" +
-            structures_left_right[i]["right"]] = ShapeDNA.compute_distance(
-                evMat[structures_left_right[i]["left"]][2:],
-                evMat[structures_left_right[i]["right"]][2:],
-                dist=options["distance"])
+        if np.isnan(evMat[structures_left_right[i]["left"]][2:]).any() or np.isnan(evMat[structures_left_right[i]["right"]][2:]).any():
+            print("NaNs found for " + structures_left_right[i]["left"] + " or " + structures_left_right[i]["right"] + ". Not computing asymmetry, returning NaN.")
+            dst[structures_left_right[i]["left"] + "_" +
+                structures_left_right[i]["right"]] = np.nan
+        else:
+            dst[structures_left_right[i]["left"] + "_" +
+                structures_left_right[i]["right"]] = ShapeDNA.compute_distance(
+                    evMat[structures_left_right[i]["left"]][2:],
+                    evMat[structures_left_right[i]["right"]][2:],
+                    dist=options["distance"])
 
     #
     return dst
