@@ -1,0 +1,3 @@
+"""
+BrainPrint analysis CLI.
+"""
