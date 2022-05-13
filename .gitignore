@@ -1,6 +1,15 @@
 __pycache__
-*pyc
+
 deprecated
 tests
 package
 venv
+
+*.pyc
+
+dist/
+build/
+*.egg-info/
+
+.tox/
+.coverage
