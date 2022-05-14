@@ -69,15 +69,12 @@ analysis:
 ```
 import lapy
 from brainprint import brainprint
-brainprint.run_brainprint(sdir="/my/subjects/directory", sid="my_subject_id")
+brainprint.run_brainprint(subjects_dir="/my/subjects/directory", subject_id="my_subject_id")
 ```
 
 Additional options are `num=<int>`, `evec=<bool>`, `skipcortex=<bool>`,
 `norm=<"surface"|"volume"|"geometry"|"none">`, `reweight=<bool>`, and
 `outdir=<string>`.
-
-See `help(brainprint)` and `brainprint.get_help()` for further usage info and
-additional options.
 
 ## Output
 
