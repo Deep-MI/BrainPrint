@@ -16,3 +16,4 @@ MISSING_OUTPUT_BASE: str = (
     "One of *subject_dir* or *output_directory* must be provided!"
 )
 SHELL_EXECUTION_FAILURE: str = "Failed to execute the following command:\n{command}\nThe following exception was raised:\n{exception}"
+SHELL_EXECUTION_RETURN: str = "Execution of the following command:\n{command}\nReturned non-zero exit code!"
