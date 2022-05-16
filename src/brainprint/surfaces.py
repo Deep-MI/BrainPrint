@@ -26,7 +26,7 @@ def create_aseg_surface(
     binarize_command = binarize_template.format(
         source=aseg_path, match=" ".join(indices), destination=indices_mask
     )
-    run_shell_command(binarize_command, "mri_binarize failed.")
+    run_shell_command(binarize_command)
 
     label_value = "1"
     # if norm exist, fix label (pretess)
@@ -38,7 +38,7 @@ def create_aseg_surface(
             norm_path=norm_path,
             destination=indices_mask,
         )
-        run_shell_command(pretess_command, "mri_pretess failed.")
+        run_shell_command(pretess_command)
 
     # runs marching cube to extract surface
     surface_name = configuration.SURFACE_NAME_TEMPLATE.format(name=temp_name)
@@ -47,7 +47,7 @@ def create_aseg_surface(
     extraction_command = extraction_template.format(
         source=indices_mask, label_value=label_value, destination=surface_path
     )
-    run_shell_command(extraction_command, "mri_mc failed?")
+    run_shell_command(extraction_command)
 
     # convert to vtk
     relative_path = configuration.RELATIVE_SURFACE_TEMPLATE.format(
@@ -58,7 +58,7 @@ def create_aseg_surface(
     conversion_command = conversion_template.format(
         source=surface_path, destination=destination
     )
-    run_shell_command(conversion_command, "mris_convert failed.")
+    run_shell_command(conversion_command)
 
     return destination
 
