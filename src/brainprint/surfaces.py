@@ -64,21 +64,21 @@ def create_aseg_surface(
 
 
 def create_aseg_surfaces(
-    subject_dir: Path, output_directory: Path
+    subject_dir: Path, output_dir: Path
 ) -> Dict[str, Path]:
     return {
-        label: create_aseg_surface(subject_dir, output_directory, indices)
+        label: create_aseg_surface(subject_dir, output_dir, indices)
         for label, indices in configuration.ASEG_LABELS.items()
     }
 
 
 def create_cortical_surfaces(
-    subject_dir: Path, output_directory: Path
+    subject_dir: Path, output_dir: Path
 ) -> Dict[str, Path]:
     return {
         label: surf_to_vtk(
             subject_dir / "surf" / name,
-            output_directory / "surfaces" / f"{name}.vtk",
+            output_dir / "surfaces" / f"{name}.vtk",
         )
         for label, name in configuration.CORTICAL_LABELS.items()
     }

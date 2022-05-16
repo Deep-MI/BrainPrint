@@ -14,6 +14,7 @@ RELATIVE_ASEG_MGZ_PATH: str = "mri/aseg.mgz"
 RELATIVE_NORM_MGZ_PATH: str = "mri/norm.mgz"
 RELATIVE_SURFACE_TEMPLATE: str = "surfaces/aseg.final.{indices}.vtk"
 SURFACE_NAME_TEMPLATE: str = "{name}.surf"
+CSV_NAME_TEMPLATE: str = "{subject_id}.brainprint.csv"
 COMMAND_TEMPLATES: Dict[str, str] = {
     "test": "mri_binarize -version",
     "mri_binarize": "mri_binarize --i {source} --match {match} --o {destination}",

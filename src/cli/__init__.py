@@ -3,9 +3,9 @@ BrainPrint analysis CLI.
 """
 from brainprint import run_brainprint
 
-from cli.parser import _parse_options
+from cli.parser import parse_options
 
 
 def main():
-    options = _parse_options()
+    options = parse_options()
     return run_brainprint(**options)
