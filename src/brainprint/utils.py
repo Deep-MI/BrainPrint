@@ -23,22 +23,40 @@ def validate_environment() -> None:
 
 
 def test_freesurfer() -> None:
+    """
+    Tests FreeSurfer binarize are accessible and executable.
+
+    Raises
+    ------
+    RuntimeError
+        Failed to execute test FreeSurfer command
+    """
     command = configuration.COMMAND_TEMPLATES["test"]
     try:
-        run_shell_command(command, "mri_binarize failed.")
+        run_shell_command(command)
     except FileNotFoundError:
         raise RuntimeError(messages.NO_FREESURFER_BINARIES)
 
 
-def run_shell_command(command: str, error_message: str):
+def run_shell_command(command: str):
     """
     Execute shell command.
     """
     print(f"Executing command:\t{command}", end="\n")
     args = shlex.split(command)
-    return_code = subprocess.call(args)
+    try:
+        return_code = subprocess.call(args)
+    except Exception as e:
+        message = messages.SHELL_EXECUTION_FAILURE.format(
+            command=command, exception=e
+        )
+        print(message)
+        raise
     if return_code != 0:
-        raise RuntimeError(error_message)
+        message = messages.SHELL_EXECUTION_FAILURE.format(
+            command=command, exception=e
+        )
+        raise RuntimeError(message)
 
 
 def validate_subject_dir(subjects_dir: Path, subject_id: str) -> None:

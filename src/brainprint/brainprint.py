@@ -1,5 +1,5 @@
 """
-Script entry point.
+Definition of the brainprint analysis execution functions.
 """
 import subprocess
 import warnings
@@ -29,7 +29,7 @@ def compute_brainprint(
     Computes shapeDNA descriptors for several structures.
     """
     destination = options["output_directory"]
-    surfaces = create_aseg_surfaces(subject_dir, options["output_directory"])
+    surfaces = create_aseg_surfaces(subject_dir, destination)
 
     if not options["skip_cortex"]:
         cortical_surfaces = create_cortical_surfaces(subject_dir, destination)
@@ -95,7 +95,7 @@ def compute_brainprint(
         if len(eigenvalues[surface_label]) == 0 or failed:
             eigenvalues[surface_label] = ["NaN"] * (options["num"] + 2)
 
-    return eigenvalues, eigenvectors
+    return eigenvalues, eigenvectors or None
 
 
 def compute_asymmetry(

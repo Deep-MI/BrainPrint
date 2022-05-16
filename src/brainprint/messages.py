@@ -15,3 +15,4 @@ ASYMMETRY_NAN: str = "NaNs found for {left_label} or {right_label}, skipping asy
 MISSING_OUTPUT_BASE: str = (
     "One of *subject_dir* or *output_directory* must be provided!"
 )
+SHELL_EXECUTION_FAILURE: str = "Failed to execute the following command:\n{command}\nThe following exception was raised:\n{exception}"
