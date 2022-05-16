@@ -6,21 +6,24 @@ CLI_DESCRIPTION: str = (
 )
 
 
-SID = (
+SID: str = (
     "Subject ID (FreeSurfer processed directory inside the subjects directory)"
 )
-SDIR = "FreeSurfer subjects directory"
-OUTDIR = "Output directory (default: <sdir>/<sid>/brainprint)"
-NUM = "Number of eigenvalues/vectors to compute (default: 50)"
-EVEC = "Switch on eigenvector computation (default: off)"
-SKIPCORTEX = "Skip cortical surfaces (default: off)"
-NORM = "Perform on eigenvalue normalization (default: none)"
-RWT = "Switch on eigenvalue reweighting (default: off)"
-ASYM = "Switch on additional asymmetry calculation (default: off)"
-HELP = "Display this help message and exit"
-MORE_HELP = "Display extensive help message and exit"
+SDIR: str = "FreeSurfer subjects directory"
+OUTDIR: str = "Output directory (default: <sdir>/<sid>/brainprint)"
+NUM: str = "Number of eigenvalues/vectors to compute (default: 50)"
+EVEC: str = "Switch on eigenvector computation (default: off)"
+SKIP_CORTEX: str = "Skip cortical surfaces (default: off)"
+NORM: str = "Perform on eigenvalue normalization (default: none)"
+RWT: str = "Switch on eigenvalue reweighting (default: off)"
+ASYM: str = "Switch on additional asymmetry calculation (default: off)"
+ASYM_DISTANCE: str = (
+    "Distance measurement to use for asymmetry calculation (default: euc)"
+)
+HELP: str = "Display this help message and exit"
+MORE_HELP: str = "Display extensive help message and exit"
 
-HELPTEXT = """
+HELPTEXT: str = """
 brainprint.py
 Author: Martin Reuter, 2015
 

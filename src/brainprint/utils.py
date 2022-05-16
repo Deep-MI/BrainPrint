@@ -5,57 +5,13 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Any, Dict
+
+import numpy as np
+import pandas as pd
+from lapy import TriaIO, TriaMesh
+from lapy.read_geometry import read_geometry
 
 from brainprint import configuration, messages
-
-FREESURFER_TEST_COMMAND: str = "mri_binarize -version"
-ASEG_LABELS = {
-    "CorpusCallosum": ["251", "252", "253", "254", "255"],
-    "Cerebellum": ["7", "8", "16", "46", "47"],
-    "Ventricles": ["4", "5", "14", "24", "31", "43", "44", "63"],
-    "3rd-Ventricle": ["14", "24"],
-    "4th-Ventricle": ["15"],
-    "Brain-Stem": ["16"],
-    "Left-Striatum": ["11", "12", "26"],
-    "Left-Lateral-Ventricle": ["4", "5", "31"],
-    "Left-Cerebellum-White-Matter": ["7"],
-    "Left-Cerebellum-Cortex": ["8"],
-    "Left-Thalamus-Proper": ["10"],
-    "Left-Caudate": ["11"],
-    "Left-Putamen": ["12"],
-    "Left-Pallidum": ["13"],
-    "Left-Hippocampus": ["17"],
-    "Left-Amygdala": ["18"],
-    "Left-Accumbens-area": ["26"],
-    "Left-VentralDC": ["28"],
-    "Right-Striatum": ["50", "51", "58"],
-    "Right-Lateral-Ventricle": ["43", "44", "63"],
-    "Right-Cerebellum-White-Matter": ["46"],
-    "Right-Cerebellum-Cortex": ["47"],
-    "Right-Thalamus-Proper": ["49"],
-    "Right-Caudate": ["50"],
-    "Right-Putamen": ["51"],
-    "Right-Pallidum": ["52"],
-    "Right-Hippocampus": ["53"],
-    "Right-Amygdala": ["54"],
-    "Right-Accumbens-area": ["58"],
-    "Right-VentralDC": ["60"],
-}
-CORTICAL_LABELS = {
-    "lh-white-2d": "lh.white",
-    "rh-white-2d": "rh.white",
-    "lh-pial-2d": "lh.pial",
-    "rh-pial-2d": "rh.pial",
-}
-
-EXECUTION_DEFAULTS = {
-    "bcond": 1,
-    "lump": False,
-    "aniso": None,
-    "aniso_smooth": 10,
-    "distance": "euc",
-}
 
 
 def validate_environment() -> None:
@@ -67,8 +23,9 @@ def validate_environment() -> None:
 
 
 def test_freesurfer() -> None:
+    command = configuration.COMMAND_TEMPLATES["test"]
     try:
-        run_shell_command(FREESURFER_TEST_COMMAND, "mri_binarize failed.")
+        run_shell_command(command, "mri_binarize failed.")
     except FileNotFoundError:
         raise RuntimeError(messages.NO_FREESURFER_BINARIES)
 
@@ -95,11 +52,15 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> None:
     return subject_dir
 
 
-def create_output_paths(subject_dir: Path, options: Dict[str, Any]) -> None:
-    try:
-        destination = Path(options["outdir"])
-    except (KeyError, ValueError, TypeError):
+def create_output_paths(
+    subject_dir: Path = None, output_directory: Path = None
+) -> None:
+    if subject_dir is None and output_directory is None:
+        raise ValueError(messages.MISSING_OUTPUT_BASE)
+    elif output_directory is None:
         destination = Path(subject_dir) / configuration.BRAINPRINT_RESULTS_DIR
+    else:
+        destination = output_directory
     destination.mkdir(parents=True, exist_ok=True)
     eigenvectors_path = destination / configuration.EIGENVECTORS_DIR
     surfaces_path = destination / configuration.SURFACES_DIR
@@ -107,4 +68,48 @@ def create_output_paths(subject_dir: Path, options: Dict[str, Any]) -> None:
     eigenvectors_path.mkdir(parents=True, exist_ok=True)
     surfaces_path.mkdir(parents=True, exist_ok=True)
     temp_path.mkdir(parents=True, exist_ok=True)
+    return destination
+
+
+def export_results(
+    options,
+    eigenvalues: np.ndarray,
+    eigenvectors: np.ndarray = None,
+    distances: np.ndarray = None,
+):
+    """
+    Writes the BrainPrint analysis results to CSV files.
+    """
+    df = pd.DataFrame(eigenvalues).sort_index(axis=1)
+    ev_indices = [f"ev{i}" for i in range(len(df) - 2)]
+    df.index = ["area", "volume"] + ev_indices
+    eigenvalues_csv = options["csv_path"]
+    df.to_csv(eigenvalues_csv, index=True, na_rep="NaN")
+
+    if eigenvectors is not None:
+        eigenvectors_dir = (
+            eigenvalues_csv.parent / configuration.EIGENVECTORS_DIR
+        )
+        for key, value in eigenvectors.items():
+            suffix = configuration.EIGENVECTORS_SUFFIX_TEMPLATE.format(key=key)
+            name = eigenvalues_csv.with_suffix(suffix).name
+            destination = eigenvectors_dir / name
+            pd.DataFrame(value).to_csv(
+                destination,
+                index=True,
+                na_rep="NaN",
+            )
+
+    if distances is not None:
+        destination = eigenvalues_csv.with_suffix(".asymmetry.csv")
+        pd.DataFrame([distances]).to_csv(
+            destination,
+            index=False,
+            na_rep="NaN",
+        )
+
+
+def surf_to_vtk(source: Path, destination: Path) -> Path:
+    surface = read_geometry(source)
+    TriaIO.export_vtk(TriaMesh(v=surface[0], t=surface[1]), destination)
     return destination
