@@ -28,7 +28,7 @@ def compute_brainprint(
     """
     Computes shapeDNA descriptors for several structures.
     """
-    destination = options["output_directory"]
+    destination = options["output_dir"]
     surfaces = create_aseg_surfaces(subject_dir, destination)
 
     if not options["skip_cortex"]:
@@ -145,13 +145,12 @@ def run_brainprint(subjects_dir: Path, subject_id: str, **kwargs):
     subject_dir = validate_subject_dir(subjects_dir, subject_id)
     validate_environment()
     test_freesurfer()
-    kwargs["output_directory"] = create_output_paths(
+    kwargs["output_dir"] = create_output_paths(
         subject_dir=subject_dir,
-        output_directory=kwargs.get("output_directory"),
+        output_dir=kwargs.get("output_dir"),
     )
-    kwargs["csv_path"] = (
-        kwargs["output_directory"] / f"{subject_id}.brainprint.csv"
-    )
+    csv_name = configuration.CSV_NAME_TEMPLATE.format(subject_id=subject_id)
+    kwargs["csv_path"] = kwargs["output_dir"] / csv_name
 
     eigenvalues, eigenvectors = compute_brainprint(subject_dir, kwargs)
 
@@ -163,6 +162,6 @@ def run_brainprint(subjects_dir: Path, subject_id: str, **kwargs):
             skip_cortex=kwargs["skip_cortex"],
         )
 
-    export_results(kwargs, eigenvalues, eigenvectors, distances)
+    export_results(kwargs["csv_path"], eigenvalues, eigenvectors, distances)
     print(messages.RETURN_VALUES)
     return eigenvalues, eigenvectors, distances

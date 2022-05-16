@@ -13,7 +13,7 @@ SURFACE_READ_ERROR: str = (
 )
 ASYMMETRY_NAN: str = "NaNs found for {left_label} or {right_label}, skipping asymmetry computation..."
 MISSING_OUTPUT_BASE: str = (
-    "One of *subject_dir* or *output_directory* must be provided!"
+    "One of *subject_dir* or *output_dir* must be provided!"
 )
 SHELL_EXECUTION_FAILURE: str = "Failed to execute the following command:\n{command}\nThe following exception was raised:\n{exception}"
 SHELL_EXECUTION_RETURN: str = "Execution of the following command:\n{command}\nReturned non-zero exit code!"

@@ -5,7 +5,7 @@ import sys
 from cli import help_text
 
 
-def _parse_options():
+def parse_options():
     """
     Initiates the option parser and return the parsed object.
     """
@@ -99,7 +99,7 @@ def _parse_options():
     output = parser.add_argument_group(title="Output parameters")
     output.add_argument(
         "--outdir",
-        dest="output_directory",
+        dest="output_dir",
         help=help_text.OUTDIR,
         default=None,
         metavar="<directory>",
