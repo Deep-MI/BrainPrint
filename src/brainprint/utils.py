@@ -53,9 +53,7 @@ def run_shell_command(command: str):
         print(message)
         raise
     if return_code != 0:
-        message = messages.SHELL_EXECUTION_FAILURE.format(
-            command=command, exception=e
-        )
+        message = messages.SHELL_EXECUTION_RETURN.format(command=command)
         raise RuntimeError(message)
 
 
