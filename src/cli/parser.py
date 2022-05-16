@@ -54,8 +54,8 @@ def _parse_options():
     )
     optional.add_argument(
         "--skipcortex",
-        dest="skipcortex",
-        help=help_text.SKIPCORTEX,
+        dest="skip_cortex",
+        help=help_text.SKIP_CORTEX,
         default=False,
         action="store_true",
         required=False,
@@ -65,7 +65,8 @@ def _parse_options():
         dest="norm",
         help=help_text.NORM,
         default="none",
-        metavar=" <surface|volume|geometry|none>",
+        metavar="<surface|volume|geometry|none>",
+        choices=["surface", "volume", "geometry", "none"],
         required=False,
     )
     optional.add_argument(
@@ -84,12 +85,21 @@ def _parse_options():
         action="store_true",
         required=False,
     )
+    optional.add_argument(
+        "--asym-distance",
+        dest="asymmetry_distance",
+        help=help_text.ASYM_DISTANCE,
+        default="euc",
+        metavar="<euc>",
+        choices=["euc"],
+        required=False,
+    )
 
     # Output options
     output = parser.add_argument_group(title="Output parameters")
     output.add_argument(
         "--outdir",
-        dest="outdir",
+        dest="output_directory",
         help=help_text.OUTDIR,
         default=None,
         metavar="<directory>",
