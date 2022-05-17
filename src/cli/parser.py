@@ -18,7 +18,7 @@ def parse_options():
     required.add_argument(
         "--sdir",
         dest="subjects_dir",
-        help=help_text.SDIR,
+        help=help_text.SUBJECTS_DIR,
         default=None,
         metavar="<directory>",
         required=True,
@@ -27,7 +27,7 @@ def parse_options():
     required.add_argument(
         "--sid",
         dest="subject_id",
-        help=help_text.SID,
+        help=help_text.SUBJECT_ID,
         default=None,
         metavar="<string>",
         required=True,
@@ -46,7 +46,7 @@ def parse_options():
     )
     optional.add_argument(
         "--evec",
-        dest="evec",
+        dest="keep_eigenvectors",
         help=help_text.EVEC,
         default=False,
         action="store_true",
@@ -71,8 +71,8 @@ def parse_options():
     )
     optional.add_argument(
         "--reweight",
-        dest="rwt",
-        help=help_text.RWT,
+        dest="reweight",
+        help=help_text.REWEIGHT,
         default=False,
         action="store_true",
         required=False,
@@ -99,8 +99,8 @@ def parse_options():
     output = parser.add_argument_group(title="Output parameters")
     output.add_argument(
         "--outdir",
-        dest="output_dir",
-        help=help_text.OUTDIR,
+        dest="destination",
+        help=help_text.OUTPUT_DIRECTORY,
         default=None,
         metavar="<directory>",
         required=False,
@@ -123,10 +123,12 @@ def parse_options():
     more_help = "--more-help" in sys.argv
     if no_input:
         args = parser.parse_args(["--help"])
+        return
     elif more_help:
         print(help_text.HELPTEXT)
-        sys.exit(0)
+        return
     else:
-        args = parser.parse_args()
+        args = vars(parser.parse_args())
+        del args["more_help"]
 
-    return vars(args)
+    return args
