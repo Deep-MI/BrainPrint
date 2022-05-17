@@ -11,9 +11,13 @@ from lapy import ShapeDNA, TriaMesh
 from brainprint import configuration, messages
 from brainprint.asymmetry import compute_asymmetry
 from brainprint.surfaces import create_surfaces, read_vtk
-from brainprint.utils import (create_output_paths, export_results,
-                              test_freesurfer, validate_environment,
-                              validate_subject_dir)
+from brainprint.utils import (
+    create_output_paths,
+    export_results,
+    test_freesurfer,
+    validate_environment,
+    validate_subject_dir,
+)
 
 warnings.filterwarnings("ignore", ".*negative int.*")
 
@@ -139,7 +143,6 @@ def compute_brainprint(
         Surface label to eigenvalues, surface label to eigenvectors (if
         *keep_eigenvectors* is True)
     """
-    failed = False
     eigenvalues = dict()
     eigenvectors = dict() if keep_eigenvectors else None
     for surface_label, surface_path in surfaces.items():
@@ -155,18 +158,15 @@ def compute_brainprint(
                 return_eigenvectors=keep_eigenvectors,
             )
         except Exception as e:
-            failed = True
             message = messages.GENERAL_EXECUTION_ERROR.format(exception=e)
             warnings.warn(message)
+            eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
+            if len(eigenvalues[surface_label]) == 0:
+                eigenvalues[surface_label] = ["NaN"] * (num + 2)
             eigenvalues[surface_label] = surface_eigenvalues
             if keep_eigenvectors:
                 eigenvectors[surface_label] = surface_eigenvectors
-            failed = False
-
-        if len(eigenvalues[surface_label]) == 0 or failed:
-            eigenvalues[surface_label] = ["NaN"] * (num + 2)
-
     return eigenvalues, eigenvectors
 
 
