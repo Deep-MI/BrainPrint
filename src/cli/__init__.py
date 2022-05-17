@@ -8,4 +8,5 @@ from cli.parser import parse_options
 
 def main():
     options = parse_options()
-    return run_brainprint(**options)
+    if options is not None:
+        return run_brainprint(**options)
