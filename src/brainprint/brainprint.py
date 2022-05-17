@@ -162,9 +162,10 @@ def compute_brainprint(
             warnings.warn(message)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
-            if len(eigenvalues[surface_label]) == 0:
+            if len(surface_eigenvalues) == 0:
                 eigenvalues[surface_label] = ["NaN"] * (num + 2)
-            eigenvalues[surface_label] = surface_eigenvalues
+            else:
+                eigenvalues[surface_label] = surface_eigenvalues
             if keep_eigenvectors:
                 eigenvectors[surface_label] = surface_eigenvectors
     return eigenvalues, eigenvectors
