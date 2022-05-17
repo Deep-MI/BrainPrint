@@ -6,16 +6,16 @@ CLI_DESCRIPTION: str = (
 )
 
 
-SID: str = (
+SUBJECT_ID: str = (
     "Subject ID (FreeSurfer processed directory inside the subjects directory)"
 )
-SDIR: str = "FreeSurfer subjects directory"
-OUTDIR: str = "Output directory (default: <sdir>/<sid>/brainprint)"
+SUBJECTS_DIR: str = "FreeSurfer subjects directory"
+OUTPUT_DIRECTORY: str = "Output directory (default: <sdir>/<sid>/brainprint)"
 NUM: str = "Number of eigenvalues/vectors to compute (default: 50)"
 EVEC: str = "Switch on eigenvector computation (default: off)"
 SKIP_CORTEX: str = "Skip cortical surfaces (default: off)"
-NORM: str = "Perform on eigenvalue normalization (default: none)"
-RWT: str = "Switch on eigenvalue reweighting (default: off)"
+NORM: str = "Eigenvalues normalization method (default: none)"
+REWEIGHT: str = "Switch on eigenvalue reweighting (default: off)"
 ASYM: str = "Switch on additional asymmetry calculation (default: off)"
 ASYM_DISTANCE: str = (
     "Distance measurement to use for asymmetry calculation (default: euc)"

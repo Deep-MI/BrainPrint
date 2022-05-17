@@ -8,8 +8,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from lapy import TriaIO, TriaMesh
-from lapy.read_geometry import read_geometry
 
 from brainprint import configuration, messages
 
@@ -67,7 +65,7 @@ def run_shell_command(command: str):
         raise RuntimeError(message)
 
 
-def validate_subject_dir(subjects_dir: Path, subject_id: str) -> None:
+def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
     """
     Checks the input FreeSurfer preprocessing results directory exists.
 
@@ -91,12 +89,18 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> None:
     return subject_dir
 
 
+def resolve_destination(subject_dir: Path, destination: Path = None) -> Path:
+    if destination is None:
+        return Path(subject_dir) / configuration.BRAINPRINT_RESULTS_DIR
+    return destination
+
+
 def create_output_paths(
-    subject_dir: Path = None, output_dir: Path = None
+    subject_dir: Path = None, destination: Path = None
 ) -> None:
     """
     Creates the output directories in which the BrainPrint analysis derivatives
-    will be created. One of *subject_dir* or *output_dir* must be
+    will be created. One of *subject_dir* or *destination* must be
     provided.
 
     Parameters
@@ -104,21 +108,16 @@ def create_output_paths(
     subject_dir : Path, optional
         If provided, will simply nest results in the provided directory, by
         default None
-    output_dir : Path, optional
+    destination : Path, optional
         If provided, will use this path as the results root directory, by
         default None
 
     Raises
     ------
     ValueError
-        No *subject_dir* or *output_dir* provided
+        No *subject_dir* or *destination* provided
     """
-    if subject_dir is None and output_dir is None:
-        raise ValueError(messages.MISSING_OUTPUT_BASE)
-    elif output_dir is None:
-        destination = Path(subject_dir) / configuration.BRAINPRINT_RESULTS_DIR
-    else:
-        destination = output_dir
+    destination = resolve_destination(subject_dir, destination)
     destination.mkdir(parents=True, exist_ok=True)
     (destination / configuration.EIGENVECTORS_DIR).mkdir(
         parents=True, exist_ok=True
@@ -174,24 +173,3 @@ def export_results(
             index=False,
             na_rep="NaN",
         )
-
-
-def surf_to_vtk(source: Path, destination: Path) -> Path:
-    """
-    Converted a FreeSurfer *.surf* file to *.vtk*.
-
-    Parameters
-    ----------
-    source : Path
-        FreeSurfer *.surf* file
-    destination : Path
-        Equivalent *.vtk* file
-
-    Returns
-    -------
-    Path
-        Resulting *.vtk* file
-    """
-    surface = read_geometry(source)
-    TriaIO.export_vtk(TriaMesh(v=surface[0], t=surface[1]), destination)
-    return destination

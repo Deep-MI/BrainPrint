@@ -66,25 +66,25 @@ CORTICAL_LABELS = {
     "rh-pial-2d": "rh.pial",
 }
 LATERAL_STRUCTURES = [
-    {"left": "Left-Striatum", "right": "Right-Striatum"},
-    {"left": "Left-Lateral-Ventricle", "right": "Right-Lateral-Ventricle"},
-    {
-        "left": "Left-Cerebellum-White-Matter",
-        "right": "Right-Cerebellum-White-Matter",
-    },
-    {"left": "Left-Cerebellum-Cortex", "right": "Right-Cerebellum-Cortex"},
-    {"left": "Left-Thalamus-Proper", "right": "Right-Thalamus-Proper"},
-    {"left": "Left-Caudate", "right": "Right-Caudate"},
-    {"left": "Left-Putamen", "right": "Right-Putamen"},
-    {"left": "Left-Pallidum", "right": "Right-Pallidum"},
-    {"left": "Left-Hippocampus", "right": "Right-Hippocampus"},
-    {"left": "Left-Amygdala", "right": "Right-Amygdala"},
-    {"left": "Left-Accumbens-area", "right": "Right-Accumbens-area"},
-    {"left": "Left-VentralDC", "right": "Right-VentralDC"},
+    ("Left-Striatum", "Right-Striatum"),
+    ("Left-Lateral-Ventricle", "Right-Lateral-Ventricle"),
+    (
+        "Left-Cerebellum-White-Matter",
+        "Right-Cerebellum-White-Matter",
+    ),
+    ("Left-Cerebellum-Cortex", "Right-Cerebellum-Cortex"),
+    ("Left-Thalamus-Proper", "Right-Thalamus-Proper"),
+    ("Left-Caudate", "Right-Caudate"),
+    ("Left-Putamen", "Right-Putamen"),
+    ("Left-Pallidum", "Right-Pallidum"),
+    ("Left-Hippocampus", "Right-Hippocampus"),
+    ("Left-Amygdala", "Right-Amygdala"),
+    ("Left-Accumbens-area", "Right-Accumbens-area"),
+    ("Left-VentralDC", "Right-VentralDC"),
 ]
 LATERAL_STRUCTURES_2D = [
-    {"left": "lh-white-2d", "right": "rh-white-2d"},
-    {"left": "lh-pial-2d", "right": "rh-pial-2d"},
+    ("lh-white-2d", "rh-white-2d"),
+    ("lh-pial-2d", "rh-pial-2d"),
 ]
 
 
