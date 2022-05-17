@@ -1,6 +1,7 @@
 """
 Definition of the brainprint analysis execution functions.
 """
+import shutil
 import warnings
 from pathlib import Path
 from typing import Dict, Tuple, Union
@@ -182,6 +183,7 @@ def run_brainprint(
     reweight: bool = False,
     asymmetry: bool = False,
     asymmetry_distance: str = "euc",
+    keep_temp: bool = False,
 ):
     """
     Runs the BrainPrint analysis.
@@ -212,6 +214,8 @@ def run_brainprint(
     asymmetry_distance : str, optional
         Distance measurement to use if *asymmetry* is set to True, by default
         "euc"
+    keep_temp : bool, optional
+        Whether to keep the temporary files directory or not, by default False
 
     Returns
     -------
@@ -249,5 +253,7 @@ def run_brainprint(
     csv_name = configuration.CSV_NAME_TEMPLATE.format(subject_id=subject_id)
     csv_path = destination / csv_name
     export_results(csv_path, eigenvalues, eigenvectors, distances)
+    if not keep_temp:
+        shutil.rmtree(destination / configuration.TEMP_DIR)
     print(messages.RETURN_VALUES)
     return eigenvalues, eigenvectors, distances

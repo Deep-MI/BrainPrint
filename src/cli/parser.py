@@ -106,6 +106,14 @@ def parse_options():
         required=False,
         type=pathlib.Path,
     )
+    output.add_argument(
+        "--keep-temp",
+        dest="keep_temp",
+        help=help_text.KEEP_TEMP,
+        default=False,
+        action="store_true",
+        required=False,
+    )
 
     # Help
     help = parser.add_argument_group(title="Getting help")

@@ -20,6 +20,9 @@ ASYM: str = "Switch on additional asymmetry calculation (default: off)"
 ASYM_DISTANCE: str = (
     "Distance measurement to use for asymmetry calculation (default: euc)"
 )
+KEEP_TEMP: str = (
+    "Whether to keep the temporary files directory or not, by default False"
+)
 HELP: str = "Display this help message and exit"
 MORE_HELP: str = "Display extensive help message and exit"
 
