@@ -5,6 +5,7 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -36,7 +37,7 @@ def test_freesurfer() -> None:
         raise RuntimeError(messages.NO_FREESURFER_BINARIES)
 
 
-def run_shell_command(command: str):
+def run_shell_command(command: str, verbose: bool = False):
     """
     Execute shell command.
 
@@ -50,7 +51,8 @@ def run_shell_command(command: str):
     RuntimeError
         Shell command execution failure
     """
-    print(f"Executing command:\t{command}", end="\n")
+    if verbose:
+        print(f"Executing command:\t{command}", end="\n")
     args = shlex.split(command)
     try:
         return_code = subprocess.call(args)
@@ -119,9 +121,6 @@ def create_output_paths(
     """
     destination = resolve_destination(subject_dir, destination)
     destination.mkdir(parents=True, exist_ok=True)
-    (destination / configuration.EIGENVECTORS_DIR).mkdir(
-        parents=True, exist_ok=True
-    )
     (destination / configuration.SURFACES_DIR).mkdir(
         parents=True, exist_ok=True
     )
@@ -129,12 +128,12 @@ def create_output_paths(
     return destination
 
 
-def export_results(
+def export_brainprint_results(
     destination: Path,
     eigenvalues: np.ndarray,
     eigenvectors: np.ndarray = None,
     distances: np.ndarray = None,
-):
+) -> Dict[str, Path]:
     """
     Writes the BrainPrint analysis results to CSV files.
 
@@ -149,13 +148,16 @@ def export_results(
     distances : np.ndarray, optional
         Distances, by default None
     """
+    files = {}
     df = pd.DataFrame(eigenvalues).sort_index(axis=1)
     ev_indices = [f"ev{i}" for i in range(len(df) - 2)]
     df.index = ["area", "volume"] + ev_indices
     df.to_csv(destination, index=True, na_rep="NaN")
+    files["eigenvalues"] = destination
 
     if eigenvectors is not None:
         eigenvectors_dir = destination.parent / configuration.EIGENVECTORS_DIR
+        eigenvectors_dir.mkdir(parents=True, exist_ok=True)
         for key, value in eigenvectors.items():
             suffix = configuration.EIGENVECTORS_SUFFIX_TEMPLATE.format(key=key)
             name = destination.with_suffix(suffix).name
@@ -165,6 +167,7 @@ def export_results(
                 index=True,
                 na_rep="NaN",
             )
+            files[key] = vectors_destination
 
     if distances is not None:
         distances_destination = destination.with_suffix(".asymmetry.csv")
@@ -173,3 +176,5 @@ def export_results(
             index=False,
             na_rep="NaN",
         )
+        files["distances"] = distances_destination
+    return files
