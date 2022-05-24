@@ -2,31 +2,32 @@
 
 This is the `brainprint` python package, a derivative of the original
 [BrainPrint-legacy](https://github.com/Deep-MI/BrainPrint-legacy) scripts,
-with the primary goal to provide a Python-only version (except some Freesurfer
-dependencies), to integrate the [LaPy](https://github.com/Deep-MI/LaPy)
-package, and to remove dependencies on third-party software
-(shapeDNA-* binaries, gmsh, meshfix). As a result, some functionality of the
+with the primary goal to provide a Python-only version (except some FreeSurfer dependencies), to integrate the [LaPy](https://github.com/Deep-MI/LaPy) package, and to remove dependencies on third-party software (shapeDNA-* binaries, gmsh, meshfix). As a result, some functionality of the
 original BrainPrint-legacy scripts is no longer maintained (currently no
 support of tetrahedral meshes and no support of cortical parcellations or
 label files).
 
+## Installation
+
+Use the following code to download, build and install a package from this
+repository into your local Python package directory:
+
+`pip3 install --user git+https://github.com/Deep-MI/BrainPrint-python.git`
+
+This will also install the necessary dependencies, e.g. the [LaPy](https://github.com/Deep-MI/LaPy)
+package. You may need to add your local Python package directory to your $PATH
+in order to run the scripts.
+
 ## Usage
+### Command Line Interface (CLI)
 
-### Usage from the command line
+Once installed, the package provides a `brainprint` executable which can be run from the command line.
 
-The toolbox consists of the `brainprint.py` Python script, which can be run
-from the command line as well as from within a Python environment.
+The `brainprint` CLI enables per-subject computation of the individual brainprint descriptors. Its usage and options are summarized below;
+detailed info is available by calling the script without any arguments from the command line.
 
-The `brainprint.py` script is used for the per-subject computation of the
-individual brainprint descriptor. Its usage and options are summarized below;
-detailed info is available by calling the script without any arguments from the
-command line.
-
-```
-python3 brainprint.py --sdir <directory> --sid <SubjectID>  [--num <num>]
-                    [--evec] [--skipcortex] [--norm <surface|volume|geometry|none> ]
-                    [--reweight] [--asymmetry] [--outdir <directory>] [--help]
-                    [--more-help]
+```sh
+brainprint --sdir <directory> --sid <SubjectID>  [--num <num>] [--evec] [--skipcortex] [--norm <surface|volume|geometry|none> ] [--reweight] [--asymmetry] [--outdir <directory>] [--help] [--more-help]
 
 Options:
   --help           Show this help message and exit
@@ -52,53 +53,32 @@ Processing directives:
 
 Output parameters:
   --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)
+  --keep-temp      Whether to keep the temporary files directory or not
+                   by default False
 ```
 
-### Usage as a Python package
+### Python Package
 
-As an alternative to their command-line usage, the BrainPrint scripts can also
-be run within a pure Python environment, i.e. installed and imported as a
-Python package.
+`brainprint` can also be run within a pure Python environment, i.e. installed and imported as a Python package. E.g.:
 
-Use `import brainprint` (or sth. equivalent) to import the package within
-a Python environment.
+```python
+>>> from brainprint import Brainprint
 
-Use the `run_brainprint` function from the `brainprint` module to run an
-analysis:
+>>> subjects_dir = "/path/to/freesurfer/subjects_dir/"
+>>> subject_id = "42"
 
+>>> bp = Brainprint(subjects_dir=subjects_dir, asymmetry=True, keep_eigenvectors=True)
+>>> results = bp.run(subject_id=subject_id)
+>>> results
+{"eigenvalues": PosixPath("/path/to/freesurfer/subjects_dir/subject_id/brainprint/subject_id.brainprint.csv"), "eigenvectors": PosixPath("/path/to/freesurfer/subjects_dir/subject_id/brainprint/eigenvectors"), "distances": PosixPath("/path/to/freesurfer/subjects_dir/subject_id/brainprint/subject_id.brainprint.asymmetry.csv")}
 ```
-import lapy
-from brainprint import brainprint
-brainprint.run_brainprint(subjects_dir="/my/subjects/directory", subject_id="my_subject_id")
-```
-
-Additional options are `num=<int>`, `evec=<bool>`, `skipcortex=<bool>`,
-`norm=<"surface"|"volume"|"geometry"|"none">`, `reweight=<bool>`, and
-`outdir=<string>`.
 
 ## Output
 
-The script will create an output directory that contains a csv table with
+The script will create an output directory that contains a CSV table with
 values (in that order) for the area, volume, and first n eigenvalues per each
 FreeSurfer structure. An additional output file will be created if the
-asymmetry calculation is performed.
-
-## Installation
-
-Use the following code to download, build and install a package from this
-repository into your local Python package directory:
-
-`pip3 install --user git+https://github.com/Deep-MI/BrainPrint-python.git`
-
-This will also install the necessary dependencies, e.g. the [LaPy](https://github.com/Deep-MI/LaPy)
-package. You may need to add your local Python package directory to your $PATH
-in order to run the scripts.
-
-## Requirements
-
-- The [LaPy](https://github.com/Deep-MI/LaPy) package must be installed.
-- A working installation of Freesurfer 6.0 must be sourced.
-- At least one structural MR image that was processed with Freesurfer 6.0.
+asymmetry calculation is performed and/or for the eigenvectors (CLI `--evecs` flag or `keep_eigenvectors` on class initialization).
 
 ## Changes
 
