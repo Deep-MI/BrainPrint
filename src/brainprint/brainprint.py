@@ -9,12 +9,12 @@ from typing import Dict, Tuple, Union
 import numpy as np
 from lapy import ShapeDNA, TriaMesh
 
-from brainprint import configuration, messages
+from brainprint import __version__, configuration, messages
 from brainprint.asymmetry import compute_asymmetry
 from brainprint.surfaces import create_surfaces, read_vtk
 from brainprint.utils import (
     create_output_paths,
-    export_results,
+    export_brainprint_results,
     test_freesurfer,
     validate_environment,
     validate_subject_dir,
@@ -252,8 +252,120 @@ def run_brainprint(
 
     csv_name = configuration.CSV_NAME_TEMPLATE.format(subject_id=subject_id)
     csv_path = destination / csv_name
-    export_results(csv_path, eigenvalues, eigenvectors, distances)
+    export_brainprint_results(csv_path, eigenvalues, eigenvectors, distances)
     if not keep_temp:
         shutil.rmtree(destination / configuration.TEMP_DIR)
     print(messages.RETURN_VALUES)
     return eigenvalues, eigenvectors, distances
+
+
+class Brainprint:
+    __version__ = __version__
+
+    def __init__(
+        self,
+        subjects_dir: Path,
+        num: int = 50,
+        skip_cortex: bool = False,
+        keep_eigenvectors: bool = False,
+        norm: str = "none",
+        reweight: bool = False,
+        asymmetry: bool = False,
+        asymmetry_distance: str = "euc",
+        keep_temp: bool = False,
+        environment_validation: bool = True,
+        freesurfer_validation: bool = True,
+    ) -> None:
+        """
+        Initializes a new :class:`Brainprint` instance.
+
+        Parameters
+        ----------
+        subjects_dir : Path
+            FreeSurfer's subjects directory
+        num : int, optional
+            Number of eigenvalues to compute, by default 50
+        norm : str, optional
+            Eigenvalues normalization method, by default "none"
+        reweight : bool, optional
+            Whether to reweight eigenvalues or not, by default False
+        skip_cortex : bool, optional
+            _description_, by default False
+        keep_eigenvectors : bool, optional
+            Whether to also return eigenvectors or not, by default False
+        asymmetry : bool, optional
+            Whether to calculate asymmetry between lateral structures, by
+            default False
+        asymmetry_distance : str, optional
+            Distance measurement to use if *asymmetry* is set to True, by
+            default "euc"
+        keep_temp : bool, optional
+            Whether to keep the temporary files directory or not, by default
+            False
+        """
+        self.subjects_dir = subjects_dir
+        self.num = num
+        self.norm = norm
+        self.skip_cortex = skip_cortex
+        self.reweight = reweight
+        self.keep_eigenvectors = keep_eigenvectors
+        self.asymmetry = asymmetry
+        self.asymmetry_distance = asymmetry_distance
+        self.keep_temp = keep_temp
+
+        self._subject_id = None
+        self._destination = None
+        self._eigenvalues = None
+        self._eigenvectors = None
+        self._distances = None
+
+        if environment_validation:
+            validate_environment()
+        if freesurfer_validation:
+            test_freesurfer()
+
+    def run(
+        self, subject_id: str, destination: Path = None
+    ) -> Dict[str, Path]:
+        self._eigenvalues = self._eigenvectors = self._distances = None
+        subject_dir = validate_subject_dir(self.subjects_dir, subject_id)
+        destination = create_output_paths(
+            subject_dir=subject_dir,
+            destination=destination,
+        )
+
+        surfaces = create_surfaces(
+            subject_dir, destination, skip_cortex=self.skip_cortex
+        )
+        self._eigenvalues, self._eigenvectors = compute_brainprint(
+            surfaces,
+            num=self.num,
+            norm=self.norm,
+            reweight=self.reweight,
+            keep_eigenvectors=self.keep_eigenvectors,
+        )
+
+        if self.asymmetry:
+            self._distances = compute_asymmetry(
+                self._eigenvalues,
+                distance=self.asymmetry_distance,
+                skip_cortex=self.skip_cortex,
+            )
+
+        self.cleanup(destination=destination)
+        return self.export_results(
+            destination=destination, subject_id=subject_id
+        )
+
+    def export_results(self, destination: Path, subject_id: str) -> None:
+        csv_name = configuration.CSV_NAME_TEMPLATE.format(
+            subject_id=subject_id
+        )
+        csv_path = destination / csv_name
+        return export_brainprint_results(
+            csv_path, self._eigenvalues, self._eigenvectors, self._distances
+        )
+
+    def cleanup(self, destination: Path) -> None:
+        if not self.keep_temp:
+            shutil.rmtree(destination / configuration.TEMP_DIR)
