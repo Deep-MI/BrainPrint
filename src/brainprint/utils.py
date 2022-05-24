@@ -167,7 +167,7 @@ def export_brainprint_results(
                 index=True,
                 na_rep="NaN",
             )
-            files[key] = vectors_destination
+        files["eigenvectors"] = eigenvectors_dir
 
     if distances is not None:
         distances_destination = destination.with_suffix(".asymmetry.csv")
