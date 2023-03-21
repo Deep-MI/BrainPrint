@@ -10,7 +10,7 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 
-import configuration, messages
+from brainprint import configuration, messages
 
 
 def validate_environment() -> None:
