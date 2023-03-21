@@ -9,7 +9,7 @@ from typing import Dict, Tuple, Union
 import numpy as np
 from lapy import ShapeDNA, TriaMesh
 
-from brainprint import __version__, configuration, messages
+from brainprint import __version__, messages
 from .asymmetry import compute_asymmetry
 from .surfaces import create_surfaces, read_vtk
 from .utils.utils import (
@@ -94,7 +94,9 @@ def compute_surface_brainprint(
     shape_dna = ShapeDNA.compute_shapedna(
         triangular_mesh,
         k=num,
-        **configuration.SHAPEDNA_KWARGS,
+        lump=False,
+        aniso=None,
+        aniso_smooth=10
     )
 
     eigenvectors = None
@@ -250,11 +252,11 @@ def run_brainprint(
             skip_cortex=skip_cortex,
         )
 
-    csv_name = configuration.CSV_NAME_TEMPLATE.format(subject_id=subject_id)
+    csv_name = "{subject_id}.brainprint.csv".format(subject_id=subject_id)
     csv_path = destination / csv_name
     export_brainprint_results(csv_path, eigenvalues, eigenvectors, distances)
     if not keep_temp:
-        shutil.rmtree(destination / configuration.TEMP_DIR)
+        shutil.rmtree(destination / "temp")
     print(messages.RETURN_VALUES)
     return eigenvalues, eigenvectors, distances
 
@@ -358,7 +360,7 @@ class Brainprint:
         )
 
     def export_results(self, destination: Path, subject_id: str) -> None:
-        csv_name = configuration.CSV_NAME_TEMPLATE.format(
+        csv_name = "{subject_id}.brainprint.csv".format(
             subject_id=subject_id
         )
         csv_path = destination / csv_name
@@ -368,4 +370,4 @@ class Brainprint:
 
     def cleanup(self, destination: Path) -> None:
         if not self.keep_temp:
-            shutil.rmtree(destination / configuration.TEMP_DIR)
+            shutil.rmtree(destination / "temp")

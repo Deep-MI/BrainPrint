@@ -6,7 +6,7 @@ from typing import Dict
 import numpy as np
 from lapy import ShapeDNA
 
-from brainprint import configuration, messages
+from brainprint import messages
 
 
 def compute_asymmetry(
@@ -29,9 +29,44 @@ def compute_asymmetry(
     Dict[str, float]
         {left_label}_{right_label}, distance
     """
-    structures = configuration.LATERAL_STRUCTURES
+    # Define structures
+
+    # combined and individual aseg labels:
+    # - Left  Striatum: left  Caudate + Putamen + Accumbens
+    # - Right Striatum: right Caudate + Putamen + Accumbens
+    # - CorpusCallosum: 5 subregions combined
+    # - Cerebellum: brainstem + (left+right) cerebellum WM and GM
+    # - Ventricles: (left+right) lat.vent + inf.lat.vent + choroidplexus + 3rdVent + CSF
+    # - Lateral-Ventricle: lat.vent + inf.lat.vent + choroidplexus
+    # - 3rd-Ventricle: 3rd-Ventricle + CSF
+
+    structures_left_right = [
+        ("Left-Striatum", "Right-Striatum"),
+        ("Left-Lateral-Ventricle", "Right-Lateral-Ventricle"),
+        (
+            "Left-Cerebellum-White-Matter",
+            "Right-Cerebellum-White-Matter",
+        ),
+        ("Left-Cerebellum-Cortex", "Right-Cerebellum-Cortex"),
+        ("Left-Thalamus-Proper", "Right-Thalamus-Proper"),
+        ("Left-Caudate", "Right-Caudate"),
+        ("Left-Putamen", "Right-Putamen"),
+        ("Left-Pallidum", "Right-Pallidum"),
+        ("Left-Hippocampus", "Right-Hippocampus"),
+        ("Left-Amygdala", "Right-Amygdala"),
+        ("Left-Accumbens-area", "Right-Accumbens-area"),
+        ("Left-VentralDC", "Right-VentralDC"),
+    ]
+
+    cortex_2d_left_right = [
+        ("lh-white-2d", "rh-white-2d"),
+        ("lh-pial-2d", "rh-pial-2d"),
+    ]
+
+
+    structures = structures_left_right
     if not skip_cortex:
-        structures += configuration.LATERAL_STRUCTURES_2D
+        structures += cortex_2d_left_right 
 
     distances = dict()
     for left_label, right_label in structures:
