@@ -61,10 +61,9 @@ def compute_asymmetry(
         ("lh-pial-2d", "rh-pial-2d"),
     ]
 
-
     structures = structures_left_right
     if not skip_cortex:
-        structures += cortex_2d_left_right 
+        structures += cortex_2d_left_right
 
     distances = dict()
     for left_label, right_label in structures:
@@ -72,10 +71,7 @@ def compute_asymmetry(
             eigenvalues[left_label][2:],
             eigenvalues[right_label][2:],
         )
-        has_nan = (
-            np.isnan(left_eigenvalues).any()
-            or np.isnan(right_eigenvalues).any()
-        )
+        has_nan = np.isnan(left_eigenvalues).any() or np.isnan(right_eigenvalues).any()
         key = f"{left_label}_{right_label}"
         if has_nan:
             message = "NaNs found for {left_label} or {right_label}, skipping asymmetry computation...".format(

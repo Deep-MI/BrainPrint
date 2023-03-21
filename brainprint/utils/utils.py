@@ -16,7 +16,9 @@ def validate_environment() -> None:
     Checks whether required environment variables are set.
     """
     if not os.getenv("FREESURFER_HOME"):
-        raise RuntimeError("FreeSurfer root directory must be set as the $FREESURFER_HOME environment variable!")
+        raise RuntimeError(
+            "FreeSurfer root directory must be set as the $FREESURFER_HOME environment variable!"
+        )
 
 
 def test_freesurfer() -> None:
@@ -32,7 +34,9 @@ def test_freesurfer() -> None:
     try:
         run_shell_command(command)
     except FileNotFoundError:
-        raise RuntimeError("Failed to run FreeSurfer command, please check the required binaries are included in your $PATH.")
+        raise RuntimeError(
+            "Failed to run FreeSurfer command, please check the required binaries are included in your $PATH."
+        )
 
 
 def run_shell_command(command: str, verbose: bool = False):
@@ -61,7 +65,9 @@ def run_shell_command(command: str, verbose: bool = False):
         print(message)
         raise
     if return_code != 0:
-        message = "Execution of the following command:\n{command}\nReturned non-zero exit code!".format(command=command)
+        message = "Execution of the following command:\n{command}\nReturned non-zero exit code!".format(
+            command=command
+        )
         raise RuntimeError(message)
 
 
@@ -84,7 +90,9 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
     """
     subject_dir = subjects_dir / subject_id
     if not subject_dir.is_dir():
-        message = "FreeSurfer results directory at {path} does not exist!".format(path=subject_dir)
+        message = "FreeSurfer results directory at {path} does not exist!".format(
+            path=subject_dir
+        )
         raise FileNotFoundError(message)
     return subject_dir
 
@@ -95,9 +103,7 @@ def resolve_destination(subject_dir: Path, destination: Path = None) -> Path:
     return destination
 
 
-def create_output_paths(
-    subject_dir: Path = None, destination: Path = None
-) -> None:
+def create_output_paths(subject_dir: Path = None, destination: Path = None) -> None:
     """
     Creates the output directories in which the BrainPrint analysis derivatives
     will be created. One of *subject_dir* or *destination* must be
@@ -119,9 +125,7 @@ def create_output_paths(
     """
     destination = resolve_destination(subject_dir, destination)
     destination.mkdir(parents=True, exist_ok=True)
-    (destination / "surfaces").mkdir(
-        parents=True, exist_ok=True
-    )
+    (destination / "surfaces").mkdir(parents=True, exist_ok=True)
     (destination / "temp").mkdir(parents=True, exist_ok=True)
     return destination
 
