@@ -6,8 +6,6 @@ from typing import Dict
 import numpy as np
 from lapy import ShapeDNA
 
-from brainprint import messages
-
 
 def compute_asymmetry(
     eigenvalues, distance: str = "euc", skip_cortex: bool = False
@@ -80,7 +78,7 @@ def compute_asymmetry(
         )
         key = f"{left_label}_{right_label}"
         if has_nan:
-            message = messages.ASYMMETRY_NAN.format(
+            message = "NaNs found for {left_label} or {right_label}, skipping asymmetry computation...".format(
                 left_label=left_label, right_label=right_label
             )
             print(message)
