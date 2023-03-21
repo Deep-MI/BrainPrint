@@ -92,11 +92,7 @@ def compute_surface_brainprint(
     """
     triangular_mesh = read_vtk(path)
     shape_dna = ShapeDNA.compute_shapedna(
-        triangular_mesh,
-        k=num,
-        lump=False,
-        aniso=None,
-        aniso_smooth=10
+        triangular_mesh, k=num, lump=False, aniso=None, aniso_smooth=10
     )
 
     eigenvectors = None
@@ -150,10 +146,7 @@ def compute_brainprint(
     eigenvectors = dict() if keep_eigenvectors else None
     for surface_label, surface_path in surfaces.items():
         try:
-            (
-                surface_eigenvalues,
-                surface_eigenvectors,
-            ) = compute_surface_brainprint(
+            (surface_eigenvalues, surface_eigenvectors,) = compute_surface_brainprint(
                 surface_path,
                 num=num,
                 norm=norm,
@@ -161,7 +154,9 @@ def compute_brainprint(
                 return_eigenvectors=keep_eigenvectors,
             )
         except Exception as e:
-            message = "BrainPrint analysis raised the following exception:\n{exception}".format(exception=e)
+            message = "BrainPrint analysis raised the following exception:\n{exception}".format(
+                exception=e
+            )
             warnings.warn(message)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
@@ -233,9 +228,7 @@ def run_brainprint(
         destination=destination,
     )
 
-    surfaces = create_surfaces(
-        subject_dir, destination, skip_cortex=skip_cortex
-    )
+    surfaces = create_surfaces(subject_dir, destination, skip_cortex=skip_cortex)
     eigenvalues, eigenvectors = compute_brainprint(
         surfaces,
         num=num,
@@ -257,7 +250,9 @@ def run_brainprint(
     export_brainprint_results(csv_path, eigenvalues, eigenvectors, distances)
     if not keep_temp:
         shutil.rmtree(destination / "temp")
-    print("Returning matrices for eigenvalues, eigenvectors, and (optionally) distances.")
+    print(
+        "Returning matrices for eigenvalues, eigenvectors, and (optionally) distances."
+    )
     print("The eigenvalue matrix contains area and volume as first two rows.")
     return eigenvalues, eigenvectors, distances
 
@@ -327,9 +322,7 @@ class Brainprint:
         if freesurfer_validation:
             test_freesurfer()
 
-    def run(
-        self, subject_id: str, destination: Path = None
-    ) -> Dict[str, Path]:
+    def run(self, subject_id: str, destination: Path = None) -> Dict[str, Path]:
         self._eigenvalues = self._eigenvectors = self._distances = None
         subject_dir = validate_subject_dir(self.subjects_dir, subject_id)
         destination = create_output_paths(
@@ -356,14 +349,10 @@ class Brainprint:
             )
 
         self.cleanup(destination=destination)
-        return self.export_results(
-            destination=destination, subject_id=subject_id
-        )
+        return self.export_results(destination=destination, subject_id=subject_id)
 
     def export_results(self, destination: Path, subject_id: str) -> None:
-        csv_name = "{subject_id}.brainprint.csv".format(
-            subject_id=subject_id
-        )
+        csv_name = "{subject_id}.brainprint.csv".format(subject_id=subject_id)
         csv_path = destination / csv_name
         return export_brainprint_results(
             csv_path, self._eigenvalues, self._eigenvectors, self._distances
