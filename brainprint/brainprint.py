@@ -9,10 +9,13 @@ from typing import Dict, Tuple, Union
 import numpy as np
 from lapy import ShapeDNA, TriaMesh
 
-from brainprint import __version__, configuration, messages
-from brainprint.asymmetry import compute_asymmetry
-from brainprint.surfaces import create_surfaces, read_vtk
-from brainprint.utils import (
+# __version__ = "0.3.0"
+from . import __version__
+
+import configuration, messages
+from .asymmetry import compute_asymmetry
+from .surfaces import create_surfaces, read_vtk
+from .utils import (
     create_output_paths,
     export_brainprint_results,
     test_freesurfer,

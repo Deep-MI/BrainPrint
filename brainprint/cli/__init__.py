@@ -1,9 +1,9 @@
 """
 BrainPrint analysis CLI.
 """
-from brainprint import run_brainprint
+from ..brainprint import run_brainprint
 
-from cli.parser import parse_options
+from .parser import parse_options
 
 
 def main():
