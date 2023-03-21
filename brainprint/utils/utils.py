@@ -10,15 +10,13 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 
-from brainprint import messages
-
 
 def validate_environment() -> None:
     """
     Checks whether required environment variables are set.
     """
     if not os.getenv("FREESURFER_HOME"):
-        raise RuntimeError(messages.NO_FREESURFER_HOME)
+        raise RuntimeError("FreeSurfer root directory must be set as the $FREESURFER_HOME environment variable!")
 
 
 def test_freesurfer() -> None:
@@ -34,7 +32,7 @@ def test_freesurfer() -> None:
     try:
         run_shell_command(command)
     except FileNotFoundError:
-        raise RuntimeError(messages.NO_FREESURFER_BINARIES)
+        raise RuntimeError("Failed to run FreeSurfer command, please check the required binaries are included in your $PATH.")
 
 
 def run_shell_command(command: str, verbose: bool = False):
@@ -57,13 +55,13 @@ def run_shell_command(command: str, verbose: bool = False):
     try:
         return_code = subprocess.call(args)
     except Exception as e:
-        message = messages.SHELL_EXECUTION_FAILURE.format(
+        message = "Failed to execute the following command:\n{command}\nThe following exception was raised:\n{exception}".format(
             command=command, exception=e
         )
         print(message)
         raise
     if return_code != 0:
-        message = messages.SHELL_EXECUTION_RETURN.format(command=command)
+        message = "Execution of the following command:\n{command}\nReturned non-zero exit code!".format(command=command)
         raise RuntimeError(message)
 
 
@@ -86,7 +84,7 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
     """
     subject_dir = subjects_dir / subject_id
     if not subject_dir.is_dir():
-        message = messages.MISSING_SUBJECT_DIRECTORY.format(path=subject_dir)
+        message = "FreeSurfer results directory at {path} does not exist!".format(path=subject_dir)
         raise FileNotFoundError(message)
     return subject_dir
 

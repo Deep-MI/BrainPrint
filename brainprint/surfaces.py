@@ -8,7 +8,6 @@ from typing import Dict, List
 from lapy import TriaIO, TriaMesh
 from lapy.read_geometry import read_geometry
 
-from brainprint import messages
 from brainprint.utils.utils import run_shell_command
 
 
@@ -151,11 +150,11 @@ def read_vtk(path: Path):
     try:
         triangular_mesh = TriaIO.import_vtk(path)
     except Exception:
-        message = messages.SURFACE_READ_ERROR.format(path=path)
+        message = "Failed to read VTK from the following path: {path}!".format(path=path)
         raise RuntimeError(message)
     else:
         if triangular_mesh is None:
-            message = messages.SURFACE_READ_ERROR.format(path=path)
+            message = "Failed to read VTK from the following path: {path}!".format(path=path)
             raise RuntimeError(message)
         return triangular_mesh
 

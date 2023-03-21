@@ -9,7 +9,7 @@ from typing import Dict, Tuple, Union
 import numpy as np
 from lapy import ShapeDNA, TriaMesh
 
-from brainprint import __version__, messages
+from brainprint import __version__
 from .asymmetry import compute_asymmetry
 from .surfaces import create_surfaces, read_vtk
 from .utils.utils import (
@@ -161,7 +161,7 @@ def compute_brainprint(
                 return_eigenvectors=keep_eigenvectors,
             )
         except Exception as e:
-            message = messages.GENERAL_EXECUTION_ERROR.format(exception=e)
+            message = "BrainPrint analysis raised the following exception:\n{exception}".format(exception=e)
             warnings.warn(message)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
@@ -257,7 +257,8 @@ def run_brainprint(
     export_brainprint_results(csv_path, eigenvalues, eigenvectors, distances)
     if not keep_temp:
         shutil.rmtree(destination / "temp")
-    print(messages.RETURN_VALUES)
+    print("Returning matrices for eigenvalues, eigenvectors, and (optionally) distances.")
+    print("The eigenvalue matrix contains area and volume as first two rows.")
     return eigenvalues, eigenvectors, distances
 
 
