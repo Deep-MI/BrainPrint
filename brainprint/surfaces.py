@@ -9,7 +9,7 @@ from lapy import TriaIO, TriaMesh
 from lapy.read_geometry import read_geometry
 
 import configuration, messages
-from .utils import run_shell_command
+from .utils.utils import run_shell_command
 
 
 def create_aseg_surface(

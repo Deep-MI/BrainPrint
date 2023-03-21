@@ -15,7 +15,7 @@ from . import __version__
 import configuration, messages
 from .asymmetry import compute_asymmetry
 from .surfaces import create_surfaces, read_vtk
-from .utils import (
+from .utils.utils import (
     create_output_paths,
     export_brainprint_results,
     test_freesurfer,
