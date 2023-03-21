@@ -6,7 +6,7 @@ from typing import Dict
 import numpy as np
 from lapy import ShapeDNA
 
-import configuration, messages
+from brainprint import configuration, messages
 
 
 def compute_asymmetry(
