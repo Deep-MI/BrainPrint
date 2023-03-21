@@ -1,7 +1,7 @@
 """
 Utility functions for the :mod:`brainprint.cli` module.
 """
-from cli import help_text
+import help_text
 
 
 def get_help(print_help: bool = True):
