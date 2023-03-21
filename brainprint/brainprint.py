@@ -9,7 +9,7 @@ from typing import Dict, Tuple, Union
 import numpy as np
 from lapy import ShapeDNA, TriaMesh
 
-from brainprint import __version__
+from . import __version__
 from .asymmetry import compute_asymmetry
 from .surfaces import create_surfaces, read_vtk
 from .utils.utils import (
