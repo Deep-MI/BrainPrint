@@ -8,7 +8,7 @@ from typing import Dict, List
 from lapy import TriaIO, TriaMesh
 from lapy.read_geometry import read_geometry
 
-from brainprint import configuration, messages
+from brainprint import messages
 from brainprint.utils.utils import run_shell_command
 
 
@@ -18,14 +18,14 @@ def create_aseg_surface(
     """
     Creates a surface from the aseg and label files.
     """
-    aseg_path = subject_dir / configuration.RELATIVE_ASEG_MGZ_PATH
-    norm_path = subject_dir / configuration.RELATIVE_NORM_MGZ_PATH
-    temp_name = configuration.TEMP_ASEG_TEMPLATE.format(uid=uuid.uuid4())
+    aseg_path = subject_dir / "mri/aseg.mgz"
+    norm_path = subject_dir / "mri/norm.mgz"
+    temp_name = "temp/aseg.{uid}".format(uid=uuid.uuid4())
     indices_mask = destination / f"{temp_name}.mgz"
     # binarize on selected labels (creates temp indices_mask)
     # always binarize first, otherwise pretess may scale aseg if labels are
     # larger than 255 (e.g. aseg+aparc, bug in mri_pretess?)
-    binarize_template = configuration.COMMAND_TEMPLATES["mri_binarize"]
+    binarize_template = "mri_binarize --i {source} --match {match} --o {destination}"
     binarize_command = binarize_template.format(
         source=aseg_path, match=" ".join(indices), destination=indices_mask
     )
@@ -34,7 +34,7 @@ def create_aseg_surface(
     label_value = "1"
     # if norm exist, fix label (pretess)
     if norm_path.is_file():
-        pretess_template = configuration.COMMAND_TEMPLATES["mri_pretess"]
+        pretess_template = "mri_pretess {source} {label_value} {norm_path} {destination}"
         pretess_command = pretess_template.format(
             source=indices_mask,
             label_value=label_value,
@@ -44,20 +44,20 @@ def create_aseg_surface(
         run_shell_command(pretess_command)
 
     # runs marching cube to extract surface
-    surface_name = configuration.SURFACE_NAME_TEMPLATE.format(name=temp_name)
+    surface_name = "{name}.surf".format(name=temp_name)
     surface_path = destination / surface_name
-    extraction_template = configuration.COMMAND_TEMPLATES["mri_mc"]
+    extraction_template = "mri_mc {source} {label_value} {destination}"
     extraction_command = extraction_template.format(
         source=indices_mask, label_value=label_value, destination=surface_path
     )
     run_shell_command(extraction_command)
 
     # convert to vtk
-    relative_path = configuration.RELATIVE_SURFACE_TEMPLATE.format(
+    relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
     conversion_destination = destination / relative_path
-    conversion_template = configuration.COMMAND_TEMPLATES["mris_convert"]
+    conversion_template = "mris_convert {source} {destination}"
     conversion_command = conversion_template.format(
         source=surface_path, destination=conversion_destination
     )
@@ -69,21 +69,71 @@ def create_aseg_surface(
 def create_aseg_surfaces(
     subject_dir: Path, destination: Path
 ) -> Dict[str, Path]:
+
+    # Define aseg labels
+
+    # combined and individual aseg labels:
+    # - Left  Striatum: left  Caudate + Putamen + Accumbens
+    # - Right Striatum: right Caudate + Putamen + Accumbens
+    # - CorpusCallosum: 5 subregions combined
+    # - Cerebellum: brainstem + (left+right) cerebellum WM and GM
+    # - Ventricles: (left+right) lat.vent + inf.lat.vent + choroidplexus + 3rdVent + CSF
+    # - Lateral-Ventricle: lat.vent + inf.lat.vent + choroidplexus
+    # - 3rd-Ventricle: 3rd-Ventricle + CSF
+
+    aseg_labels = {
+        'CorpusCallosum' : ['251', '252', '253', '254', '255'],
+        'Cerebellum' : ['7', '8', '16', '46', '47'],
+        'Ventricles' : ['4', '5', '14', '24', '31', '43', '44', '63'],
+        '3rd-Ventricle' : ['14', '24'],
+        '4th-Ventricle' : ['15'],
+        'Brain-Stem' : ['16'],
+        'Left-Striatum' : ['11', '12', '26'],
+        'Left-Lateral-Ventricle' : ['4', '5', '31'],
+        'Left-Cerebellum-White-Matter' : ['7'],
+        'Left-Cerebellum-Cortex' : ['8'],
+        'Left-Thalamus-Proper' : ['10'],
+        'Left-Caudate' : ['11'],
+        'Left-Putamen' : ['12'],
+        'Left-Pallidum' : ['13'],
+        'Left-Hippocampus' : ['17'],
+        'Left-Amygdala' : ['18'],
+        'Left-Accumbens-area' : ['26'],
+        'Left-VentralDC' : ['28'],
+        'Right-Striatum' : ['50', '51', '58'],
+        'Right-Lateral-Ventricle' : ['43', '44', '63'],
+        'Right-Cerebellum-White-Matter' : ['46'],
+        'Right-Cerebellum-Cortex' : ['47'],
+        'Right-Thalamus-Proper' : ['49'],
+        'Right-Caudate' : ['50'],
+        'Right-Putamen' : ['51'],
+        'Right-Pallidum' : ['52'],
+        'Right-Hippocampus' : ['53'],
+        'Right-Amygdala' : ['54'],
+        'Right-Accumbens-area' : ['58'],
+        'Right-VentralDC' : ['60']
+        }
     return {
         label: create_aseg_surface(subject_dir, destination, indices)
-        for label, indices in configuration.ASEG_LABELS.items()
+        for label, indices in aseg_labels.items()
     }
 
 
 def create_cortical_surfaces(
     subject_dir: Path, destination: Path
 ) -> Dict[str, Path]:
+    cortical_labels = {
+    'lh-white-2d' : 'lh.white',
+    'rh-white-2d': 'rh.white',
+    'lh-pial-2d' : 'lh.pial',
+    'rh-pial-2d': 'rh.pial',
+    }
     return {
         label: surf_to_vtk(
             subject_dir / "surf" / name,
             destination / "surfaces" / f"{name}.vtk",
         )
-        for label, name in configuration.CORTICAL_LABELS.items()
+        for label, name in cortical_labels.items()
     }
 
 

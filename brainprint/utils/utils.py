@@ -10,7 +10,7 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 
-from brainprint import configuration, messages
+from brainprint import messages
 
 
 def validate_environment() -> None:
@@ -30,7 +30,7 @@ def test_freesurfer() -> None:
     RuntimeError
         Failed to execute test FreeSurfer command
     """
-    command = configuration.COMMAND_TEMPLATES["test"]
+    command = "mri_binarize -version"
     try:
         run_shell_command(command)
     except FileNotFoundError:
@@ -93,7 +93,7 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
 
 def resolve_destination(subject_dir: Path, destination: Path = None) -> Path:
     if destination is None:
-        return Path(subject_dir) / configuration.BRAINPRINT_RESULTS_DIR
+        return Path(subject_dir) / "brainprint"
     return destination
 
 
@@ -121,10 +121,10 @@ def create_output_paths(
     """
     destination = resolve_destination(subject_dir, destination)
     destination.mkdir(parents=True, exist_ok=True)
-    (destination / configuration.SURFACES_DIR).mkdir(
+    (destination / "surfaces").mkdir(
         parents=True, exist_ok=True
     )
-    (destination / configuration.TEMP_DIR).mkdir(parents=True, exist_ok=True)
+    (destination / "temp").mkdir(parents=True, exist_ok=True)
     return destination
 
 
@@ -156,10 +156,10 @@ def export_brainprint_results(
     files["eigenvalues"] = destination
 
     if eigenvectors is not None:
-        eigenvectors_dir = destination.parent / configuration.EIGENVECTORS_DIR
+        eigenvectors_dir = destination.parent / "eigenvectors"
         eigenvectors_dir.mkdir(parents=True, exist_ok=True)
         for key, value in eigenvectors.items():
-            suffix = configuration.EIGENVECTORS_SUFFIX_TEMPLATE.format(key=key)
+            suffix = ".evecs-{key}.csv".format(key=key)
             name = destination.with_suffix(suffix).name
             vectors_destination = eigenvectors_dir / name
             pd.DataFrame(value).to_csv(
