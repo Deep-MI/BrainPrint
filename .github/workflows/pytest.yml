@@ -40,7 +40,7 @@ jobs:
       - name: Display system information
         run: brainprint-sys_info --developer
       - name: Run pytest
-        run: pytest brainprint --cov=lapy --cov-report=xml --cov-config=pyproject.toml
+        run: pytest brainprint --cov=brainprint --cov-report=xml --cov-config=pyproject.toml
       - name: Upload to codecov
         if: ${{ matrix.os == 'ubuntu' && matrix.python-version == 3.9 }}
         uses: codecov/codecov-action@v3
