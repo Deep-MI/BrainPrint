@@ -2,7 +2,7 @@ import argparse
 import pathlib
 import sys
 
-import help_text
+from . import help_text
 
 
 def parse_options():
