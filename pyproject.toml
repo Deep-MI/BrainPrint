@@ -75,6 +75,7 @@ source = 'https://github.com/Deep-MI/BrainPrint-python'
 tracker = 'https://github.com/Deep-MI/BrainPrint-python/issues'
 
 [project.scripts]
+brainprint = 'brainprint.cli:main'
 brainprint-sys_info = 'brainprint.commands.sys_info:run'
 
 [tool.setuptools]
