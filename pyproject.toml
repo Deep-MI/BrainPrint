@@ -38,7 +38,7 @@ classifiers = [
 dependencies = [
     'numpy',
     'scipy',
-    'lapy @ git+https://github.com/Deep-MI/LaPy.git#egg=lapy'
+    'lapy'
 ]
 
 [project.optional-dependencies]
