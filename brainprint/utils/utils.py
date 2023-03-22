@@ -88,7 +88,7 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
     FileNotFoundError
         Subject results directory does not exist
     """
-    subject_dir = subjects_dir / subject_id
+    subject_dir = Path(subjects_dir) / subject_id
     if not subject_dir.is_dir():
         message = "FreeSurfer results directory at {path} does not exist!".format(
             path=subject_dir
