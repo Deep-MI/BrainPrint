@@ -12,7 +12,7 @@ label files).
 Use the following code to download, build and install a package from this
 repository into your local Python package directory:
 
-`pip3 install --user git+https://github.com/Deep-MI/BrainPrint-python.git`
+`pip3 install --user git+https://github.com/Deep-MI/BrainPrint.git`
 
 This will also install the necessary dependencies, e.g. the [LaPy](https://github.com/Deep-MI/LaPy)
 package. You may need to add your local Python package directory to your $PATH
