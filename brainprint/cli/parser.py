@@ -94,6 +94,14 @@ def parse_options():
         choices=["euc"],
         required=False,
     )
+    optional.add_argument(
+        "--cholmod",
+        dest="cholmod",
+        help=help_text.CHOLMOD,
+        default=False,
+        action="store_true",
+        required=False,
+    )
 
     # Output options
     output = parser.add_argument_group(title="Output parameters")

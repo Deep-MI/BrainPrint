@@ -20,6 +20,9 @@ ASYM: str = "Switch on additional asymmetry calculation (default: off)"
 ASYM_DISTANCE: str = (
     "Distance measurement to use for asymmetry calculation (default: euc)"
 )
+CHOLMOD: str = (
+    "Use cholesky decomposition (faster) instead of LU decompostion (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
+)
 KEEP_TEMP: str = (
     "Whether to keep the temporary files directory or not, by default False"
 )
@@ -101,8 +104,8 @@ COMMAND-LINE USAGE
 
 python3 brainprint.py --sdir <directory> --sid <SubjectID>  [--num <num>]
                     [--evec] [--skipcortex] [--norm <surface|volume|geometry|none> ]
-                    [--reweight] [--asymmetry] [--outdir <directory>] [--help]
-                    [--more-help]
+                    [--reweight] [--asymmetry] [--cholmod] [--outdir <directory>] 
+                    [--help] [--more-help]
 
 Options:
     --help           Show this help message and exit
@@ -120,11 +123,14 @@ Processing directives:
     --evec           Switch on eigenvector computation (default: off)
     --skipcortex     Skip cortical surfaces (default: off)
     --norm <surface|volume|geometry|none>
-                    Switch on eigenvalue normalization; will be either surface,
-                    volume, or determined by the geometry of the object. Use
-                    "none" or leave out entirely to skip normalization.
+                     Switch on eigenvalue normalization; will be either surface,
+                     volume, or determined by the geometry of the object. Use
+                     "none" or leave out entirely to skip normalization.
     --reweight       Switch on eigenvalue reweighting (default: off)
     --asymmetry      Perform left-right asymmetry calculation (default: off)
+    --cholmod        Use cholesky decomposition (faster) instead of LU 
+                     decompostion (slower). May require manual install of the
+                     scikit-sparse library. Default is LU decomposition.
 
 Output parameters:
     --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)
