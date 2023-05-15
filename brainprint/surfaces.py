@@ -178,5 +178,5 @@ def surf_to_vtk(source: Path, destination: Path) -> Path:
         Resulting *.vtk* file
     """
     surface = read_geometry(source)
-    TriaIO.export_vtk(TriaMesh(v=surface[0], t=surface[1]), destination)
+    TriaIO.export_vtk(TriaMesh.TriaMesh(v=surface[0], t=surface[1]), destination)
     return destination
