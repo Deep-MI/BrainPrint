@@ -50,6 +50,9 @@ Processing directives:
                    "none" or leave out entirely to skip normalization.
   --reweight       Switch on eigenvalue reweighting (default: off)
   --asymmetry      Perform left-right asymmetry calculation (default: off)
+  --cholmod        Switch on use of (faster) Cholesky decomposition instead
+                   of (slower) LU decomposition (default: off). May require 
+                   manual install of scikit-sparse package. 
 
 Output parameters:
   --outdir=OUTDIR  Output directory (default: <sdir>/<sid>/brainprint)

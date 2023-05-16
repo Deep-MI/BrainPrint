@@ -68,6 +68,7 @@ def compute_surface_brainprint(
     num: int = 50,
     norm: str = "none",
     reweight: bool = False,
+    use_cholmod: bool = False,
 ) -> Tuple[np.ndarray, Union[np.ndarray, None]]:
     """
     Returns the BrainPrint eigenvalues and eigenvectors for the given surface.
@@ -84,6 +85,11 @@ def compute_surface_brainprint(
         Eigenvalues normalization method, by default "none"
     reweight : bool, optional
         Whether to reweight eigenvalues or not, by default False
+    use_cholmod : bool, optional
+        If True, attempts to use the Cholesky decomposition for improved execution
+        speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
+        will be thrown.
+        If False, will use slower LU decomposition. This is the default.
 
     Returns
     -------
@@ -92,7 +98,7 @@ def compute_surface_brainprint(
     """
     triangular_mesh = read_vtk(path)
     shape_dna = ShapeDNA.compute_shapedna(
-        triangular_mesh, k=num, lump=False, aniso=None, aniso_smooth=10
+        triangular_mesh, k=num, lump=False, aniso=None, aniso_smooth=10, use_cholmod=use_cholmod
     )
 
     eigenvectors = None
@@ -119,6 +125,7 @@ def compute_brainprint(
     num: int = 50,
     norm: str = "none",
     reweight: bool = False,
+    use_cholmod: bool = False,
 ) -> Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None]]:
     """
     Computes ShapeDNA descriptors over several surfaces.
@@ -135,6 +142,10 @@ def compute_brainprint(
         Eigenvalues normalization method, by default "none"
     reweight : bool, optional
         Whether to reweight eigenvalues or not, by default False
+    use_cholmod : bool, optional
+        If True, attempts to use the Cholesky decomposition for improved execution
+        speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
+        will be thrown. If False, will use slower LU decomposition. This is the default.
 
     Returns
     -------
@@ -152,6 +163,7 @@ def compute_brainprint(
                 norm=norm,
                 reweight=reweight,
                 return_eigenvectors=keep_eigenvectors,
+                use_cholmod=use_cholmod,
             )
         except Exception as e:
             message = "BrainPrint analysis raised the following exception:\n{exception}".format(
@@ -181,6 +193,7 @@ def run_brainprint(
     asymmetry: bool = False,
     asymmetry_distance: str = "euc",
     keep_temp: bool = False,
+    use_cholmod: bool = False,
 ):
     """
     Runs the BrainPrint analysis.
@@ -213,6 +226,10 @@ def run_brainprint(
         "euc"
     keep_temp : bool, optional
         Whether to keep the temporary files directory or not, by default False
+    use_cholmod : bool, optional
+        If True, attempts to use the Cholesky decomposition for improved execution
+        speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
+        will be thrown. If False, will use slower LU decomposition. This is the default.
 
     Returns
     -------
@@ -235,6 +252,7 @@ def run_brainprint(
         norm=norm,
         reweight=reweight,
         keep_eigenvectors=keep_eigenvectors,
+        use_cholmod=use_cholmod,
     )
 
     distances = None
@@ -273,6 +291,7 @@ class Brainprint:
         keep_temp: bool = False,
         environment_validation: bool = True,
         freesurfer_validation: bool = True,
+        use_cholmod: bool = False,
     ) -> None:
         """
         Initializes a new :class:`Brainprint` instance.
@@ -300,6 +319,10 @@ class Brainprint:
         keep_temp : bool, optional
             Whether to keep the temporary files directory or not, by default
             False
+        use_cholmod : bool, optional
+            If True, attempts to use the Cholesky decomposition for improved execution
+            speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
+            will be thrown. If False, will use slower LU decomposition. This is the default.
         """
         self.subjects_dir = subjects_dir
         self.num = num
@@ -310,6 +333,7 @@ class Brainprint:
         self.asymmetry = asymmetry
         self.asymmetry_distance = asymmetry_distance
         self.keep_temp = keep_temp
+        self.use_cholmod = use_cholmod
 
         self._subject_id = None
         self._destination = None
@@ -339,6 +363,7 @@ class Brainprint:
             norm=self.norm,
             reweight=self.reweight,
             keep_eigenvectors=self.keep_eigenvectors,
+            use_cholmod=self.use_cholmod,
         )
 
         if self.asymmetry:

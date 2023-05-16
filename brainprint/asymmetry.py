@@ -83,6 +83,6 @@ def compute_asymmetry(
             distances[key] = ShapeDNA.compute_distance(
                 left_eigenvalues,
                 right_eigenvalues,
-                distance=distance,
+                dist=distance,
             )
     return distances
