@@ -4,17 +4,16 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'brainprint'
-version = '0.3.0.dev'
-description = 'A light-weight package derived from the BrainPrint scripts'
+version = '0.3.0'
+description = 'A package to compute BrainPrint (shape descriptors) from FastSurfer/FreeSurfer MRI segmentations'
 readme = 'README.md'
 license = {file = 'LICENSE'}
 requires-python = '>=3.4'
 authors = [
-    {name = 'Kersten Diers', email = 'kersten.diers@dzne.de'},
     {name = 'Martin Reuter', email = 'martin.reuter@dzne.de'},
+    {name = 'Kersten Diers', email = 'kersten.diers@dzne.de'},
 ]
 maintainers = [
-    {name = 'Kersten Diers', email = 'kersten.diers@dzne.de'},
     {name = 'Martin Reuter', email = 'martin.reuter@dzne.de'},
 ]
 keywords = [
@@ -71,10 +70,10 @@ full = [
 ]
 
 [project.urls]
-homepage = 'https://github.com/Deep-MI/BrainPrint-python'
-documentation = 'https://github.com/Deep-MI/BrainPrint-python'
-source = 'https://github.com/Deep-MI/BrainPrint-python'
-tracker = 'https://github.com/Deep-MI/BrainPrint-python/issues'
+homepage = 'https://github.com/Deep-MI/BrainPrint'
+documentation = 'https://github.com/Deep-MI/BrainPrint'
+source = 'https://github.com/Deep-MI/BrainPrint'
+tracker = 'https://github.com/Deep-MI/BrainPrint/issues'
 
 [project.scripts]
 brainprint = 'brainprint.cli:main'
