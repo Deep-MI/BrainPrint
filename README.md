@@ -2,17 +2,19 @@
 
 This is the `brainprint` python package, a derivative of the original
 [BrainPrint-legacy](https://github.com/Deep-MI/BrainPrint-legacy) scripts,
-with the primary goal to provide a Python-only version (except some FreeSurfer dependencies), to integrate the [LaPy](https://github.com/Deep-MI/LaPy) package, and to remove dependencies on third-party software (shapeDNA-* binaries, gmsh, meshfix). As a result, some functionality of the
-original BrainPrint-legacy scripts is no longer maintained (currently no
-support of tetrahedral meshes and no support of cortical parcellations or
-label files).
+with the primary goal to provide a Python-only version, to integrate the
+[LaPy](https://github.com/Deep-MI/LaPy) package, and to remove dependencies
+on third-party software (shapeDNA-* binaries, gmsh, meshfix). As a result,
+some functionality of the original BrainPrint-legacy scripts is no longer
+maintained (currently no support of tetrahedral meshes and no support of
+cortical parcellations or label files).
 
 ## Installation
 
-Use the following code to download, build and install a package from this
-repository into your local Python package directory:
+Use the following code to install the latest release of LaPy into your local
+Python package directory:
 
-`pip3 install --user git+https://github.com/Deep-MI/BrainPrint.git`
+`python3 -m pip install brainprint`
 
 This will also install the necessary dependencies, e.g. the [LaPy](https://github.com/Deep-MI/LaPy)
 package. You may need to add your local Python package directory to your $PATH
