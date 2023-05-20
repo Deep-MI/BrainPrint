@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/brainprint.svg)](https://pypi.org/project/brainprint/)
 # BrainPrint
 
 This is the `brainprint` python package, a derivative of the original
