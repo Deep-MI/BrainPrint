@@ -62,7 +62,7 @@ def run_shell_command(command: str, verbose: bool = False):
     except Exception as e:
         message = "Failed to execute the following command:\n{command}\n"\
             "The following exception was raised:\n{exception}".format(
-            command=command, exception=e)
+                command=command, exception=e)
         print(message)
         raise
     if return_code != 0:

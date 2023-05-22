@@ -69,15 +69,13 @@ def compute_asymmetry(
     for left_label, right_label in structures:
         left_eigenvalues, right_eigenvalues = (
             eigenvalues[left_label][2:],
-            eigenvalues[right_label][2:],
-        )
+            eigenvalues[right_label][2:])
         has_nan = np.isnan(left_eigenvalues).any() or np.isnan(right_eigenvalues).any()
         key = f"{left_label}_{right_label}"
         if has_nan:
             message = "NaNs found for {left_label} or {right_label}, "\
                 "skipping asymmetry computation...".format(
-                left_label=left_label, right_label=right_label
-            )
+                    left_label=left_label, right_label=right_label)
             print(message)
             distances[key] = np.nan
         else:
