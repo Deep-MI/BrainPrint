@@ -20,7 +20,7 @@ ASYM: str = "Switch on additional asymmetry calculation (default: off)"
 ASYM_DISTANCE: str = (
     "Distance measurement to use for asymmetry calculation (default: euc)"
 )
-CHOLMOD: str = "Use cholesky decomposition (faster) instead of LU decompostion (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
+CHOLMOD: str = "Use cholesky decomposition (faster) instead of LU decomposition (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
 KEEP_TEMP: str = (
     "Whether to keep the temporary files directory or not, by default False"
 )
@@ -127,7 +127,7 @@ Processing directives:
     --reweight       Switch on eigenvalue reweighting (default: off)
     --asymmetry      Perform left-right asymmetry calculation (default: off)
     --cholmod        Use cholesky decomposition (faster) instead of LU 
-                     decompostion (slower). May require manual install of the
+                     decomposition (slower). May require manual install of the
                      scikit-sparse library. Default is LU decomposition.
 
 Output parameters:
@@ -161,7 +161,7 @@ REFERENCES
 
 If used for a publication, please cite both [1] for the shape
 descriptor method and [2] for the application to brain MRI and
-definiton of the BrainPrint.
+definition of the BrainPrint.
 
 [1] M. Reuter, F.-E. Wolter and N. Peinecke.
 Laplace-Beltrami spectra as "Shape-DNA" of surfaces and solids.

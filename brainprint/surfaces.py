@@ -1,5 +1,5 @@
 """
-Utilty module holding surface generation related functions.
+Utility module holding surface generation related functions.
 """
 import uuid
 from pathlib import Path
