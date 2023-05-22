@@ -18,7 +18,8 @@ def validate_environment() -> None:
     if not os.getenv("FREESURFER_HOME"):
         raise RuntimeError(
             "FreeSurfer root directory must be set as the $FREESURFER_HOME "
-            "environment variable!")
+            "environment variable!"
+        )
 
 
 def test_freesurfer() -> None:
@@ -60,14 +61,19 @@ def run_shell_command(command: str, verbose: bool = False):
     try:
         return_code = subprocess.call(args)
     except Exception as e:
-        message = "Failed to execute the following command:\n{command}\n"\
+        message = (
+            "Failed to execute the following command:\n{command}\n"
             "The following exception was raised:\n{exception}".format(
-                command=command, exception=e)
+                command=command, exception=e
+            )
+        )
         print(message)
         raise
     if return_code != 0:
-        message = "Execution of the following command:\n{command}\n"\
+        message = (
+            "Execution of the following command:\n{command}\n"
             "Returned non-zero exit code!".format(command=command)
+        )
         raise RuntimeError(message)
 
 
