@@ -75,7 +75,7 @@ def compute_asymmetry(
         key = f"{left_label}_{right_label}"
         if has_nan:
             message = "NaNs found for {left_label} or {right_label}, "\
-	        "skipping asymmetry computation...".format(
+                "skipping asymmetry computation...".format(
                 left_label=left_label, right_label=right_label
             )
             print(message)

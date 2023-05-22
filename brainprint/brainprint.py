@@ -172,7 +172,7 @@ def compute_brainprint(
             )
         except Exception as e:
             message = "BrainPrint analysis raised the following exception:\n"\
-	        "{exception}".format(exception=e)
+                "{exception}".format(exception=e)
             warnings.warn(message)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
@@ -325,8 +325,8 @@ class Brainprint:
         use_cholmod : bool, optional
             If True, attempts to use the Cholesky decomposition for improved execution
             speed. Requires the ``scikit-sparse`` library. If it can not be found, an
-	    error will be thrown. If False, will use slower LU decomposition. This is
-	    the default.
+            error will be thrown. If False, will use slower LU decomposition. This is
+            the default.
         """
         self.subjects_dir = subjects_dir
         self.num = num
