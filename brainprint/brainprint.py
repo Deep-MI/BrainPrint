@@ -98,7 +98,12 @@ def compute_surface_brainprint(
     """
     triangular_mesh = read_vtk(path)
     shape_dna = ShapeDNA.compute_shapedna(
-        triangular_mesh, k=num, lump=False, aniso=None, aniso_smooth=10, use_cholmod=use_cholmod
+        triangular_mesh,
+        k=num,
+        lump=False,
+        aniso=None,
+        aniso_smooth=10,
+        use_cholmod=use_cholmod,
     )
 
     eigenvectors = None
