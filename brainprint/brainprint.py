@@ -171,8 +171,10 @@ def compute_brainprint(
                 use_cholmod=use_cholmod,
             )
         except Exception as e:
-            message = "BrainPrint analysis raised the following exception:\n"\
+            message = (
+                "BrainPrint analysis raised the following exception:\n"
                 "{exception}".format(exception=e)
+            )
             warnings.warn(message)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
