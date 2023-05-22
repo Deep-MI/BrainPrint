@@ -162,7 +162,10 @@ def compute_brainprint(
     eigenvectors = dict() if keep_eigenvectors else None
     for surface_label, surface_path in surfaces.items():
         try:
-            (surface_eigenvalues, surface_eigenvectors,) = compute_surface_brainprint(
+            (
+                surface_eigenvalues,
+                surface_eigenvectors,
+            ) = compute_surface_brainprint(
                 surface_path,
                 num=num,
                 norm=norm,

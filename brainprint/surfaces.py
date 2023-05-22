@@ -68,7 +68,6 @@ def create_aseg_surface(
 
 
 def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path]:
-
     # Define aseg labels
 
     # combined and individual aseg labels:
