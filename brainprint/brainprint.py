@@ -162,7 +162,10 @@ def compute_brainprint(
     eigenvectors = dict() if keep_eigenvectors else None
     for surface_label, surface_path in surfaces.items():
         try:
-            (surface_eigenvalues, surface_eigenvectors,) = compute_surface_brainprint(
+            (
+                surface_eigenvalues,
+                surface_eigenvectors,
+            ) = compute_surface_brainprint(
                 surface_path,
                 num=num,
                 norm=norm,
@@ -171,8 +174,9 @@ def compute_brainprint(
                 use_cholmod=use_cholmod,
             )
         except Exception as e:
-            message = "BrainPrint analysis raised the following exception:\n{exception}".format(
-                exception=e
+            message = (
+                "BrainPrint analysis raised the following exception:\n"
+                "{exception}".format(exception=e)
             )
             warnings.warn(message)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
@@ -322,12 +326,12 @@ class Brainprint:
             Distance measurement to use if *asymmetry* is set to True, by
             default "euc"
         keep_temp : bool, optional
-            Whether to keep the temporary files directory or not, by default
-            False
+            Whether to keep the temporary files directory or not, by default False
         use_cholmod : bool, optional
             If True, attempts to use the Cholesky decomposition for improved execution
-            speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
-            will be thrown. If False, will use slower LU decomposition. This is the default.
+            speed. Requires the ``scikit-sparse`` library. If it can not be found, an
+            error will be thrown. If False, will use slower LU decomposition. This is
+            the default.
         """
         self.subjects_dir = subjects_dir
         self.num = num

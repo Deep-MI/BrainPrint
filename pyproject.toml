@@ -38,7 +38,8 @@ dependencies = [
     'numpy',
     'scipy',
     'pandas',
-    'lapy'
+    'lapy',
+    'psutil'
 ]
 
 [project.optional-dependencies]
