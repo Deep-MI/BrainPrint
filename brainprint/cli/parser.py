@@ -96,7 +96,7 @@ def parse_options():
     )
     optional.add_argument(
         "--cholmod",
-        dest="cholmod",
+        dest="use_cholmod",
         help=help_text.CHOLMOD,
         default=False,
         action="store_true",

@@ -147,14 +147,6 @@ brainprint.run_brainprint(subjects_dir="/my/subjects/directory", subject_id="my_
 Additional options are num=<int>, evec=<bool>, skipcortex=<bool>,
 norm=<"surface"|"volume"|"geometry"|"none">, reweight=<bool>, and outdir=<string>.
 
-=============
-REQUIREMENTS
-============
-
-The script requires the lapy package, which can be installed from
-https://github.com/Deep-MI/LaPy using
-pip3 install --user git+https://github.com/Deep-MI/LaPy.git.
-
 ==========
 REFERENCES
 ==========
