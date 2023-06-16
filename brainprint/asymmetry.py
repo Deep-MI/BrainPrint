@@ -4,7 +4,7 @@ Contains asymmetry estimation functionality.
 from typing import Dict
 
 import numpy as np
-from lapy import ShapeDNA
+from lapy import shapedna
 
 
 def compute_asymmetry(
@@ -83,7 +83,7 @@ def compute_asymmetry(
             print(message)
             distances[key] = np.nan
         else:
-            distances[key] = ShapeDNA.compute_distance(
+            distances[key] = shapedna.compute_distance(
                 left_eigenvalues,
                 right_eigenvalues,
                 dist=distance,
