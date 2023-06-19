@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, List
 
 from lapy import TriaMesh
-from lapy._read_geometry import read_geometry
 
 from .utils.utils import run_shell_command
 
@@ -176,6 +175,5 @@ def surf_to_vtk(source: Path, destination: Path) -> Path:
     Path
         Resulting *.vtk* file
     """
-    surface = read_geometry(source)
-    TriaMesh(v=surface[0], t=surface[1]).write_vtk(destination)
+    TriaMesh.read_fssurf(source).write_vtk(destination)
     return destination
