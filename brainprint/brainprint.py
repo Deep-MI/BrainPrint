@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, Tuple, Union
 
 import numpy as np
-from lapy import shapedna, TriaMesh
+from lapy import TriaMesh, shapedna
 
 from . import __version__
 from .asymmetry import compute_asymmetry
