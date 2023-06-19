@@ -1,13 +1,14 @@
 """
 Definition of the brainprint analysis execution functions.
 """
+
 import shutil
 import warnings
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
 import numpy as np
-from lapy import ShapeDNA, TriaMesh
+from lapy import TriaMesh, shapedna
 
 from . import __version__
 from .asymmetry import compute_asymmetry
@@ -52,13 +53,13 @@ def apply_eigenvalues_options(
     if not triangular_mesh.is_oriented():
         triangular_mesh.orient_()
     if norm != "none":
-        eigenvalues = ShapeDNA.normalize_ev(
+        eigenvalues = shapedna.normalize_ev(
             geom=triangular_mesh,
             evals=eigenvalues,
             method=norm,
         )
     if reweight:
-        eigenvalues = ShapeDNA.reweight_ev(eigenvalues)
+        eigenvalues = shapedna.reweight_ev(eigenvalues)
     return eigenvalues
 
 
@@ -97,7 +98,7 @@ def compute_surface_brainprint(
         Eigenvalues, eigenvectors (if returned)
     """
     triangular_mesh = read_vtk(path)
-    shape_dna = ShapeDNA.compute_shapedna(
+    shape_dna = shapedna.compute_shapedna(
         triangular_mesh,
         k=num,
         lump=False,

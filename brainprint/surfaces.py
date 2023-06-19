@@ -5,8 +5,7 @@ import uuid
 from pathlib import Path
 from typing import Dict, List
 
-from lapy import TriaIO, TriaMesh
-from lapy.read_geometry import read_geometry
+from lapy import TriaMesh
 
 from .utils.utils import run_shell_command
 
@@ -145,7 +144,7 @@ def create_surfaces(
 
 def read_vtk(path: Path):
     try:
-        triangular_mesh = TriaIO.import_vtk(path)
+        triangular_mesh = TriaMesh.read_vtk(path)
     except Exception:
         message = "Failed to read VTK from the following path: {path}!".format(
             path=path
@@ -176,6 +175,5 @@ def surf_to_vtk(source: Path, destination: Path) -> Path:
     Path
         Resulting *.vtk* file
     """
-    surface = read_geometry(source)
-    TriaIO.export_vtk(TriaMesh(v=surface[0], t=surface[1]), destination)
+    TriaMesh.read_fssurf(source).write_vtk(destination)
     return destination
