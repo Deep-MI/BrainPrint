@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'brainprint'
-version = '0.4.0-dev'
+version = '0.4.0'
 description = 'A package to compute BrainPrint (shape descriptors) from FastSurfer/FreeSurfer MRI segmentations'
 readme = 'README.md'
 license = {file = 'LICENSE'}
