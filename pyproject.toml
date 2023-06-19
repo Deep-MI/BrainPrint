@@ -38,7 +38,7 @@ dependencies = [
     'numpy',
     'scipy',
     'pandas',
-    'lapy',
+    'lapy >= 1.0.0, <2',
     'psutil'
 ]
 
