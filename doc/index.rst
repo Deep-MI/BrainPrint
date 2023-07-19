@@ -1,5 +1,3 @@
-
-
 .. include:: ./links.inc
 
 
@@ -19,11 +17,6 @@ As a result, some functionality of the original BrainPrint-legacy scripts is no 
 (currently no support of tetrahedral meshes and no support of cortical parcellations or label files).
 
 The github project directory is available on `BrainPrint GitHub repository <project github_>`_.
-
-.. toctree::
-   :maxdepth: 2
-   
-   api/index
 
 
 Install
@@ -46,9 +39,11 @@ License
 
 A full copy of the license can be found on `GitHub <project license_>`_.
 
-.. Indices and tables
-.. ==================
+`BrainPrint <project brainprint_>`_ is licensed under the `MIT license`_.
+A full copy of the license can be found `on GitHub <project license_>`_.
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+
+.. toctree::
+   :hidden:
+
+   api/index

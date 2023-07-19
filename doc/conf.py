@@ -3,32 +3,28 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import inspect
-from datetime import date
-
-
-import brainprint
-
-from sphinx_gallery.sorting import FileNameSortKey
-
-
-# Setting absolute path to the previous directory 
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath(".."))
-
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'BrainPrint'
-author = 'Martin Reuter'
+
+import inspect
+from datetime import date
+from importlib import import_module
+from typing import Dict, Optional
+
+from sphinx_gallery.sorting import FileNameSortKey
+
+import brainprint
+
+project = "Brainprint"
+author = "Martin Reuter"
 copyright = f"{date.today().year}, {author}"
 release = brainprint.__version__
 package = brainprint.__name__
 gh_url = "https://github.com/Deep-MI/BrainPrint"
 
+# -- general configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = "5.0"
@@ -38,27 +34,31 @@ needs_sphinx = "5.0"
 root_doc = "index"
 
 
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-extensions = ["sphinx.ext.autosummary",
-              "sphinx.ext.autodoc",
+extensions = ["sphinx.ext.autodoc",
               "sphinx.ext.autosectionlabel",
-              "sphinx_tabs.tabs",
+              "sphinx.ext.autosummary",
               "sphinx.ext.intersphinx",
+              "sphinx.ext.linkcode",
+              "sphinxcontrib.napoleon",
               "sphinxcontrib.bibtex",
               "sphinx_copybutton",
-              "sphinx_issues",
-              "sphinx.ext.todo",
-              "sphinx.ext.viewcode"
-              ]
-# "sphinx_gallery.gen_gallery",
+              "sphinx_design",
+              "sphinx_gallery.gen_gallery",
+              "IPython.sphinxext.ipython_console_highlighting",
+              "numpydoc",
+            #  "sphinx.ext.todo",
+            #   "sphinx.ext.viewcode",
+    ]
+
+# numpydoc_class_members_toctree = True
+
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**.ipynb_checkpoints", "tutorials/examples/README.rst"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints", "tutorials/examples/README.rst"]
 
 # Sphinx will warn about all references where the target cannot be found.
-nitpicky = True
+#nitpicky = True
+nitpicky = False
 nitpick_ignore = []
 
 # A list of ignored prefixes for module index sorting.
@@ -69,13 +69,11 @@ modindex_common_prefix = [f"{package}."]
 # make `filter` a cross-reference to the Python function “filter”.
 default_role = "py:obj"
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'furo'
 html_static_path = ['_static']
-html_static_path = ["_static"]
 html_title = project
 html_show_sphinx = False
 
@@ -97,6 +95,7 @@ html_theme_options = {
     ],
 }
 
+
 # -- autosummary -------------------------------------------------------------
 autosummary_generate = True
 
@@ -105,6 +104,8 @@ autodoc_typehints = "none"
 autodoc_member_order = "groupwise"
 autodoc_warningiserror = True
 autoclass_content = "class"
+
+
 
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = {
@@ -116,64 +117,119 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable/", None),
 }
+
 intersphinx_timeout = 5
 
 
+# -- sphinx-issues -----------------------------------------------------------
+issues_github_path = gh_url.split("https://github.com/")[-1]
+
+# -- autosectionlabels -------------------------------------------------------
+autosectionlabel_prefix_document = True
+
 # -- sphinxcontrib-bibtex ----------------------------------------------------
 bibtex_bibfiles = ["./references.bib"]
+
 
 # -- sphinx.ext.linkcode -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/linkcode.html
 
 
-def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
-    """Determine the URL corresponding to a Python object.
 
-    Parameters
-    ----------
-    domain : str
-        One of 'py', 'c', 'cpp', 'javascript'.
-    info : dict
-        With keys "module" and "fullname".
+# def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
+#     """Determine the URL corresponding to a Python object.
 
-    Returns
-    -------
-    url : str | None
-        The code URL. If None, no link is added.
-    """
-    if domain != "py":
-        return None  # only document python objects
+#     Parameters
+#     ----------
+#     domain : str
+#         One of 'py', 'c', 'cpp', 'javascript'.
+#     info : dict
+#         With keys "module" and "fullname".
 
-    # retrieve pyobject and file
-    try:
-        module = import_module(info["module"])
-        pyobject = module
-        for elt in info["fullname"].split("."):
-            pyobject = getattr(pyobject, elt)
-        fname = inspect.getsourcefile(pyobject).replace("\\", "/")
-    except Exception:
-        # Either the object could not be loaded or the file was not found.
-        # For instance, properties will raise.
+#     Returns
+#     -------
+#     url : str | None
+#         The code URL. If None, no link is added.
+#     """
+#     if domain != "py":
+#         return None  # only document python objects
+
+#     # retrieve pyobject and file
+#     try:
+#         module = import_module(info["module"])
+#         pyobject = module
+#         for elt in info["fullname"].split("."):
+#             pyobject = getattr(pyobject, elt)
+#         fname = inspect.getsourcefile(pyobject).replace("\\", "/")
+#     except Exception:
+#         # Either the object could not be loaded or the file was not found.
+#         # For instance, properties will raise.
+#         return None
+
+#     # retrieve start/stop lines
+#     source, start_line = inspect.getsourcelines(pyobject)
+#     lines = "L%d-L%d" % (start_line, start_line + len(source) - 1)
+
+#     # create URL
+#     if "dev" in release:
+#         branch = "main"
+#     else:
+#         return None  # alternatively, link to a maint/version branch
+#     fname = fname.rsplit(f"/{package}/")[1]
+#     url = f"{gh_url}/blob/{branch}/{package}/{fname}#{lines}"
+#     return url
+
+#  using this method to link github source code as the above method was working with
+#  brain print project
+from urllib.parse import quote
+
+
+def linkcode_resolve(domain, info):
+    if domain != 'py':
         return None
+    if not info['module']:
+        return None
+    
+    # Replace periods with slashes in the module path
+    filename = quote(info['module'].replace('.', '/'))
+    if not filename.startswith("tests"):
+        # Add the 'src/' prefix to the filename
+        filename = "/" + filename
 
-    # retrieve start/stop lines
-    source, start_line = inspect.getsourcelines(pyobject)
-    lines = "L%d-L%d" % (start_line, start_line + len(source) - 1)
-
-    # create URL
-    if "dev" in release:
-        branch = "main"
+    if "fullname" in info:
+        anchor = info["fullname"]
+        anchor = "#:~:text=" + quote(anchor.split(".")[-1])
     else:
-        return None  # alternatively, link to a maint/version branch
-    fname = fname.rsplit(f"/{package}/")[1]
-    url = f"{gh_url}/blob/{branch}/{package}/{fname}#{lines}"
-    return url
+        anchor = ""
+
+    # Replace <gh_url> with the actual GitHub repository URL
+    gh_url = "https://github.com/Deep-MI/BrainPrint"  # Replace with your repository URL
+    result = f"{gh_url}/blob/master/{filename}.py{anchor}"
+    return result
+
+
+
+# -- sphinx-gallery ----------------------------------------------------------
+sphinx_gallery_conf = {
+    "backreferences_dir": "/home/ashrafo/BrainPrint_local_automethod/doc/generated/backreferences",
+    "doc_module": (f"{package}",),
+    "examples_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
+    "exclude_implicit_doc": {},  # set
+    "filename_pattern": r"\d{2}_",
+    "gallery_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
+    "line_numbers": False,
+    "plot_gallery": True,
+    "reference_url": {f"{package}": None},
+    "remove_config_comments": True,
+    "show_memory": True,
+    # "within_subsection_order": FileNameSortKey,
+}
 
 # # -- sphinx-gallery ----------------------------------------------------------
 # sphinx_gallery_conf = {
 #     "backreferences_dir": "generated/backreferences",
 #     "doc_module": (f"{package}",),
-#     "examples_dirs": ["/home/ashrafo/BrainPrint_local/brainprint"],
+#     "examples_dirs": ["../examples"],
 #     "exclude_implicit_doc": {},  # set
 #     "filename_pattern": r"\d{2}_",
 #     "gallery_dirs": ["generated/examples"],
@@ -186,5 +242,30 @@ def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
 # }
 
 
-    # "examples_dirs": ["../examples"],
 
+
+import os
+
+# -- make sure pandoc gets installed -----------------------------------------
+from inspect import getsourcefile
+
+# Get path to directory containing this file, conf.py.
+DOCS_DIRECTORY = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
+
+def ensure_pandoc_installed(_):
+    import pypandoc
+
+    # Download pandoc if necessary. If pandoc is already installed and on
+    # the PATH, the installed version will be used. Otherwise, we will
+    # download a copy of pandoc into docs/bin/ and add that to our PATH.
+    pandoc_dir = os.path.join(DOCS_DIRECTORY, "bin")
+    # Add dir containing pandoc binary to the PATH environment variable
+    if pandoc_dir not in os.environ["PATH"].split(os.pathsep):
+        os.environ["PATH"] += os.pathsep + pandoc_dir
+    pypandoc.ensure_pandoc_installed(
+        targetfolder=pandoc_dir,
+        delete_installer=True,
+    )
+
+def setup(app):
+    app.connect("builder-inited", ensure_pandoc_installed)
