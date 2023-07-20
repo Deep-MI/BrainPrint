@@ -209,39 +209,42 @@ def linkcode_resolve(domain, info):
 
 
 
-# -- sphinx-gallery ----------------------------------------------------------
-sphinx_gallery_conf = {
-    "backreferences_dir": "/home/ashrafo/BrainPrint_local_automethod/doc/generated/backreferences",
-    "doc_module": (f"{package}",),
-    "examples_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
-    "exclude_implicit_doc": {},  # set
-    "filename_pattern": r"\d{2}_",
-    "gallery_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
-    "line_numbers": False,
-    "plot_gallery": True,
-    "reference_url": {f"{package}": None},
-    "remove_config_comments": True,
-    "show_memory": True,
-    # "within_subsection_order": FileNameSortKey,
-}
-
 # # -- sphinx-gallery ----------------------------------------------------------
 # sphinx_gallery_conf = {
-#     "backreferences_dir": "generated/backreferences",
+#     "backreferences_dir": "/home/ashrafo/BrainPrint_local_automethod/doc/generated/backreferences",
 #     "doc_module": (f"{package}",),
-#     "examples_dirs": ["../examples"],
+#     "examples_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
 #     "exclude_implicit_doc": {},  # set
 #     "filename_pattern": r"\d{2}_",
-#     "gallery_dirs": ["generated/examples"],
+#     "gallery_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
 #     "line_numbers": False,
 #     "plot_gallery": True,
 #     "reference_url": {f"{package}": None},
 #     "remove_config_comments": True,
 #     "show_memory": True,
-#     "within_subsection_order": FileNameSortKey,
+#     # "within_subsection_order": FileNameSortKey,
 # }
 
+# -- conf.py ----------------------------------------------------------
 
+
+# In examples_dirs extension I replaced ../examples with generated/examples
+# because it was not able to recognize examples path with knowing the parent folder i.e generated
+# -- sphinx-gallery ----------------------------------------------------------
+sphinx_gallery_conf = {
+    "backreferences_dir": "generated/backreferences",
+    "doc_module": (f"{package}",),
+    "examples_dirs": ["generated/examples"],    
+    "exclude_implicit_doc": {},  # set
+    "filename_pattern": r"\d{2}_",
+    "gallery_dirs": ["generated/examples"],
+    "line_numbers": False,
+    "plot_gallery": True,
+    "reference_url": {f"{package}": None},
+    "remove_config_comments": True,
+    "show_memory": True,
+    "within_subsection_order": FileNameSortKey,
+}
 
 
 import os
