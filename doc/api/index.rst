@@ -1,9 +1,11 @@
 API References
 ==============
 
+.. currentmodule:: brainprint
 
-.. toctree::
-    :maxdepth: 2
+.. autosummary::
+    :toctree: generated/
 
-    brainprint.modules.rst
-    brainprint.classes
+    brainprint
+    asymmetry
+    surfaces
