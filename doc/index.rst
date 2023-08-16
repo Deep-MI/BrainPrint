@@ -1,5 +1,7 @@
 .. include:: ./links.inc
 
+.. .. literalinclude:: ../README.md
+..    :language: markdown
 
 .. image:: https://badge.fury.io/py/brainprint.svg
    :target: https://pypi.org/project/brainprint/

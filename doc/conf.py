@@ -33,22 +33,23 @@ needs_sphinx = "5.0"
 root_doc = "index"
 
 
-extensions = ["sphinx.ext.autodoc",
-              "sphinx.ext.autosectionlabel",
-              "sphinx.ext.autosummary",
-              "sphinx.ext.intersphinx",
-              "sphinx.ext.linkcode",
-            #   "sphinxcontrib.napoleon",
-              "sphinxcontrib.bibtex",
-              "sphinx_copybutton",
-              "sphinx_design",
-            #  "sphinx_gallery.gen_gallery",
-              "IPython.sphinxext.ipython_console_highlighting",
-              "numpydoc",
-            #  "sphinx.ext.todo",
-            #   "sphinx.ext.viewcode",
-            #   "myst_parser",
-    ]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.linkcode",
+    #   "sphinxcontrib.napoleon",
+    "sphinxcontrib.bibtex",
+    "sphinx_copybutton",
+    "sphinx_design",
+    #  "sphinx_gallery.gen_gallery",
+    "IPython.sphinxext.ipython_console_highlighting",
+    "numpydoc",
+    #  "sphinx.ext.todo",
+    #   "sphinx.ext.viewcode",
+    #   "myst_parser",
+]
 
 
 # myst_enable_extensions = [
@@ -71,11 +72,17 @@ extensions = ["sphinx.ext.autodoc",
 # numpydoc_class_members_toctree = True
 
 
-templates_path = ['_templates']
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints", "tutorials/examples/README.rst"]
+templates_path = ["_templates"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "**.ipynb_checkpoints",
+    "tutorials/examples/README.rst",
+]
 
 # Sphinx will warn about all references where the target cannot be found.
-#nitpicky = True
+# nitpicky = True
 nitpicky = False
 nitpick_ignore = []
 
@@ -90,8 +97,8 @@ default_role = "py:obj"
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'furo'
-html_static_path = ['_static']
+html_theme = "furo"
+html_static_path = ["_static"]
 html_title = project
 html_show_sphinx = False
 
@@ -157,13 +164,13 @@ from urllib.parse import quote
 
 
 def linkcode_resolve(domain, info):
-    if domain != 'py':
+    if domain != "py":
         return None
-    if not info['module']:
+    if not info["module"]:
         return None
-    
+
     # Replace periods with slashes in the module path
-    filename = quote(info['module'].replace('.', '/'))
+    filename = quote(info["module"].replace(".", "/"))
     if not filename.startswith("tests"):
         # Add the 'src/' prefix to the filename
         filename = "/" + filename
@@ -206,7 +213,7 @@ def linkcode_resolve(domain, info):
 # sphinx_gallery_conf = {
 #     "backreferences_dir": "generated/backreferences",
 #     "doc_module": (f"{package}",),
-#     "examples_dirs": ["generated/examples"],    
+#     "examples_dirs": ["generated/examples"],
 #     "exclude_implicit_doc": {},  # set
 #     "filename_pattern": r"\d{2}_",
 #     "gallery_dirs": ["generated/examples"],
@@ -227,6 +234,7 @@ from inspect import getsourcefile
 # Get path to directory containing this file, conf.py.
 DOCS_DIRECTORY = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
 
+
 def ensure_pandoc_installed(_):
     import pypandoc
 
@@ -241,6 +249,7 @@ def ensure_pandoc_installed(_):
         targetfolder=pandoc_dir,
         delete_installer=True,
     )
+
 
 def setup(app):
     app.connect("builder-inited", ensure_pandoc_installed)
