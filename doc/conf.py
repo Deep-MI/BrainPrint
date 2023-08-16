@@ -175,7 +175,7 @@ def linkcode_resolve(domain, info):
         anchor = ""
 
     # Replace <gh_url> with the actual GitHub repository URL
-    gh_url = "https://github.com/Deep-MI/BrainPrint"  # Replace with your repository URL
+    # gh_url = "https://github.com/Deep-MI/BrainPrint"  # Replace with your repository URL
     result = f"{gh_url}/blob/master/{filename}.py{anchor}"
     return result
 
