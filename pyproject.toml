@@ -47,6 +47,22 @@ build = [
     'build',
     'twine',
 ]
+doc = [
+    'furo',
+    'matplotlib',
+    'memory-profiler',
+    'numpydoc',
+    'sphinx',
+    'sphinxcontrib-bibtex',
+    'sphinx-copybutton',
+    'sphinx-design',
+    'sphinx-gallery',
+    'sphinx-issues',
+    'pypandoc',
+    'nbsphinx',
+    'IPython', # For syntax highlighting in notebooks
+    'ipykernel',
+]
 style = [
     'bibclean',
     'black',
@@ -97,6 +113,7 @@ extend-exclude = '''
     | .github
     | setup.py
     | data/
+    | doc/
     | examples/
 )
 '''
@@ -109,6 +126,7 @@ py_version = 38
 extend_skip_glob = [
     'setup.py',
     'data/*',
+    'doc/*',
     'examples/*',
 ]
 
