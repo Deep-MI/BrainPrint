@@ -12,8 +12,7 @@ from datetime import date
 from importlib import import_module
 from typing import Dict, Optional
 
-from sphinx_gallery.sorting import FileNameSortKey
-
+# from sphinx_gallery.sorting import FileNameSortKey
 import brainprint
 
 project = "brainprint"
@@ -50,26 +49,6 @@ extensions = [
     #   "sphinx.ext.viewcode",
     #   "myst_parser",
 ]
-
-
-# myst_enable_extensions = [
-#     "amsmath",
-#     "attrs_inline",
-#     "colon_fence",
-#     "deflist",
-#     "dollarmath",
-#     "fieldlist",
-#     "html_admonition",
-#     "html_image",
-#     "linkify",
-#     "replacements",
-#     "smartquotes",
-#     "strikethrough",
-#     "substitution",
-#     "tasklist",
-# ]
-# myst_heading_anchors = 2
-# numpydoc_class_members_toctree = True
 
 
 templates_path = ["_templates"]
@@ -131,7 +110,6 @@ autodoc_warningiserror = True
 autoclass_content = "class"
 
 
-
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/stable", None),
@@ -156,74 +134,76 @@ autosectionlabel_prefix_document = True
 bibtex_bibfiles = ["./references.bib"]
 
 
-
-
 #  using this method to link github source code as the above method was working with
 #  brain print project
-from urllib.parse import quote
+# from urllib.parse import quote
 
 
-def linkcode_resolve(domain, info):
+# def linkcode_resolve(domain, info):
+#     if domain != "py":
+#         return None
+#     if not info["module"]:
+#         return None
+
+#     filename = quote(info["module"].replace(".", "/"))
+#     if not filename.startswith("tests"):
+#         filename = "/" + filename
+
+#     if "fullname" in info:
+#         anchor = info["fullname"]
+#         anchor = "#:~:text=" + quote(anchor.split(".")[-1])
+#     else:
+#         anchor = ""
+
+#     result = f"{gh_url}/blob/master/{filename}.py{anchor}"
+#     return result
+
+# -- sphinx.ext.linkcode -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/linkcode.html
+
+
+def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
+    """Determine the URL corresponding to a Python object.
+
+    Parameters
+    ----------
+    domain : str
+        One of 'py', 'c', 'cpp', 'javascript'.
+    info : dict
+        With keys "module" and "fullname".
+
+    Returns
+    -------
+    url : str | None
+        The code URL. If None, no link is added.
+    """
     if domain != "py":
-        return None
-    if not info["module"]:
+        return None  # only document python objects
+
+    # retrieve pyobject and file
+    try:
+        module = import_module(info["module"])
+        pyobject = module
+        for elt in info["fullname"].split("."):
+            pyobject = getattr(pyobject, elt)
+        fname = inspect.getsourcefile(pyobject).replace("\\", "/")
+    except Exception:
+        # Either the object could not be loaded or the file was not found.
+        # For instance, properties will raise.
         return None
 
-    # Replace periods with slashes in the module path
-    filename = quote(info["module"].replace(".", "/"))
-    if not filename.startswith("tests"):
-        # Add the 'src/' prefix to the filename
-        filename = "/" + filename
+    # retrieve start/stop lines
+    source, start_line = inspect.getsourcelines(pyobject)
+    lines = "L%d-L%d" % (start_line, start_line + len(source) - 1)
 
-    if "fullname" in info:
-        anchor = info["fullname"]
-        anchor = "#:~:text=" + quote(anchor.split(".")[-1])
+    # create URL
+    if "dev" in release:
+        branch = "main"
     else:
-        anchor = ""
-
-    # Replace <gh_url> with the actual GitHub repository URL
-    # gh_url = "https://github.com/Deep-MI/BrainPrint"  # Replace with your repository URL
-    result = f"{gh_url}/blob/master/{filename}.py{anchor}"
-    return result
-
-
-
-# # -- sphinx-gallery ----------------------------------------------------------
-# sphinx_gallery_conf = {
-#     "backreferences_dir": "/home/ashrafo/BrainPrint_local_automethod/doc/generated/backreferences",
-#     "doc_module": (f"{package}",),
-#     "examples_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
-#     "exclude_implicit_doc": {},  # set
-#     "filename_pattern": r"\d{2}_",
-#     "gallery_dirs": ["/home/ashrafo/BrainPrint_local_automethod/doc/generated/examples"],
-#     "line_numbers": False,
-#     "plot_gallery": True,
-#     "reference_url": {f"{package}": None},
-#     "remove_config_comments": True,
-#     "show_memory": True,
-#     # "within_subsection_order": FileNameSortKey,
-# }
-
-# -- conf.py ----------------------------------------------------------
-
-
-# In examples_dirs extension I replaced ../examples with generated/examples
-# because it was not able to recognize examples path with knowing the parent folder i.e generated
-# -- sphinx-gallery ----------------------------------------------------------
-# sphinx_gallery_conf = {
-#     "backreferences_dir": "generated/backreferences",
-#     "doc_module": (f"{package}",),
-#     "examples_dirs": ["generated/examples"],
-#     "exclude_implicit_doc": {},  # set
-#     "filename_pattern": r"\d{2}_",
-#     "gallery_dirs": ["generated/examples"],
-#     "line_numbers": False,
-#     "plot_gallery": True,
-#     "reference_url": {f"{package}": None},
-#     "remove_config_comments": True,
-#     "show_memory": True,
-#     "within_subsection_order": FileNameSortKey,
-# }
+        return None  # alternatively, link to a maint/version branch
+    fname = fname.rsplit(f"/{package}/")[1]
+    url = f"{gh_url}/blob/{branch}/{package}/{fname}#{lines}"
+    return url
 
 
 import os
