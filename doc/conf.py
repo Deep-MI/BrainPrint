@@ -13,15 +13,17 @@ from importlib import import_module
 from typing import Dict, Optional
 
 # from sphinx_gallery.sorting import FileNameSortKey
+
 import brainprint
 
-project = "brainprint"
+project = "BrainPrint"
 author = "Martin Reuter"
 copyright = f"{date.today().year}, {author}"
 release = brainprint.__version__
 package = brainprint.__name__
 gh_url = "https://github.com/Deep-MI/BrainPrint"
-# -- general configuration ---------------------------------------------------
+
+# -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -31,25 +33,20 @@ needs_sphinx = "5.0"
 # the root toctree directive.
 root_doc = "index"
 
-
+# Add any Sphinx extension module names here, as strings. They can be
+# extensions coming with Sphinx (named "sphinx.ext.*") or your custom
+# ones.
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.linkcode",
-    #   "sphinxcontrib.napoleon",
+    "numpydoc",
     "sphinxcontrib.bibtex",
     "sphinx_copybutton",
     "sphinx_design",
-    #  "sphinx_gallery.gen_gallery",
-    "IPython.sphinxext.ipython_console_highlighting",
-    "numpydoc",
-    #  "sphinx.ext.todo",
-    #   "sphinx.ext.viewcode",
-    #   "myst_parser",
 ]
-
 
 templates_path = ["_templates"]
 exclude_patterns = [
@@ -57,11 +54,9 @@ exclude_patterns = [
     "Thumbs.db",
     ".DS_Store",
     "**.ipynb_checkpoints",
-    "tutorials/examples/README.rst",
 ]
 
 # Sphinx will warn about all references where the target cannot be found.
-# nitpicky = True
 nitpicky = False
 nitpick_ignore = []
 
@@ -75,12 +70,10 @@ default_role = "py:obj"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 html_theme = "furo"
 html_static_path = ["_static"]
 html_title = project
 html_show_sphinx = False
-
 
 # Documentation to change footer icons:
 # https://pradyunsg.me/furo/customisation/footer/#changing-footer-icons
@@ -99,7 +92,6 @@ html_theme_options = {
     ],
 }
 
-
 # -- autosummary -------------------------------------------------------------
 autosummary_generate = True
 
@@ -108,7 +100,6 @@ autodoc_typehints = "none"
 autodoc_member_order = "groupwise"
 autodoc_warningiserror = True
 autoclass_content = "class"
-
 
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = {
@@ -120,9 +111,7 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sklearn": ("https://scikit-learn.org/stable/", None),
 }
-
 intersphinx_timeout = 5
-
 
 # -- sphinx-issues -----------------------------------------------------------
 issues_github_path = gh_url.split("https://github.com/")[-1]
@@ -130,37 +119,71 @@ issues_github_path = gh_url.split("https://github.com/")[-1]
 # -- autosectionlabels -------------------------------------------------------
 autosectionlabel_prefix_document = True
 
+# -- numpydoc ----------------------------------------------------------------
+#numpydoc_class_members_toctree = False
+#numpydoc_attributes_as_param_list = False
+
+# x-ref
+numpydoc_xref_param_type = True
+numpydoc_xref_aliases = {
+    # Matplotlib
+    "Axes": "matplotlib.axes.Axes",
+    "Figure": "matplotlib.figure.Figure",
+    # Python
+    "bool": ":class:`python:bool`",
+    "Path": "pathlib.Path",
+    "TextIO": "io.TextIOBase",
+    # Scipy
+    "csc_matrix": "scipy.sparse.csc_matrix",
+}
+#numpydoc_xref_ignore = {}
+
+# validation
+# https://numpydoc.readthedocs.io/en/latest/validation.html#validation-checks
+error_ignores = {
+    "GL01",  # docstring should start in the line immediately after the quotes
+    "EX01",  # section 'Examples' not found
+    "ES01",  # no extended summary found
+    "SA01",  # section 'See Also' not found
+    "RT02",  # The first line of the Returns section should contain only the type, unless multiple values are being returned  # noqa
+}
+numpydoc_validate = True
+numpydoc_validation_checks = {"all"} | set(error_ignores)
+numpydoc_validation_exclude = {  # regex to ignore during docstring check
+    r"\.__getitem__",
+    r"\.__contains__",
+    r"\.__hash__",
+    r"\.__mul__",
+    r"\.__sub__",
+    r"\.__add__",
+    r"\.__iter__",
+    r"\.__div__",
+    r"\.__neg__",
+}
+
 # -- sphinxcontrib-bibtex ----------------------------------------------------
 bibtex_bibfiles = ["./references.bib"]
 
+# -- sphinx.ext.linkcode -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/linkcode.html
 
-#  using this method to link github source code as the above method was working with
-#  brain print project
+#  Alternative method for linking to code by Osama, not sure which one is better
 # from urllib.parse import quote
-
-
 # def linkcode_resolve(domain, info):
 #     if domain != "py":
 #         return None
 #     if not info["module"]:
 #         return None
-
 #     filename = quote(info["module"].replace(".", "/"))
 #     if not filename.startswith("tests"):
 #         filename = "/" + filename
-
 #     if "fullname" in info:
 #         anchor = info["fullname"]
 #         anchor = "#:~:text=" + quote(anchor.split(".")[-1])
 #     else:
 #         anchor = ""
-
 #     result = f"{gh_url}/blob/master/{filename}.py{anchor}"
 #     return result
-
-# -- sphinx.ext.linkcode -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/extensions/linkcode.html
-
 
 def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
     """Determine the URL corresponding to a Python object.
@@ -206,14 +229,29 @@ def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
     return url
 
 
-import os
+# # -- sphinx-gallery ----------------------------------------------------------
+# sphinx_gallery_conf = {
+#     "backreferences_dir": "generated/backreferences",
+#     "doc_module": (f"{package}",),
+#     "examples_dirs": ["generated/examples"],
+#     "exclude_implicit_doc": {},  # set
+#     "filename_pattern": r"\d{2}_",
+#     "gallery_dirs": ["generated/examples"],
+#     "line_numbers": False,
+#     "plot_gallery": True,
+#     "reference_url": {f"{package}": None},
+#     "remove_config_comments": True,
+#     "show_memory": True,
+#     "within_subsection_order": FileNameSortKey,
+# }
+
 
 # -- make sure pandoc gets installed -----------------------------------------
 from inspect import getsourcefile
+import os
 
 # Get path to directory containing this file, conf.py.
 DOCS_DIRECTORY = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
-
 
 def ensure_pandoc_installed(_):
     import pypandoc
@@ -229,7 +267,6 @@ def ensure_pandoc_installed(_):
         targetfolder=pandoc_dir,
         delete_installer=True,
     )
-
 
 def setup(app):
     app.connect("builder-inited", ensure_pandoc_installed)
