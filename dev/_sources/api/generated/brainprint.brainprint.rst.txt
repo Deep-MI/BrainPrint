@@ -1,0 +1,5 @@
+﻿brainprint.brainprint
+=====================
+
+.. automodule:: brainprint.brainprint
+    :members:
