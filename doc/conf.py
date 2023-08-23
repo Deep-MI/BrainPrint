@@ -182,7 +182,7 @@ def linkcode_resolve(domain, info):
         anchor = "#:~:text=" + quote(anchor.split(".")[-1])
     else:
         anchor = ""
-    result = f"{gh_url}/blob/master/{filename}.py{anchor}"
+    result = f"{gh_url}/blob/main/{filename}.py{anchor}"
     return result
 
 # def linkcode_resolve(domain: str, info: Dict[str, str]) -> Optional[str]:
