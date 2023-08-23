@@ -248,7 +248,7 @@ def run_brainprint(
         - Eigenvalues
         - Eigenvectors
         - Distances
-    """
+    """ # noqa: E501
     validate_environment()
     test_freesurfer()
     subject_dir = validate_subject_dir(subjects_dir, subject_id)
