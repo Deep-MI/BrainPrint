@@ -31,24 +31,23 @@ def apply_eigenvalues_options(
     reweight: bool = False,
 ) -> np.ndarray:
     """
-    Applies BrainPrint analysis configuration options to the ShapeDNA
-    eigenvalues.
+    Apply BrainPrint analysis configuration options to the ShapeDNA eigenvalues.
 
     Parameters
     ----------
     eigenvalues : np.ndarray
-        ShapeDNA derived eigenvalues
+        ShapeDNA derived eigenvalues.
     triangular_mesh : TriaMesh
-        Surface representation
+        Surface representation.
     norm : str, optional
-        Eigenvalues normalization method, by default "none"
+        Eigenvalues normalization method (default is "none").
     reweight : bool, optional
-        Whether to reweight eigenvalues or not, by default False
+        Whether to reweight eigenvalues or not (default is False).
 
     Returns
     -------
     np.ndarray
-        Fixed eigenvalues
+        Fixed eigenvalues.
     """
     if not triangular_mesh.is_oriented():
         triangular_mesh.orient_()
@@ -72,20 +71,21 @@ def compute_surface_brainprint(
     use_cholmod: bool = False,
 ) -> Tuple[np.ndarray, Union[np.ndarray, None]]:
     """
-    Returns the BrainPrint eigenvalues and eigenvectors for the given surface.
+    Compute BrainPrint eigenvalues and eigenvectors for the given surface.
 
     Parameters
     ----------
     path : Path
-        *.vtk* surface path
+
+        Path to the *.vtk* surface path.
     return_eigenvectors : bool, optional
-        Whether to store eigenvectors or not, by default True
+        Whether to store eigenvectors in the result (default is True).
     num : int, optional
-        Number of eigenvalues to compute, by default 50
+        Number of eigenvalues to compute (default is 50).
     norm : str, optional
-        Eigenvalues normalization method, by default "none"
+        Eigenvalues normalization method (default is "none").
     reweight : bool, optional
-        Whether to reweight eigenvalues or not, by default False
+        Whether to reweight eigenvalues or not (default is False).
     use_cholmod : bool, optional
         If True, attempts to use the Cholesky decomposition for improved execution
         speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
@@ -95,7 +95,7 @@ def compute_surface_brainprint(
     Returns
     -------
     Tuple[np.ndarray, Union[np.ndarray, None]]
-        Eigenvalues, eigenvectors (if returned)
+        Eigenvalues, eigenvectors (if returned).
     """
     triangular_mesh = read_vtk(path)
     shape_dna = shapedna.compute_shapedna(
@@ -134,20 +134,20 @@ def compute_brainprint(
     use_cholmod: bool = False,
 ) -> Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None]]:
     """
-    Computes ShapeDNA descriptors over several surfaces.
+    Compute ShapeDNA descriptors over several surfaces.
 
     Parameters
     ----------
     surfaces : Dict[str, Path]
-        Dictionary mapping from labels to *.vtk* paths
+        Dictionary mapping from labels to *.vtk* paths.
     keep_eigenvectors : bool, optional
-        Whether to also return eigenvectors or not, by default False
+        Whether to also return eigenvectors or not, by default False.
     num : int, optional
-        Number of eigenvalues to compute, by default 50
+        Number of eigenvalues to compute, by default 50.
     norm : str, optional
-        Eigenvalues normalization method, by default "none"
+        Eigenvalues normalization method, by default "none".
     reweight : bool, optional
-        Whether to reweight eigenvalues or not, by default False
+        Whether to reweight eigenvalues or not, by default False.
     use_cholmod : bool, optional
         If True, attempts to use the Cholesky decomposition for improved execution
         speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
@@ -157,7 +157,7 @@ def compute_brainprint(
     -------
     Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None]]
         Surface label to eigenvalues, surface label to eigenvectors (if
-        *keep_eigenvectors* is True)
+        *keep_eigenvectors* is True).
     """
     eigenvalues = dict()
     eigenvectors = dict() if keep_eigenvectors else None
@@ -206,36 +206,36 @@ def run_brainprint(
     use_cholmod: bool = False,
 ):
     """
-    Runs the BrainPrint analysis.
+    Run the BrainPrint analysis.
 
     Parameters
     ----------
     subjects_dir : Path
-        FreeSurfer's subjects directory
+        FreeSurfer's subjects directory.
     subject_id : str
         The subject identifier, as defined within the FreeSurfer's subjects
-        directory
+        directory.
     destination : Path, optional
         If provided, will use this path as the results root directory, by
-        default None
+        default None.
     num : int, optional
-        Number of eigenvalues to compute, by default 50
-    norm : str, optional
-        Eigenvalues normalization method, by default "none"
-    reweight : bool, optional
-        Whether to reweight eigenvalues or not, by default False
+        Number of eigenvalues to compute, by default 50.
     skip_cortex : bool, optional
-        _description_, by default False
+        _description_, by default False.
     keep_eigenvectors : bool, optional
-        Whether to also return eigenvectors or not, by default False
+        Whether to also return eigenvectors or not, by default False.
+    norm : str, optional
+        Eigenvalues normalization method, by default "none".
+    reweight : bool, optional
+        Whether to reweight eigenvalues or not, by default False.
     asymmetry : bool, optional
         Whether to calculate asymmetry between lateral structures, by default
-        False
+        False.
     asymmetry_distance : str, optional
         Distance measurement to use if *asymmetry* is set to True, by default
-        "euc"
+        "euc".
     keep_temp : bool, optional
-        Whether to keep the temporary files directory or not, by default False
+        Whether to keep the temporary files directory or not, by default False.
     use_cholmod : bool, optional
         If True, attempts to use the Cholesky decomposition for improved execution
         speed. Requires the ``scikit-sparse`` library. If it can not be found, an error
@@ -243,9 +243,11 @@ def run_brainprint(
 
     Returns
     -------
-    Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None],
-    Union[Dict[str, float], None]]
-        Eigenvalues, eigenvectors, distances
+    Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None], Union[Dict[str, float], None]]
+        A tuple containing dictionaries with BrainPrint analysis results.
+        - Eigenvalues
+        - Eigenvectors
+        - Distances
     """
     validate_environment()
     test_freesurfer()
