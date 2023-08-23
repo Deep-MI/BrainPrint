@@ -14,7 +14,21 @@ def create_aseg_surface(
     subject_dir: Path, destination: Path, indices: List[int]
 ) -> Path:
     """
-    Creates a surface from the aseg and label files.
+    Generate a surface from the aseg and label files.
+
+    Parameters
+    ----------
+    subject_dir : Path
+        Path to the subject's directory.
+    destination : Path
+        Path to the destination directory where the surface will be saved.
+    indices : List[int]
+        List of label indices to include in the surface generation.
+
+    Returns
+    -------
+    Path
+        Path to the generated surface in VTK format.
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
     norm_path = subject_dir / "mri/norm.mgz"
@@ -166,14 +180,14 @@ def surf_to_vtk(source: Path, destination: Path) -> Path:
     Parameters
     ----------
     source : Path
-        FreeSurfer *.surf* file
+        FreeSurfer *.surf* file.
     destination : Path
-        Equivalent *.vtk* file
+        Equivalent *.vtk* file.
 
     Returns
     -------
     Path
-        Resulting *.vtk* file
+        Resulting *.vtk* file.
     """
     TriaMesh.read_fssurf(source).write_vtk(destination)
     return destination

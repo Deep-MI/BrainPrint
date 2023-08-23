@@ -11,21 +11,21 @@ def compute_asymmetry(
     eigenvalues, distance: str = "euc", skip_cortex: bool = False
 ) -> Dict[str, float]:
     """
-    Computes lateral shape distances from BrainPrint analysis results.
+    Compute lateral shape distances from BrainPrint analysis results.
 
     Parameters
     ----------
     eigenvalues : _type_
-        BrainPrint analysis results
+        BrainPrint analysis results.
     distance : str, optional
-        ShapeDNA distance, by default "euc"
+        ShapeDNA distance, by default "euc".
     skip_cortex : bool, optional
-        Whether to skip white matter and pial surfaces, by default False
+        Whether to skip white matter and pial surfaces, by default False.
 
     Returns
     -------
     Dict[str, float]
-        {left_label}_{right_label}, distance
+        {left_label}_{right_label}, distance.
     """
     # Define structures
 
