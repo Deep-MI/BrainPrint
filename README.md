@@ -95,6 +95,10 @@ scripts:
 - currently no support for analyses of cortical parcellation or label files
 - no more Python 2.x compatibility
 
+## API Documentation
+
+The API Documentation can be found at https://deep-mi.org/BrainPrint .
+
 ## References
 
 If you use this software for a publication please cite:
