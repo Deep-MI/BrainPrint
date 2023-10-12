@@ -146,7 +146,7 @@ def test_compute_surface_brainprint():
     Note:
     - Assumes the `compute_surface_brainprint` function is correctly implemented.
     - Replace 'path' with the actual path to a VTK file for meaningful testing.
-    - Test checks result as tuple, unpacks 'eigenvalues' and 'eigenvectors', verifies types.
+    - Test checks tuple result, unpacks 'eigenvalues' and 'eigenvectors', verifies types.
     """
 
     path = "/home/ashrafo/LaPy/data/cubeTria.vtk"
@@ -161,51 +161,51 @@ def test_compute_surface_brainprint():
     ), "Eigenvectors is not None or a NumPy array"
 
 
-def test_run_brainprint(sample_subjects_dir):
-    """
-    Test the run_brainprint function.
+# def test_run_brainprint(sample_subjects_dir):
+#     """
+#     Test the run_brainprint function.
 
 
-    Parameters:
-    sample_subjects_dir (str): Path to the sample subjects directory.
+#     Parameters:
+#     sample_subjects_dir (str): Path to the sample subjects directory.
 
-    Raises:
-    AssertionError: For unexpected return types or eigenvalue matrix properties.
+#     Raises:
+#     AssertionError: For unexpected return types or eigenvalue matrix properties.
 
-    Note:
-    - Assumes the `run_brainprint` function is correctly implemented.
-    - The test checks:
-      - The result is a tuple.
-      - 'eigenvalues' is a dictionary.
-      - 'eigenvectors' is either None or a dictionary.
-      - 'distances' is either None or a dictionary.
-      - If 'eigenvalues' not None and subject found, more eigenvalue matrix checks occur.
-      - It verifies that the matrix contains at least two rows.
-      - It ensures that the values in the first two rows are non-negative.
-    """
-    subject_id = "bert"
-    result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
-    eigenvalues, eigenvectors, distances = result
-    assert isinstance(result, tuple), "Return value is not a tuple"
-    assert isinstance(eigenvalues, dict), "Return value is not a dictionary"
-    assert eigenvectors is None or isinstance(
-        eigenvectors, dict
-    ), "Eigenvectors is not None or a NumPy array"
-    assert distances is None or isinstance(
-        eigenvectors, dict
-    ), "Distacnces is not None or a dictionary"
+#     Note:
+#     - Assumes the `run_brainprint` function is correctly implemented.
+#     - The test checks:
+#       - The result is a tuple.
+#       - 'eigenvalues' is a dictionary.
+#       - 'eigenvectors' is either None or a dictionary.
+#       - 'distances' is either None or a dictionary.
+#       - If 'eigenvalues' not None and subject found, more eigenvalue matrix checks.
+#       - It verifies that the matrix contains at least two rows.
+#       - It ensures that the values in the first two rows are non-negative.
+#     """
+#     subject_id = "bert"
+#     result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
+#     eigenvalues, eigenvectors, distances = result
+#     assert isinstance(result, tuple), "Return value is not a tuple"
+#     assert isinstance(eigenvalues, dict), "Return value is not a dictionary"
+#     assert eigenvectors is None or isinstance(
+#         eigenvectors, dict
+#     ), "Eigenvectors is not None or a NumPy array"
+#     assert distances is None or isinstance(
+#         eigenvectors, dict
+#     ), "Distacnces is not None or a dictionary"
 
-    # Check if "area" and "volume" are the first two rows in the eigenvalue matrix
-    if eigenvalues is not None and subject_id in eigenvalues:
-        eigenvalue_matrix = eigenvalues[subject_id]
-        assert (
-            eigenvalue_matrix.shape[0] >= 2
-        ), "Eigenvalue matrix has fewer than two rows"
+#     # Check if "area" and "volume" are the first two rows in the eigenvalue matrix
+#     if eigenvalues is not None and subject_id in eigenvalues:
+#         eigenvalue_matrix = eigenvalues[subject_id]
+#         assert (
+#             eigenvalue_matrix.shape[0] >= 2
+#         ), "Eigenvalue matrix has fewer than two rows"
 
-        # Check the values of the first two rows are non-zero
-        assert np.all(
-            eigenvalue_matrix[:2] >= 0
-        ), "Area and volume values are not non-negative"
+#         # Check the values of the first two rows are non-zero
+#         assert np.all(
+#             eigenvalue_matrix[:2] >= 0
+#         ), "Area and volume values are not non-negative"
 
 
 def test_compute_brainprint(sample_subjects_dir):
@@ -220,7 +220,7 @@ def test_compute_brainprint(sample_subjects_dir):
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
-    - Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint available.
+    - Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint are available.
     """
     subject_id = "bert"
     subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)

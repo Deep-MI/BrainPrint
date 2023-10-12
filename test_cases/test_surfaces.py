@@ -72,7 +72,7 @@ def test_create_cortical_surfaces(sample_subjects_dir, sample_destination_dir):
 
     Note:
     - Assumes the `create_cortical_surfaces` function is correctly implemented.
-    - Validates the expected dictionary structure with label names as keys and Path objects.
+    - Validates dictionary structure with label names as keys and Path objects.
     - Verifies specific key-value pairs in the result.
     """
     subject_dir = Path(sample_subjects_dir)
@@ -99,12 +99,12 @@ def test_read_vtk():
     Raises:
     AssertionError: If the test fails due to unexpected result type.
 
-    Note: Assumes `read_vtk` is correctly implemented and validates TriaMesh result type.
+    Note: Assumes `read_vtk` correctly implemented, validates TriaMesh result type.
     """
-    sample_vtk_file = ("../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk")
+    vtk_file = ("../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk")
 
     # Call the function with the sample VTK file
-    vtk_path = Path(sample_vtk_file)
+    vtk_path = Path(vtk_file)
     triangular_mesh = read_vtk(vtk_path)
 
     # Assert that the result is an instance of TriaMesh
