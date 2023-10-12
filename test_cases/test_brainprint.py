@@ -220,7 +220,7 @@ def test_compute_brainprint(sample_subjects_dir):
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
-    Assumes validate_subject_dir, create_output_paths, create_surfaces & compute_brainprint available.
+    Assumes validate_subject_dir, create_output_paths, create_surfaces & compute_BP.
     """
     subject_id = "bert"
     subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)
