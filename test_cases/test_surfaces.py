@@ -1,6 +1,6 @@
-import uuid
+
 from pathlib import Path
-from typing import Dict, List
+
 
 import pytest
 from lapy import TriaMesh
@@ -8,10 +8,8 @@ from lapy import TriaMesh
 # from brainprint.utils.utils import run_shell_command
 from brainprint.surfaces import (
     create_aseg_surface,
-    create_aseg_surfaces,
     create_cortical_surfaces,
     read_vtk,
-    surf_to_vtk,
 )
 
 
@@ -102,7 +100,7 @@ def test_read_vtk():
     Raises:
     AssertionError: If the test fails due to unexpected result type.
 
-    Note: Assumes the `read_vtk` function is correctly implemented and checks if the result is an instance of TriaMesh.
+    Note: Assumes `read_vtk` is correctly implemented and validates TriaMesh result type.
     """
     sample_vtk_file = (
         "../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk"
