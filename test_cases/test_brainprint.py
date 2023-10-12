@@ -131,7 +131,7 @@ def test_apply_eigenvalues_options(tria_mesh_fixture):
         evals=np.array([10, 2, 33]),
         method=norm,
     )
-    assert eigenvalues == None
+    assert eigenvalues is None
 
 
 def test_compute_surface_brainprint():
@@ -220,7 +220,7 @@ def test_compute_brainprint(sample_subjects_dir):
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
-    Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint are available.
+    Assumes validate_subject_dir, create_output_paths, create_surfaces & compute_brainprint available.
     """
     subject_id = "bert"
     subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)
@@ -252,7 +252,7 @@ def test_run_brainprint(sample_subjects_dir):
     - 'eigenvalues' is a dict.
     - 'eigenvectors' is None or a dict.
     - 'distances' is None or a dict.
-    - If 'eigenvalues' isn't None and the subject is found, further checks the eigenvalue matrix.
+    - If 'eigenvalues' not None and subject found, further checks eigenvalue matrix.
     """
     subject_id = "bert"
     result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
