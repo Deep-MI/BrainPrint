@@ -146,7 +146,7 @@ def test_compute_surface_brainprint():
     Note:
     - Assumes the `compute_surface_brainprint` function is correctly implemented.
     - Replace 'path' with the actual path to a VTK file for meaningful testing.
-    - Test checks tuple result, unpacks 'eigenvalues' and 'eigenvectors', verifies types.
+    - Test checks tuple result, unpacks 'eigenvalues' & 'eigenvectors', verifies types.
     """
 
     path = "/home/ashrafo/LaPy/data/cubeTria.vtk"
@@ -220,7 +220,7 @@ def test_compute_brainprint(sample_subjects_dir):
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
-    - Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint are available.
+    Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint are available.
     """
     subject_id = "bert"
     subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)
@@ -238,9 +238,6 @@ def test_compute_brainprint(sample_subjects_dir):
 def test_run_brainprint(sample_subjects_dir):
     """
     Test the run_brainprint function.
-
-    Validates run_brainprint using sample data, checks results, types, and eigenvalue matrix.
-
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.

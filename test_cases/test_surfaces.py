@@ -101,7 +101,9 @@ def test_read_vtk():
 
     Note: Assumes `read_vtk` correctly implemented, validates TriaMesh result type.
     """
-    vtk_file = ("../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk")
+    vtk_file = (
+        "../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk"
+        )
 
     # Call the function with the sample VTK file
     vtk_path = Path(vtk_file)
