@@ -13,9 +13,6 @@ from brainprint.brainprint import (
 from brainprint.surfaces import create_surfaces
 from brainprint.utils.utils import (
     create_output_paths,
-    export_brainprint_results,
-    test_freesurfer,
-    validate_environment,
     validate_subject_dir,
 )
 
@@ -78,8 +75,6 @@ def test_brainprint_initialization(sample_subjects_dir):
     """
     Test the initialization and run of the Brainprint class.
 
-    This test validates Brainprint class initialization and attribute values.
-
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
 
@@ -119,8 +114,6 @@ def test_apply_eigenvalues_options(tria_mesh_fixture):
     """
     Test the apply_eigenvalues_options function.
 
-    This test validates apply_eigenvalues_options for eigenvalues normalization.
-
     Parameters:
     tria_mesh_fixture: Fixture providing a triangular mesh for testing.
 
@@ -153,7 +146,7 @@ def test_compute_surface_brainprint():
     Note:
     - Assumes the `compute_surface_brainprint` function is correctly implemented.
     - Replace 'path' with the actual path to a VTK file for meaningful testing.
-    - Test checks that result is a tuple, unpacks into 'eigenvalues' and 'eigenvectors', and verifies types.
+    - Test checks result as tuple, unpacks 'eigenvalues' and 'eigenvectors', verifies types.
     """
 
     path = "/home/ashrafo/LaPy/data/cubeTria.vtk"
@@ -186,7 +179,7 @@ def test_run_brainprint(sample_subjects_dir):
       - 'eigenvalues' is a dictionary.
       - 'eigenvectors' is either None or a dictionary.
       - 'distances' is either None or a dictionary.
-      - If 'eigenvalues' isn't None and the subject is found, more eigenvalue matrix checks occur.
+      - If 'eigenvalues' not None and subject found, more eigenvalue matrix checks occur.
       - It verifies that the matrix contains at least two rows.
       - It ensures that the values in the first two rows are non-negative.
     """
@@ -227,7 +220,7 @@ def test_compute_brainprint(sample_subjects_dir):
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
-    - Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint are available.
+    - Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint available.
     """
     subject_id = "bert"
     subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)
@@ -246,8 +239,8 @@ def test_run_brainprint(sample_subjects_dir):
     """
     Test the run_brainprint function.
 
-    Validates run_brainprint behavior by running it with sample data and checking results, 
-    including return value types and eigenvalue matrix structure.
+    Validates run_brainprint using sample data, checks results, types, and eigenvalue matrix.
+
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.

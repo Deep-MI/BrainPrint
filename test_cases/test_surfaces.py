@@ -80,7 +80,6 @@ def test_create_cortical_surfaces(sample_subjects_dir, sample_destination_dir):
     # Call the function
     result = create_cortical_surfaces(subject_dir, destination)
 
-    # Assert that the result is a dictionary containing label names as keys and Path objects as values
     assert isinstance(result, dict)
     assert all(isinstance(value, Path) for value in result.values())
     assert "lh-white-2d" in result
@@ -102,9 +101,7 @@ def test_read_vtk():
 
     Note: Assumes `read_vtk` is correctly implemented and validates TriaMesh result type.
     """
-    sample_vtk_file = (
-        "../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk"
-    )
+    sample_vtk_file = ("../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk")
 
     # Call the function with the sample VTK file
     vtk_path = Path(sample_vtk_file)
@@ -117,8 +114,6 @@ def test_read_vtk():
 def test_surf_to_vtk(sample_subjects_dir, sample_destination_dir):
     subject_dir = Path(sample_subjects_dir)
     sample_destination_dir = Path(sample_destination_dir)
-    # resulting_vtk_file = surf_to_vtk(subject_dir, sample_destination_dir)
-
     try:
         trimesh = TriaMesh.read_fssurf(subject_dir)
         if trimesh:

@@ -1,9 +1,4 @@
-from typing import Dict
-
-
 import pytest
-
-
 
 from brainprint.asymmetry import compute_asymmetry
 from brainprint.brainprint import run_brainprint
@@ -26,8 +21,8 @@ def test_run_brainprint(sample_subjects_dir):
     Raises:
     AssertionError: If the test fails due to unexpected results.
 
-    Note: 
-    Assumes run_brainprint function verifies result types and eigenvalue matrix properties.
+    Note:
+    Assumes run_brainprint checks result types and eigenvalue matrix properties.
     """
     subject_id = "bert"
     result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
