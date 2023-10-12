@@ -94,7 +94,7 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path
     Returns
     -------
     Dict[str, Path]
-        A dictionary mapping label names to the corresponding Path objects of created surfaces.
+        Dictionary of label names mapped to corresponding surface Path objects.
     """
     # Define aseg labels
 
@@ -159,7 +159,7 @@ def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, 
     Returns
     -------
     Dict[str, Path]
-        A dictionary mapping label names to the corresponding Path objects of created surfaces.
+        Dictionary mapping label names to associated surface Paths.
     """
     cortical_labels = {
         "lh-white-2d": "lh.white",
@@ -194,7 +194,7 @@ def create_surfaces(
     Returns
     -------
     Dict[str, Path]
-        A dictionary mapping label names to the corresponding Path objects of created surfaces.
+        Dict mapping label names to the corresponding Path objects of created surfaces.
     """
     surfaces = create_aseg_surfaces(subject_dir, destination)
     if not skip_cortex:
