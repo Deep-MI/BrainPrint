@@ -81,6 +81,21 @@ def create_aseg_surface(
 
 
 def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path]:
+    """
+    Create surfaces from FreeSurfer aseg labels.
+
+    Parameters
+    ----------
+    subject_dir : Path
+        Path to the subject's FreeSurfer directory.
+    destination : Path
+        Path to the destination directory for saving surfaces.
+
+    Returns
+    -------
+    Dict[str, Path]
+        Dictionary of label names mapped to corresponding surface Path objects.
+    """
     # Define aseg labels
 
     # combined and individual aseg labels:
@@ -131,6 +146,21 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path
 
 
 def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path]:
+    """
+    Create cortical surfaces from FreeSurfer labels.
+
+    Parameters
+    ----------
+    subject_dir : Path
+        Path to the subject's FreeSurfer directory.
+    destination : Path
+        Path to the destination directory where the surfaces will be saved.
+
+    Returns
+    -------
+    Dict[str, Path]
+        Dictionary mapping label names to associated surface Paths.
+    """
     cortical_labels = {
         "lh-white-2d": "lh.white",
         "rh-white-2d": "rh.white",
@@ -149,6 +179,23 @@ def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, 
 def create_surfaces(
     subject_dir: Path, destination: Path, skip_cortex: bool = False
 ) -> Dict[str, Path]:
+    """
+    Create surfaces based on FreeSurfer labels.
+
+    Parameters
+    ----------
+    subject_dir : Path
+        Path to the subject's FreeSurfer directory.
+    destination : Path
+        Path to the destination directory where the surfaces will be saved.
+    skip_cortex : bool, optional
+        If True, cortical surfaces will not be created (default is False).
+
+    Returns
+    -------
+    Dict[str, Path]
+        Dict mapping label names to the corresponding Path objects of created surfaces.
+    """
     surfaces = create_aseg_surfaces(subject_dir, destination)
     if not skip_cortex:
         cortical_surfaces = create_cortical_surfaces(subject_dir, destination)
@@ -157,6 +204,24 @@ def create_surfaces(
 
 
 def read_vtk(path: Path):
+    """
+    Read a VTK file and return a triangular mesh.
+
+    Parameters
+    ----------
+    path : Path
+        Path to the VTK file to be read.
+
+    Returns
+    -------
+    TriaMesh
+        A triangular mesh object representing the contents of the VTK file.
+
+    Raises
+    ------
+    RuntimeError
+        If there is an issue reading the VTK file or if the file is empty.
+    """
     try:
         triangular_mesh = TriaMesh.read_vtk(path)
     except Exception:

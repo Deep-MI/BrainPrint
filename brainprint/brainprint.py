@@ -1,5 +1,5 @@
 """
-Definition of the brainprint analysis execution functions.
+Definition of the brainprint analysis execution functions..
 """
 
 import shutil
@@ -359,6 +359,21 @@ class Brainprint:
             test_freesurfer()
 
     def run(self, subject_id: str, destination: Path = None) -> Dict[str, Path]:
+        """
+        Run Brainprint analysis for a specified subject.
+
+        Parameters
+        ----------
+        subject_id : str
+            The ID of the subject to analyze.
+        destination : Path, optional
+            The destination directory for analysis results, by default None.
+
+        Returns
+        -------
+        Dict[str, Path]
+            A dictionary containing paths to the generated analysis results.
+        """
         self._eigenvalues = self._eigenvectors = self._distances = None
         subject_dir = validate_subject_dir(self.subjects_dir, subject_id)
         destination = create_output_paths(
@@ -389,6 +404,20 @@ class Brainprint:
         return self.export_results(destination=destination, subject_id=subject_id)
 
     def export_results(self, destination: Path, subject_id: str) -> None:
+        """
+        Export Brainprint analysis results to a CSV file.
+
+        Parameters
+        ----------
+        destination : Path
+            The destination directory for analysis results.
+        subject_id : str
+            The ID of the subject being analyzed.
+
+        Returns
+        -------
+        None
+        """
         csv_name = "{subject_id}.brainprint.csv".format(subject_id=subject_id)
         csv_path = destination / csv_name
         return export_brainprint_results(
@@ -396,5 +425,17 @@ class Brainprint:
         )
 
     def cleanup(self, destination: Path) -> None:
+        """
+        Clean up temporary files generated during the analysis.
+
+        Parameters
+        ----------
+        destination : Path
+            The destination directory for analysis results.
+
+        Returns
+        -------
+        None
+        """
         if not self.keep_temp:
             shutil.rmtree(destination / "temp")
