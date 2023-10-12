@@ -1,16 +1,11 @@
 
 from pathlib import Path
 
-
 import pytest
 from lapy import TriaMesh
 
 # from brainprint.utils.utils import run_shell_command
-from brainprint.surfaces import (
-    create_aseg_surface,
-    create_cortical_surfaces,
-    read_vtk,
-)
+from brainprint.surfaces import create_aseg_surface, create_cortical_surfaces, read_vtk
 
 
 # Create a fixture for a sample subjects_dir

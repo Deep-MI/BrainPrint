@@ -11,10 +11,7 @@ from brainprint.brainprint import (
     run_brainprint,
 )
 from brainprint.surfaces import create_surfaces
-from brainprint.utils.utils import (
-    create_output_paths,
-    validate_subject_dir,
-)
+from brainprint.utils.utils import create_output_paths, validate_subject_dir
 
 """
 Don't forget to source Freesurfer
