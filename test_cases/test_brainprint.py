@@ -20,7 +20,7 @@ from brainprint.utils.utils import (
 )
 
 """
-In order to run the tests, please export the directory of freesurfer in your virtual environment
+Don't forget to source Freesurfer
 export FREESURFER_HOME=/groups/ag-reuter/software-centos/fs72
 source $FREESURFER_HOME/SetUpFreeSurfer.sh 
 """
@@ -78,7 +78,7 @@ def test_brainprint_initialization(sample_subjects_dir):
     """
     Test the initialization and run of the Brainprint class.
 
-    This test case validates the initialization of the Brainprint class and checks its attribute values.
+    This test validates Brainprint class initialization and attribute values.
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
@@ -119,18 +119,17 @@ def test_apply_eigenvalues_options(tria_mesh_fixture):
     """
     Test the apply_eigenvalues_options function.
 
-    This test validates the behavior of the apply_eigenvalues_options function by applying eigenvalues normalization.
+    This test validates apply_eigenvalues_options for eigenvalues normalization.
 
     Parameters:
     tria_mesh_fixture: Fixture providing a triangular mesh for testing.
 
     Raises:
-    AssertionError: If the test fails due to unexpected eigenvalues normalization results.
-
+    AssertionError: For unexpected eigenvalues normalization failures.
     Note:
     - Assumes the `apply_eigenvalues_options` function is correctly implemented.
     - The 'norm' variable specifies the eigenvalues normalization method for testing.
-    - The test checks if the result 'eigenvalues' is None, indicating successful eigenvalues normalization.
+    - Test verifies 'eigenvalues' result as None for successful normalization.
     """
     norm = "none"
 
@@ -146,7 +145,7 @@ def test_compute_surface_brainprint():
     """
     Test the compute_surface_brainprint function.
 
-    This test validates the behavior of the compute_surface_brainprint function using a sample VTK path.
+    This test validates compute_surface_brainprint with a sample VTK path.
 
     Raises:
     AssertionError: If the test fails due to unexpected return types.
@@ -154,7 +153,7 @@ def test_compute_surface_brainprint():
     Note:
     - Assumes the `compute_surface_brainprint` function is correctly implemented.
     - Replace 'path' with the actual path to a VTK file for meaningful testing.
-    - The test checks that the result is a tuple and unpacks it into 'eigenvalues' and 'eigenvectors', then verifies their types.
+    - Test checks that result is a tuple, unpacks into 'eigenvalues' and 'eigenvectors', and verifies types.
     """
 
     path = "/home/ashrafo/LaPy/data/cubeTria.vtk"
@@ -173,13 +172,12 @@ def test_run_brainprint(sample_subjects_dir):
     """
     Test the run_brainprint function.
 
-    This test validates the behavior of the run_brainprint function by running it with sample data.
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
 
     Raises:
-    AssertionError: If the test fails due to unexpected return types or eigenvalue matrix properties.
+    AssertionError: For unexpected return types or eigenvalue matrix properties.
 
     Note:
     - Assumes the `run_brainprint` function is correctly implemented.
@@ -188,9 +186,9 @@ def test_run_brainprint(sample_subjects_dir):
       - 'eigenvalues' is a dictionary.
       - 'eigenvectors' is either None or a dictionary.
       - 'distances' is either None or a dictionary.
-      - If 'eigenvalues' is not None and the subject is found in it, further checks are performed on the eigenvalue matrix.
-        - It verifies that the matrix contains at least two rows.
-        - It ensures that the values in the first two rows are non-negative.
+      - If 'eigenvalues' isn't None and the subject is found, more eigenvalue matrix checks occur.
+      - It verifies that the matrix contains at least two rows.
+      - It ensures that the values in the first two rows are non-negative.
     """
     subject_id = "bert"
     result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
@@ -221,7 +219,6 @@ def test_compute_brainprint(sample_subjects_dir):
     """
     Test the compute_brainprint function.
 
-    This test validates the behavior of the compute_brainprint function using sample data.
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
@@ -230,8 +227,7 @@ def test_compute_brainprint(sample_subjects_dir):
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
-    - Assumes that the functions `validate_subject_dir`, `create_output_paths`, `create_surfaces`,
-      and `compute_brainprint` are correctly implemented and available in the test environment.
+    - Assumes validate_subject_dir, create_output_paths, create_surfaces, and compute_brainprint are available.
     """
     subject_id = "bert"
     subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)
@@ -250,27 +246,23 @@ def test_run_brainprint(sample_subjects_dir):
     """
     Test the run_brainprint function.
 
-    This test case validates the behavior of the run_brainprint function by running it
-    with sample data and checking the properties of the results, including the types of
-    the returned values and the structure of the eigenvalue matrix.
+    Validates run_brainprint behavior by running it with sample data and checking results, 
+    including return value types and eigenvalue matrix structure.
 
     Parameters:
-    sample_subjects_dir (str): The path to the sample subjects directory.
+    sample_subjects_dir (str): Path to the sample subjects directory.
 
     Raises:
-    AssertionError: If the test fails due to unexpected return types or eigenvalue matrix properties.
+    AssertionError: For unexpected return types or eigenvalue matrix properties.
 
     Note:
-    - This test assumes that the run_brainprint function is correctly implemented and
-      available in the test environment.
-    - The test checks the following:
-      - The result is a tuple.
-      - 'eigenvalues' is a dictionary.
-      - 'eigenvectors' is either None or a dictionary.
-      - 'distances' is either None or a dictionary.
-      - If 'eigenvalues' is not None and the subject is found in it, it further checks
-        that the eigenvalue matrix contains at least two rows and that the values in
-        the first two rows are assumed to be non-negative.
+    - Assumes run_brainprint is correctly implemented and available.
+    - Checks:
+    - Result is a tuple.
+    - 'eigenvalues' is a dict.
+    - 'eigenvectors' is None or a dict.
+    - 'distances' is None or a dict.
+    - If 'eigenvalues' isn't None and the subject is found, further checks the eigenvalue matrix.
     """
     subject_id = "bert"
     result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
