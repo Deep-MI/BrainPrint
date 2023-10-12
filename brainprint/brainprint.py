@@ -1,5 +1,5 @@
 """
-Definition of the brainprint analysis execution functions.
+Definition of the brainprint analysis execution functions..
 """
 
 import shutil

@@ -144,6 +144,7 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path
         for label, indices in aseg_labels.items()
     }
 
+
 def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path]:
     """
     Create cortical surfaces from FreeSurfer labels.
@@ -173,6 +174,7 @@ def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, 
         )
         for label, name in cortical_labels.items()
     }
+
 
 def create_surfaces(
     subject_dir: Path, destination: Path, skip_cortex: bool = False
