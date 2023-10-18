@@ -97,7 +97,7 @@ def test_brainprint_initialization(sample_subjects_dir):
     assert not brainprint.keep_temp
     assert not brainprint.use_cholmod
 
-    # Change subject id if requried
+    # Change subject id if required
     subject_id = "bert"
     result = brainprint.run(subject_id=subject_id)
     assert isinstance(result, dict)
