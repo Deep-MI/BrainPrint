@@ -16,8 +16,6 @@ from .surfaces import create_surfaces, read_vtk
 from .utils.utils import (
     create_output_paths,
     export_brainprint_results,
-    test_freesurfer,
-    validate_environment,
     validate_subject_dir,
 )
 
@@ -249,8 +247,6 @@ def run_brainprint(
         - Eigenvectors
         - Distances
     """  # noqa: E501
-    validate_environment()
-    test_freesurfer()
     subject_dir = validate_subject_dir(subjects_dir, subject_id)
     destination = create_output_paths(
         subject_dir=subject_dir,
@@ -301,8 +297,6 @@ class Brainprint:
         asymmetry: bool = False,
         asymmetry_distance: str = "euc",
         keep_temp: bool = False,
-        environment_validation: bool = True,
-        freesurfer_validation: bool = True,
         use_cholmod: bool = False,
     ) -> None:
         """
@@ -352,11 +346,6 @@ class Brainprint:
         self._eigenvalues = None
         self._eigenvectors = None
         self._distances = None
-
-        if environment_validation:
-            validate_environment()
-        if freesurfer_validation:
-            test_freesurfer()
 
     def run(self, subject_id: str, destination: Path = None) -> dict[str, Path]:
         """
