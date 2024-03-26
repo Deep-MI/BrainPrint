@@ -2,12 +2,16 @@
 Utility module holding surface generation related functions.
 """
 import uuid
+import nibabel as nb
+import numpy as np
 from pathlib import Path
 from typing import Dict, List
 
 from lapy import TriaMesh
 
-from .utils.utils import run_shell_command
+from skimage.measure import marching_cubes
+
+#from .utils.utils import run_shell_command # currently only needed for mri_pretess
 
 
 def create_aseg_surface(
@@ -28,7 +32,7 @@ def create_aseg_surface(
     Returns
     -------
     Path
-        Path to the generated surface in VTK format.
+        Path to the generated surface in VTK format
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
     norm_path = subject_dir / "mri/norm.mgz"
@@ -37,45 +41,41 @@ def create_aseg_surface(
     # binarize on selected labels (creates temp indices_mask)
     # always binarize first, otherwise pretess may scale aseg if labels are
     # larger than 255 (e.g. aseg+aparc, bug in mri_pretess?)
-    binarize_template = "mri_binarize --i {source} --match {match} --o {destination}"
-    binarize_command = binarize_template.format(
-        source=aseg_path, match=" ".join(indices), destination=indices_mask
-    )
-    run_shell_command(binarize_command)
+
+    aseg = nb.load(aseg_path)
+    indices_num = [ int(x) for x in indices ]
+    aseg_data_bin = np.isin(aseg.get_fdata(), indices_num).astype(np.float32)
+    aseg_bin = nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine)
+    nb.save(img=aseg_bin, filename=indices_mask)
 
     label_value = "1"
+
     # if norm exist, fix label (pretess)
-    if norm_path.is_file():
-        pretess_template = (
-            "mri_pretess {source} {label_value} {norm_path} {destination}"
-        )
-        pretess_command = pretess_template.format(
-            source=indices_mask,
-            label_value=label_value,
-            norm_path=norm_path,
-            destination=indices_mask,
-        )
-        run_shell_command(pretess_command)
+    #if norm_path.is_file():
+    #    pretess_template = (
+    #        "mri_pretess {source} {label_value} {norm_path} {destination}"
+    #    )
+    #    pretess_command = pretess_template.format(
+    #        source=indices_mask,
+    #        label_value=label_value,
+    #        norm_path=norm_path,
+    #        destination=indices_mask,
+    #    )
+    #    run_shell_command(pretess_command)
 
     # runs marching cube to extract surface
     surface_name = "{name}.surf".format(name=temp_name)
     surface_path = destination / surface_name
-    extraction_template = "mri_mc {source} {label_value} {destination}"
-    extraction_command = extraction_template.format(
-        source=indices_mask, label_value=label_value, destination=surface_path
-    )
-    run_shell_command(extraction_command)
+
+    vertices, trias, _, _ = marching_cubes(volume=aseg_data_bin, level=0.5)
 
     # convert to vtk
     relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
     conversion_destination = destination / relative_path
-    conversion_template = "mris_convert {source} {destination}"
-    conversion_command = conversion_template.format(
-        source=surface_path, destination=conversion_destination
-    )
-    run_shell_command(conversion_command)
+
+    TriaMesh(v=vertices, t=trias).write_vtk(filename=conversion_destination)
 
     return conversion_destination
 
