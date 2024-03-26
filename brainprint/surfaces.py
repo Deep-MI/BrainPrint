@@ -10,9 +10,6 @@ from lapy import TriaMesh
 
 from skimage.measure import marching_cubes
 
-#from .utils.utils import run_shell_command # currently only needed for mri_pretess
-
-
 def create_aseg_surface(
     subject_dir: Path, destination: Path, indices: list[int]
 ) -> Path:
@@ -34,38 +31,17 @@ def create_aseg_surface(
         Path to the generated surface in VTK format
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
-    norm_path = subject_dir / "mri/norm.mgz"
-    temp_name = f"temp/aseg.{uuid.uuid4()}"
+    temp_name = "temp/aseg.{uid}".format(uid=uuid.uuid4())
     indices_mask = destination / f"{temp_name}.mgz"
-    # binarize on selected labels (creates temp indices_mask)
-    # always binarize first, otherwise pretess may scale aseg if labels are
-    # larger than 255 (e.g. aseg+aparc, bug in mri_pretess?)
 
+    # binarize on selected labels (creates temp indices_mask)
     aseg = nb.load(aseg_path)
     indices_num = [ int(x) for x in indices ]
     aseg_data_bin = np.isin(aseg.get_fdata(), indices_num).astype(np.float32)
     aseg_bin = nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine)
     nb.save(img=aseg_bin, filename=indices_mask)
 
-    label_value = "1"
-
-    # if norm exist, fix label (pretess)
-    #if norm_path.is_file():
-    #    pretess_template = (
-    #        "mri_pretess {source} {label_value} {norm_path} {destination}"
-    #    )
-    #    pretess_command = pretess_template.format(
-    #        source=indices_mask,
-    #        label_value=label_value,
-    #        norm_path=norm_path,
-    #        destination=indices_mask,
-    #    )
-    #    run_shell_command(pretess_command)
-
     # runs marching cube to extract surface
-    surface_name = f"{temp_name}.surf"
-    surface_path = destination / surface_name
-
     vertices, trias, _, _ = marching_cubes(volume=aseg_data_bin, level=0.5)
 
     # convert to vtk
@@ -73,7 +49,6 @@ def create_aseg_surface(
         indices="_".join(indices)
     )
     conversion_destination = destination / relative_path
-
     TriaMesh(v=vertices, t=trias).write_vtk(filename=conversion_destination)
 
     return conversion_destination
