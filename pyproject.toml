@@ -39,7 +39,9 @@ dependencies = [
     'scipy',
     'pandas',
     'lapy >= 1.0.0, <2',
-    'psutil'
+    'psutil',
+    'nibabel',
+    'scikit-image',
 ]
 
 [project.optional-dependencies]
