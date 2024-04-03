@@ -12,7 +12,7 @@ cortical parcellations or label files).
 
 ## Installation
 
-Use the following code to install the latest release of LaPy into your local
+Use the following code to install the latest release into your local
 Python package directory:
 
 `python3 -m pip install brainprint`
