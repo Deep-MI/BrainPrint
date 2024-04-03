@@ -224,5 +224,5 @@ def surf_to_vtk(source: Path, destination: Path) -> Path:
     Path
         Resulting *.vtk* file.
     """
-    TriaMesh.read_fssurf(source).write_vtk(destination)
+    TriaMesh.read_fssurf(source).write_vtk(str(destination))
     return destination
