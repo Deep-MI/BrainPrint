@@ -76,7 +76,6 @@ def compute_surface_brainprint(
     Parameters
     ----------
     path : Path
-
         Path to the *.vtk* surface path.
     return_eigenvectors : bool, optional
         Whether to store eigenvectors in the result (default is True).
