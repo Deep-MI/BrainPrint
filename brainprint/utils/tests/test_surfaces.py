@@ -1,31 +1,45 @@
-from pathlib import Path
-
 import pytest
-from lapy import TriaMesh
 
-# from brainprint.utils.utils import run_shell_command
+from lapy import TriaMesh
+from pathlib import Path
 from brainprint.surfaces import create_aseg_surface, create_cortical_surfaces, read_vtk
 
 
 # Create a fixture for a sample subjects_dir
 @pytest.fixture
 def sample_subjects_dir():
-    # Use a temporary directory for testing, replace this your local subject directory
-    # subject_dir = "../../brainprint_test_data/bert"
-    subject_dir = "../../../../brainprint_test_data/bert"
+    # Use a temporary directory for testing
+    subject_dir = "data"
     return subject_dir
 
 
-# Create a fixture for a sample subjects_dir
+# Create a fixture for a sample subject_id
+@pytest.fixture
+def sample_subject_id():
+    # Use a temporary subject_id for testing
+    subject_id = "bert"
+    return subject_id
+
+
+# Create a fixture for a sample destination_dir
 @pytest.fixture
 def sample_destination_dir():
-    # Use a temporary directory for testing, replace this your local subject directory
-    # destination = "../../brainprint_test_data/destination"
-    destination = "../../../../brainprint_test_data/destination"
+    # Use a temporary directory for testing
+    destination = "data"
     return destination
 
 
-def test_create_aseg_surfaces(sample_subjects_dir, sample_destination_dir):
+# Create a fixture for a sample vtk_file
+@pytest.fixture
+def sample_vtk_file(sample_subjects_dir, sample_subject_id):
+    # Use a temporary file for testing
+    source  = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial"
+    destination = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial.vtk"
+    TriaMesh.read_fssurf(source).write_vtk(str(destination))
+    return str(destination)
+
+
+def test_create_aseg_surfaces(sample_subjects_dir, sample_subject_id, sample_destination_dir):
     """
     Test the create_aseg_surfaces function.
 
@@ -42,8 +56,8 @@ def test_create_aseg_surfaces(sample_subjects_dir, sample_destination_dir):
     - Verifies that the result file name matches the expected .vtk file name.
     """
 
-    subject_dir = Path(sample_subjects_dir)
-    destination = Path(sample_destination_dir)
+    subject_dir = Path(sample_subjects_dir) / sample_subject_id
+    destination = Path(sample_destination_dir) / sample_subject_id
     indices = ["label1", "label2"]
     result = create_aseg_surface(subject_dir, destination, indices)
 
@@ -55,7 +69,7 @@ def test_create_aseg_surfaces(sample_subjects_dir, sample_destination_dir):
     assert result.name == expected_file_name, "The result file does not match .vtk file"
 
 
-def test_create_cortical_surfaces(sample_subjects_dir, sample_destination_dir):
+def test_create_cortical_surfaces(sample_subjects_dir, sample_subject_id, sample_destination_dir):
     """
     Test the create_cortical_surfaces function.
 
@@ -71,9 +85,9 @@ def test_create_cortical_surfaces(sample_subjects_dir, sample_destination_dir):
     - Validates dictionary structure with label names as keys and Path objects.
     - Verifies specific key-value pairs in the result.
     """
-    subject_dir = Path(sample_subjects_dir)
-    destination = Path(sample_destination_dir)
-    # Call the function
+
+    subject_dir = Path(sample_subjects_dir) / sample_subject_id
+    destination = Path(sample_destination_dir) / sample_subject_id
     result = create_cortical_surfaces(subject_dir, destination)
 
     assert isinstance(result, dict)
@@ -88,7 +102,7 @@ def test_create_cortical_surfaces(sample_subjects_dir, sample_destination_dir):
     assert result["rh-pial-2d"] == destination / "surfaces" / "rh.pial.vtk"
 
 
-def test_read_vtk():
+def test_read_vtk(sample_vtk_file):
     """
     Test the read_vtk function with a sample VTK file.
 
@@ -97,19 +111,18 @@ def test_read_vtk():
 
     Note: Assumes `read_vtk` correctly implemented, validates TriaMesh result type.
     """
-    vtk_file = "../../../../brainprint_test_data/destination/surfaces/aseg.final.label1_label2.vtk"
 
     # Call the function with the sample VTK file
-    vtk_path = Path(vtk_file)
+    vtk_path = Path(sample_vtk_file)
     triangular_mesh = read_vtk(vtk_path)
 
     # Assert that the result is an instance of TriaMesh
     assert isinstance(triangular_mesh, TriaMesh)
 
 
-def test_surf_to_vtk(sample_subjects_dir, sample_destination_dir):
-    subject_dir = Path(sample_subjects_dir)
-    sample_destination_dir = Path(sample_destination_dir)
+def test_surf_to_vtk(sample_subjects_dir, sample_subject_id, sample_destination_dir):
+    subject_dir = Path(sample_subjects_dir) / sample_subject_id
+    sample_destination_dir = Path(sample_destination_dir) / sample_subject_id
     try:
         trimesh = TriaMesh.read_fssurf(subject_dir)
         if trimesh:
