@@ -2,10 +2,11 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from lapy import TriaMesh, shapedna
+from lapy import TriaMesh
 
 from brainprint import Brainprint
 from brainprint.brainprint import (
+    apply_eigenvalues_options,
     compute_brainprint,
     compute_surface_brainprint,
     run_brainprint,
@@ -13,68 +14,39 @@ from brainprint.brainprint import (
 from brainprint.surfaces import create_surfaces
 from brainprint.utils.utils import create_output_paths, validate_subject_dir
 
-"""
-Don't forget to source Freesurfer
-export FREESURFER_HOME=/groups/ag-reuter/software-centos/fs72
-source $FREESURFER_HOME/SetUpFreeSurfer.sh 
-"""
-
 
 # Create a fixture for a sample subjects_dir
 @pytest.fixture
 def sample_subjects_dir():
     # Use a temporary directory for testing
-    # subjects_dir = "../../brainprint_test_data/subjects"
-    subjects_dir = "../../../../brainprint_test_data/subjects"
+    subjects_dir = "data"
     return subjects_dir
 
-
+# Create a fixture for a sample subject_id
 @pytest.fixture
-def tria_mesh_fixture():
-    """
-    Create a triangular mesh fixture with predefined points and triangles.
+def sample_subject_id():
+    # Use a temporary subject_id for testing
+    subject_id = "bert"
+    return subject_id
 
-    Returns:
-    TriaMesh: An instance of the TriaMesh class with predefined data.
-    """
-    points = np.array(
-        [
-            [0.0, 0.0, 0.0],
-            [0, 1, 0],
-            [1, 1, 0],
-            [1, 0, 0],
-            [0, 0, 1],
-            [0, 1, 1],
-            [1, 1, 1],
-            [1, 0, 1],
-        ]
-    )
-    trias = np.array(
-        [
-            [0, 1, 2],
-            [2, 3, 0],
-            [4, 5, 6],
-            [6, 7, 4],
-            [0, 4, 7],
-            [7, 3, 0],
-            [0, 4, 5],
-            [5, 1, 0],
-            [1, 5, 6],
-            [6, 2, 1],
-            [3, 7, 6],
-            [6, 2, 3],
-        ]
-    )
-    return TriaMesh(points, trias)
+# Create a fixture for a sample vtk_file
+@pytest.fixture
+def sample_vtk_file(sample_subjects_dir, sample_subject_id):
+    # Use a temporary file for testing
+    source  = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial"
+    destination = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial.vtk"
+    TriaMesh.read_fssurf(source).write_vtk(str(destination))
+    return str(destination)
 
 
 # Test the initialization of the Brainprint class
-def test_brainprint_initialization(sample_subjects_dir):
+def test_brainprint_initialization(sample_subjects_dir, sample_subject_id):
     """
     Test the initialization and run of the Brainprint class.
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
+    sample_subject_id (str): Sample subject ID.
 
     Raises:
     AssertionError: If the test fails due to incorrect attribute initialization.
@@ -98,9 +70,8 @@ def test_brainprint_initialization(sample_subjects_dir):
     assert not brainprint.keep_temp
     assert not brainprint.use_cholmod
 
-    # Change subject id if required
-    subject_id = "bert"
-    result = brainprint.run(subject_id=subject_id)
+    #
+    result = brainprint.run(sample_subject_id)
     assert isinstance(result, dict)
 
     # Check if the values in the dict are of type Dict[str, Path]
@@ -108,52 +79,50 @@ def test_brainprint_initialization(sample_subjects_dir):
         assert isinstance(value, Path)
 
 
-def test_apply_eigenvalues_options(tria_mesh_fixture):
+def test_apply_eigenvalues_options(sample_vtk_file, norm="none", reweight=False):
     """
     Test the apply_eigenvalues_options function.
 
     Parameters:
-    tria_mesh_fixture: Fixture providing a triangular mesh for testing.
+    sample_vtk_file (str): Path to sample vtk file.
+    norm (str): eigenvalues normalization method.
+    reweight (bool): eigenvalues reweighting.
 
     Raises:
     AssertionError: For unexpected eigenvalues normalization failures.
+
     Note:
     - Assumes the `apply_eigenvalues_options` function is correctly implemented.
-    - The 'norm' variable specifies the eigenvalues normalization method for testing.
-    - Test verifies 'eigenvalues' result as None for successful normalization.
+    - Checks type of 'eigenvalues' for successful normalization.
     """
-    norm = "none"
 
-    eigenvalues = shapedna.normalize_ev(
-        geom=tria_mesh_fixture,
-        evals=np.array([10, 2, 33]),
-        method=norm,
-    )
-    assert eigenvalues is None
+    tria_mesh = TriaMesh.read_vtk(sample_vtk_file)
+
+    eigenvalues = np.random.rand(50)
+
+    new_eigenvalues = apply_eigenvalues_options(eigenvalues, triangular_mesh=tria_mesh, norm=norm, reweight=reweight)
+
+    assert isinstance(new_eigenvalues, np.ndarray)
 
 
-def test_compute_surface_brainprint():
+def test_compute_surface_brainprint(sample_vtk_file):
     """
     Test the compute_surface_brainprint function.
 
     This test validates compute_surface_brainprint with a sample VTK path.
+
+    Parameters:
+    sample_vtk_file (str): Path to sample vtk file.
 
     Raises:
     AssertionError: If the test fails due to unexpected return types.
 
     Note:
     - Assumes the `compute_surface_brainprint` function is correctly implemented.
-    - Replace 'path' with the actual path to a VTK file for meaningful testing.
     - Test checks tuple result, unpacks 'eigenvalues' & 'eigenvectors', verifies types.
     """
 
-    # path = "/home/ashrafo/LaPy/data/cubeTria.vtk"
-    path = "../../../../LaPy/data/cubeTria.vtk"
-
-    # This path must be replace with the actival .vtk path
-    result = compute_surface_brainprint(path, num=50)
-    eigenvalues, eigenvectors = result
-    assert isinstance(result, tuple), "Return value is not a tuple"
+    eigenvalues, eigenvectors = compute_surface_brainprint(sample_vtk_file, num=50)
     assert isinstance(eigenvalues, np.ndarray), "Eigenvalues is not a numpyarray"
     assert len(eigenvalues) == 52, "Eigenvalues has an incorrect length"
     assert eigenvectors is None or isinstance(
@@ -161,60 +130,13 @@ def test_compute_surface_brainprint():
     ), "Eigenvectors is not None or a NumPy array"
 
 
-# def test_run_brainprint(sample_subjects_dir):
-#     """
-#     Test the run_brainprint function.
-
-
-#     Parameters:
-#     sample_subjects_dir (str): Path to the sample subjects directory.
-
-#     Raises:
-#     AssertionError: For unexpected return types or eigenvalue matrix properties.
-
-#     Note:
-#     - Assumes the `run_brainprint` function is correctly implemented.
-#     - The test checks:
-#       - The result is a tuple.
-#       - 'eigenvalues' is a dictionary.
-#       - 'eigenvectors' is either None or a dictionary.
-#       - 'distances' is either None or a dictionary.
-#       - If 'eigenvalues' not None and subject found, more eigenvalue matrix checks.
-#       - It verifies that the matrix contains at least two rows.
-#       - It ensures that the values in the first two rows are non-negative.
-#     """
-#     subject_id = "bert"
-#     result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
-#     eigenvalues, eigenvectors, distances = result
-#     assert isinstance(result, tuple), "Return value is not a tuple"
-#     assert isinstance(eigenvalues, dict), "Return value is not a dictionary"
-#     assert eigenvectors is None or isinstance(
-#         eigenvectors, dict
-#     ), "Eigenvectors is not None or a NumPy array"
-#     assert distances is None or isinstance(
-#         eigenvectors, dict
-#     ), "Distacnces is not None or a dictionary"
-
-#     # Check if "area" and "volume" are the first two rows in the eigenvalue matrix
-#     if eigenvalues is not None and subject_id in eigenvalues:
-#         eigenvalue_matrix = eigenvalues[subject_id]
-#         assert (
-#             eigenvalue_matrix.shape[0] >= 2
-#         ), "Eigenvalue matrix has fewer than two rows"
-
-#         # Check the values of the first two rows are non-zero
-#         assert np.all(
-#             eigenvalue_matrix[:2] >= 0
-#         ), "Area and volume values are not non-negative"
-
-
-def test_compute_brainprint(sample_subjects_dir):
+def test_compute_brainprint(sample_subjects_dir, sample_subject_id):
     """
     Test the compute_brainprint function.
 
-
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
+    sample_subject_id (str): Sample subject ID.
 
     Raises:
     AssertionError: If the test fails due to unexpected return types.
@@ -222,8 +144,8 @@ def test_compute_brainprint(sample_subjects_dir):
     Note:
     Assumes validate_subject_dir, create_output_paths, create_surfaces & compute_BP.
     """
-    subject_id = "bert"
-    subject_dir = validate_subject_dir(sample_subjects_dir, subject_id)
+
+    subject_dir = validate_subject_dir(sample_subjects_dir, sample_subject_id)
     destination = create_output_paths(subject_dir=subject_dir, destination=None)
     surfaces = create_surfaces(subject_dir, destination, skip_cortex=False)
     result = compute_brainprint(surfaces)
@@ -235,12 +157,13 @@ def test_compute_brainprint(sample_subjects_dir):
     ), "eigenvectors are not none or dict type"
 
 
-def test_run_brainprint(sample_subjects_dir):
+def test_run_brainprint(sample_subjects_dir, sample_subject_id):
     """
     Test the run_brainprint function.
 
     Parameters:
     sample_subjects_dir (str): Path to the sample subjects directory.
+    sample_subject_id (str): Sample subject ID.
 
     Raises:
     AssertionError: For unexpected return types or eigenvalue matrix properties.
@@ -254,9 +177,10 @@ def test_run_brainprint(sample_subjects_dir):
     - 'distances' is None or a dict.
     - If 'eigenvalues' not None and subject found, further checks eigenvalue matrix.
     """
-    subject_id = "bert"
-    result = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=subject_id)
+
+    result = run_brainprint(sample_subjects_dir, sample_subject_id)
     eigenvalues, eigenvectors, distances = result
+
     assert isinstance(result, tuple), "result is not tuple"
     assert isinstance(eigenvalues, dict), "eigenvalues are not dict type"
     assert eigenvectors is None or isinstance(
@@ -265,8 +189,8 @@ def test_run_brainprint(sample_subjects_dir):
     assert distances is None or isinstance(eigenvectors, dict)
 
     # Check if "area" and "volume" are the first two rows in the eigenvalue matrix
-    if eigenvalues is not None and subject_id in eigenvalues:
-        eigenvalue_matrix = eigenvalues[subject_id]
+    if eigenvalues is not None and sample_subject_id in eigenvalues:
+        eigenvalue_matrix = eigenvalues[sample_subject_id]
         assert eigenvalue_matrix.shape[0] >= 2  # Ensure there are at least two rows
 
         # Check the values of the first two rows are non-zero
