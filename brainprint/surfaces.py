@@ -44,10 +44,14 @@ def create_aseg_surface(
     # runs marching cube to extract surface
     vertices, trias, _, _ = marching_cubes(volume=aseg_data_bin, level=0.5)
 
+    # convert to surface RAS
+    vertices = np.matmul(aseg.header.get_vox2ras_tkr(), np.append(vertices, np.ones((vertices.shape[0], 1)), axis=1).transpose()).transpose()[:,0:3]
+
     # convert to vtk
     relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
+
     conversion_destination = destination / relative_path
     TriaMesh(v=vertices, t=trias).write_vtk(filename=conversion_destination)
 
