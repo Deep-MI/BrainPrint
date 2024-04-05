@@ -6,6 +6,7 @@ import nibabel as nb
 import numpy as np
 from pathlib import Path
 from typing import Dict, List
+from scipy import sparse as sp
 
 from lapy import TriaMesh
 
@@ -48,13 +49,26 @@ def create_aseg_surface(
     # convert to surface RAS
     vertices = np.matmul(aseg.header.get_vox2ras_tkr(), np.append(vertices, np.ones((vertices.shape[0], 1)), axis=1).transpose()).transpose()[:,0:3]
 
+    # create tria mesh
+    aseg_mesh = TriaMesh(v=vertices, t=trias)
+
+    # keep largest connected component
+    comps = sp.csgraph.connected_components(aseg_mesh.adj_sym, directed=False)
+    if comps[0] > 1:
+        comps_largest = np.argmax(np.unique(comps[1], return_counts=True)[1])
+        vtcs_remove = np.where(comps[1] != comps_largest)
+        tria_keep = np.sum(np.isin(aseg_mesh.t, vtcs_remove), axis=1) == 0
+        aseg_mesh.t = aseg_mesh.t[tria_keep, :]
+
+    # remove free vertices
+    aseg_mesh.rm_free_vertices_()
+
     # convert to vtk
     relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
-
     conversion_destination = destination / relative_path
-    TriaMesh(v=vertices, t=trias).write_vtk(filename=conversion_destination)
+    aseg_mesh.write_vtk(filename=conversion_destination)
 
     return conversion_destination
 
