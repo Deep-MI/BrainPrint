@@ -2,9 +2,6 @@
 Utilities for the :mod:`brainprint` module.
 """
 
-import os
-import shlex
-import subprocess
 from pathlib import Path
 
 import numpy as np
