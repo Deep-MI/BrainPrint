@@ -29,7 +29,7 @@ def create_aseg_surface(
     Returns
     -------
     Path
-        Path to the generated surface in VTK format
+        Path to the generated surface in VTK format.
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
     temp_name = "temp/aseg.{uid}".format(uid=uuid.uuid4())
