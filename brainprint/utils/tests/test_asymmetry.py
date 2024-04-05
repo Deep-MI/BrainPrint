@@ -10,11 +10,13 @@ def sample_subjects_dir():
     subjects_dir = "data"
     return subjects_dir
 
+
 @pytest.fixture
 def sample_subject_id():
     # Use a temporary subject id for testing
     subject_id = "bert"
     return subject_id
+
 
 def test_compute_asymmetry(sample_subjects_dir, sample_subject_id):
     """
@@ -32,7 +34,9 @@ def test_compute_asymmetry(sample_subjects_dir, sample_subject_id):
     """
 
     # Run brainprint
-    eigenvalues, eigenvectors, distances = run_brainprint(subjects_dir=sample_subjects_dir, subject_id=sample_subject_id)
+    eigenvalues, eigenvectors, distances = run_brainprint(
+        subjects_dir=sample_subjects_dir, subject_id=sample_subject_id
+    )
 
     # Compute asymmetry
     distances = compute_asymmetry(eigenvalues, distance="euc", skip_cortex=False)

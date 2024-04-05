@@ -1,6 +1,7 @@
 """
 Help text strings for the :mod:`brainprint.cli` module.
 """
+
 CLI_DESCRIPTION: str = (
     "This program conducts a brainprint analysis of FreeSurfer output."
 )
@@ -20,7 +21,9 @@ ASYM: str = "Switch on additional asymmetry calculation (default: off)"
 ASYM_DISTANCE: str = (
     "Distance measurement to use for asymmetry calculation (default: euc)"
 )
-CHOLMOD: str = "Use cholesky decomposition (faster) instead of LU decomposition (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
+CHOLMOD: str = (
+    "Use cholesky decomposition (faster) instead of LU decomposition (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
+)
 KEEP_TEMP: str = (
     "Whether to keep the temporary files directory or not, by default False"
 )

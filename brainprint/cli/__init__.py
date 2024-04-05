@@ -1,6 +1,7 @@
 """
 BrainPrint analysis CLI.
 """
+
 from ..brainprint import run_brainprint
 from .parser import parse_options
 

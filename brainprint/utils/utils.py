@@ -1,6 +1,7 @@
 """
 Utilities for the :mod:`brainprint` module.
 """
+
 import os
 import shlex
 import subprocess
@@ -9,6 +10,7 @@ from typing import Dict
 
 import numpy as np
 import pandas as pd
+
 
 def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
     """

@@ -22,6 +22,7 @@ def sample_subjects_dir():
     subjects_dir = "data"
     return subjects_dir
 
+
 # Create a fixture for a sample subject_id
 @pytest.fixture
 def sample_subject_id():
@@ -29,11 +30,12 @@ def sample_subject_id():
     subject_id = "bert"
     return subject_id
 
+
 # Create a fixture for a sample vtk_file
 @pytest.fixture
 def sample_vtk_file(sample_subjects_dir, sample_subject_id):
     # Use a temporary file for testing
-    source  = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial"
+    source = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial"
     destination = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial.vtk"
     TriaMesh.read_fssurf(source).write_vtk(str(destination))
     return str(destination)
@@ -100,7 +102,9 @@ def test_apply_eigenvalues_options(sample_vtk_file, norm="none", reweight=False)
 
     eigenvalues = np.random.rand(50)
 
-    new_eigenvalues = apply_eigenvalues_options(eigenvalues, triangular_mesh=tria_mesh, norm=norm, reweight=reweight)
+    new_eigenvalues = apply_eigenvalues_options(
+        eigenvalues, triangular_mesh=tria_mesh, norm=norm, reweight=reweight
+    )
 
     assert isinstance(new_eigenvalues, np.ndarray)
 

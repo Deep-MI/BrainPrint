@@ -1,6 +1,7 @@
 """
 Contains asymmetry estimation functionality.
 """
+
 from typing import Dict
 
 import numpy as np
