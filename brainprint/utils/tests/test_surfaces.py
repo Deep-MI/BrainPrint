@@ -58,14 +58,14 @@ def test_create_aseg_surfaces(sample_subjects_dir, sample_subject_id, sample_des
 
     subject_dir = Path(sample_subjects_dir) / sample_subject_id
     destination = Path(sample_destination_dir) / sample_subject_id
-    indices = ["label1", "label2"]
+    indices = ["255"]
     result = create_aseg_surface(subject_dir, destination, indices)
 
     assert result is not None, "The result is not None"
     assert isinstance(result, Path), "The result is not a path"
     assert result.exists(), "The result file does not exist"
 
-    expected_file_name = "aseg.final.label1_label2.vtk"
+    expected_file_name = "aseg.final.255.vtk"
     assert result.name == expected_file_name, "The result file does not match .vtk file"
 
 
