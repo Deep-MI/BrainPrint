@@ -1,6 +1,7 @@
 """
 Utility module holding surface generation related functions.
 """
+
 import uuid
 import nibabel as nb
 import numpy as np
@@ -10,6 +11,7 @@ from scipy import sparse as sp
 from lapy import TriaMesh
 
 from skimage.measure import marching_cubes
+
 
 def create_aseg_surface(
     subject_dir: Path, destination: Path, indices: list[int]
@@ -37,7 +39,7 @@ def create_aseg_surface(
 
     # binarize on selected labels (creates temp indices_mask)
     aseg = nb.load(aseg_path)
-    indices_num = [ int(x) for x in indices ]
+    indices_num = [int(x) for x in indices]
     aseg_data_bin = np.isin(aseg.get_fdata(), indices_num).astype(np.float32)
     aseg_bin = nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine)
     nb.save(img=aseg_bin, filename=indices_mask)
@@ -46,7 +48,10 @@ def create_aseg_surface(
     vertices, trias, _, _ = marching_cubes(volume=aseg_data_bin, level=0.5)
 
     # convert to surface RAS
-    vertices = np.matmul(aseg.header.get_vox2ras_tkr(), np.append(vertices, np.ones((vertices.shape[0], 1)), axis=1).transpose()).transpose()[:,0:3]
+    vertices = np.matmul(
+        aseg.header.get_vox2ras_tkr(),
+        np.append(vertices, np.ones((vertices.shape[0], 1)), axis=1).transpose(),
+    ).transpose()[:, 0:3]
 
     # create tria mesh
     aseg_mesh = TriaMesh(v=vertices, t=trias)

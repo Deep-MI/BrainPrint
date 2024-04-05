@@ -33,13 +33,15 @@ def sample_destination_dir():
 @pytest.fixture
 def sample_vtk_file(sample_subjects_dir, sample_subject_id):
     # Use a temporary file for testing
-    source  = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial"
+    source = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial"
     destination = Path(sample_subjects_dir) / sample_subject_id / "surf" / "lh.pial.vtk"
     TriaMesh.read_fssurf(source).write_vtk(str(destination))
     return str(destination)
 
 
-def test_create_aseg_surfaces(sample_subjects_dir, sample_subject_id, sample_destination_dir):
+def test_create_aseg_surfaces(
+    sample_subjects_dir, sample_subject_id, sample_destination_dir
+):
     """
     Test the create_aseg_surfaces function.
 
@@ -69,7 +71,9 @@ def test_create_aseg_surfaces(sample_subjects_dir, sample_subject_id, sample_des
     assert result.name == expected_file_name, "The result file does not match .vtk file"
 
 
-def test_create_cortical_surfaces(sample_subjects_dir, sample_subject_id, sample_destination_dir):
+def test_create_cortical_surfaces(
+    sample_subjects_dir, sample_subject_id, sample_destination_dir
+):
     """
     Test the create_cortical_surfaces function.
 

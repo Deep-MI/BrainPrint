@@ -1,6 +1,7 @@
 """
 Utilities for the :mod:`brainprint` module.
 """
+
 import os
 import shlex
 import subprocess
