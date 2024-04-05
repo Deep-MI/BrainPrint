@@ -1,15 +1,14 @@
 """
 Utility module holding surface generation related functions.
 """
-
 import uuid
-import nibabel as nb
-import numpy as np
 from pathlib import Path
 from scipy import sparse as sp
 
+import nibabel as nb
+import numpy as np
 from lapy import TriaMesh
-
+from scipy import sparse as sp
 from skimage.measure import marching_cubes
 
 

@@ -1,7 +1,8 @@
-import pytest
-
-from lapy import TriaMesh
 from pathlib import Path
+
+import pytest
+from lapy import TriaMesh
+
 from brainprint.surfaces import create_aseg_surface, create_cortical_surfaces, read_vtk
 
 
