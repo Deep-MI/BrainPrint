@@ -36,7 +36,7 @@ classifiers = [
 ]
 dependencies = [
     'numpy',
-    'scipy',
+    'scipy!=1.13.0',
     'pandas',
     'lapy >= 1.0.0, <2',
     'psutil'
