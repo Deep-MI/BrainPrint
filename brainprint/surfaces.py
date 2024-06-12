@@ -5,6 +5,7 @@ import uuid
 from pathlib import Path
 from scipy import sparse as sp
 
+import os
 import nibabel as nb
 import numpy as np
 from lapy import TriaMesh
@@ -77,7 +78,9 @@ def create_aseg_surface(
     relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
+    # os.makedirs(os.path.dirname(relative_path), exist_ok=True)
     conversion_destination = destination / relative_path
+    os.makedirs(os.path.dirname(conversion_destination), exist_ok=True)
     aseg_mesh.write_vtk(filename=conversion_destination)
 
     return conversion_destination

@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from brainprint.asymmetry import compute_asymmetry
@@ -7,14 +8,14 @@ from brainprint.brainprint import run_brainprint
 @pytest.fixture
 def sample_subjects_dir():
     # Use a temporary directory for testing
-    subjects_dir = "data"
+    subjects_dir = os.environ["SUBJECTS_DIR"]
     return subjects_dir
 
 
 @pytest.fixture
 def sample_subject_id():
     # Use a temporary subject id for testing
-    subject_id = "bert"
+    subject_id = os.environ["SUBJECT_ID"]
     return subject_id
 
 
