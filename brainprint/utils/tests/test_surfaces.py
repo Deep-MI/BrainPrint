@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import os
 import pytest
 from lapy import TriaMesh
 
@@ -10,15 +11,14 @@ from brainprint.surfaces import create_aseg_surface, create_cortical_surfaces, r
 @pytest.fixture
 def sample_subjects_dir():
     # Use a temporary directory for testing
-    subject_dir = "data"
-    return subject_dir
+    subjects_dir = os.environ["SUBJECTS_DIR"]
+    return subjects_dir
 
 
-# Create a fixture for a sample subject_id
 @pytest.fixture
 def sample_subject_id():
-    # Use a temporary subject_id for testing
-    subject_id = "bert"
+    # Use a temporary subject id for testing
+    subject_id = os.environ["SUBJECT_ID"]
     return subject_id
 
 
@@ -26,7 +26,7 @@ def sample_subject_id():
 @pytest.fixture
 def sample_destination_dir():
     # Use a temporary directory for testing
-    destination = "data"
+    destination = os.environ["DESTINATION_DIR"]
     return destination
 
 
