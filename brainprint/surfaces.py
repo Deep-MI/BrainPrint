@@ -43,8 +43,15 @@ def create_aseg_surface(
     aseg_bin = nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine)
     nb.save(img=aseg_bin, filename=indices_mask)
 
+    # legacy code for running FreeSurfer's mri_pretess
+    #import subprocess
+    #subprocess.run(["cp", str(indices_mask), str(indices_mask).replace(".mgz", "-no_pretess.mgz")])
+    ##subprocess.run(["mri_pretess", str(indices_mask).replace(".mgz", "-no_pretess.mgz"), "pretess" , str(indices_mask).replace(".mgz", "-no_pretess.mgz"), str(indices_mask)])
+    ##subprocess.run(["mri_pretess", str(indices_mask).replace(".mgz", "-no_pretess.mgz"), "pretess" , str(subject_dir / "mri/norm.mgz"), str(indices_mask)])
+    #aseg_data_bin = nb.load(indices_mask).get_fdata()
+
     # runs marching cube to extract surface
-    vertices, trias, _, _ = marching_cubes(volume=aseg_data_bin, level=0.5)
+    vertices, trias, _, _ = marching_cubes(volume=aseg_data_bin, level=0.5, allow_degenerate=False, method="lorensen")
 
     # convert to surface RAS
     vertices = np.matmul(
