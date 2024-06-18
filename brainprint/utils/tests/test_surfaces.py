@@ -1,6 +1,6 @@
+import os
 from pathlib import Path
 
-import os
 import pytest
 from lapy import TriaMesh
 
