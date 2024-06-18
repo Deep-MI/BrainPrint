@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import numpy as np
@@ -19,15 +20,14 @@ from brainprint.utils.utils import create_output_paths, validate_subject_dir
 @pytest.fixture
 def sample_subjects_dir():
     # Use a temporary directory for testing
-    subjects_dir = "data"
+    subjects_dir = os.environ["SUBJECTS_DIR"]
     return subjects_dir
 
 
-# Create a fixture for a sample subject_id
 @pytest.fixture
 def sample_subject_id():
-    # Use a temporary subject_id for testing
-    subject_id = "bert"
+    # Use a temporary subject id for testing
+    subject_id = os.environ["SUBJECT_ID"]
     return subject_id
 
 
