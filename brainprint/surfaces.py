@@ -1,7 +1,7 @@
 """
 Utility module holding surface generation related functions.
 """
-import uuid
+import os
 from pathlib import Path
 from scipy import sparse as sp
 
@@ -9,6 +9,7 @@ import nibabel as nb
 import numpy as np
 from lapy import TriaMesh
 from scipy import sparse as sp
+from scipy import ndimage as sn
 from skimage.measure import marching_cubes
 
 
@@ -33,7 +34,7 @@ def create_aseg_surface(
         Path to the generated surface in VTK format.
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
-    temp_name = "temp/aseg.{uid}".format(uid=uuid.uuid4())
+    temp_name = "temp/aseg.{indices}".format(indices="_".join(indices))
     indices_mask = destination / f"{temp_name}.mgz"
 
     # binarize on selected labels (creates temp indices_mask)
@@ -42,6 +43,16 @@ def create_aseg_surface(
     aseg_data_bin = np.isin(aseg.get_fdata(), indices_num).astype(np.float32)
     aseg_bin = nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine)
     nb.save(img=aseg_bin, filename=indices_mask)
+    
+    # legacy code for applying mask smoothing
+    #k = 1.0 / np.sqrt(np.array([
+    #    [[3, 2, 3], [2, 1, 2], [3, 2, 3]],
+    #    [[2, 1, 2], [1, 1, 1], [2, 1, 1]],
+    #    [[3, 2, 3], [2, 1, 2], [3, 2, 3]],
+    #]))
+    #aseg_data_bin = sn.convolve(aseg_data_bin, k)
+    #aseg_data_bin = np.round(aseg_data_bin / np.sum(k))
+    #nb.save(img=nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine), filename=str(indices_mask).replace(".mgz", "-filter.mgz"))
 
     # legacy code for running FreeSurfer's mri_pretess
     # import subprocess
@@ -79,7 +90,7 @@ def create_aseg_surface(
     relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
-    # os.makedirs(os.path.dirname(relative_path), exist_ok=True)
+    
     conversion_destination = destination / relative_path
     os.makedirs(os.path.dirname(conversion_destination), exist_ok=True)
     aseg_mesh.write_vtk(filename=conversion_destination)
