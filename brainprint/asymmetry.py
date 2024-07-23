@@ -25,25 +25,10 @@ def compute_asymmetry(
     dict[str, float]
         {left_label}_{right_label}, distance.
     """
-    # Define structures
-
-    # combined and individual aseg labels:
-    # - Left  Striatum: left  Caudate + Putamen + Accumbens
-    # - Right Striatum: right Caudate + Putamen + Accumbens
-    # - CorpusCallosum: 5 subregions combined
-    # - Cerebellum: brainstem + (left+right) cerebellum WM and GM
-    # - Ventricles: (left+right) lat.vent + inf.lat.vent + choroidplexus + 3rdVent + CSF
-    # - Lateral-Ventricle: lat.vent + inf.lat.vent + choroidplexus
-    # - 3rd-Ventricle: 3rd-Ventricle + CSF
 
     structures_left_right = [
-        ("Left-Striatum", "Right-Striatum"),
         ("Left-Lateral-Ventricle", "Right-Lateral-Ventricle"),
-        (
-            "Left-Cerebellum-White-Matter",
-            "Right-Cerebellum-White-Matter",
-        ),
-        ("Left-Cerebellum-Cortex", "Right-Cerebellum-Cortex"),
+        ("Left-Cerebellum", "Right-Cerebellum"),
         ("Left-Thalamus-Proper", "Right-Thalamus-Proper"),
         ("Left-Caudate", "Right-Caudate"),
         ("Left-Putamen", "Right-Putamen"),

@@ -27,11 +27,8 @@ def test_files_exist_in_directory(sample_subjects_dir, sample_subject_id):
     surface_directory = os.path.join(output_directory, "surfaces")
     surface_files = [
         "aseg.final.10.vtk",
-        "aseg.final.47.vtk",
-        "aseg.final.11_12_26.vtk",
         "aseg.final.49.vtk",
         "aseg.final.11.vtk",
-        "aseg.final.50_51_58.vtk",
         "aseg.final.12.vtk",
         "aseg.final.50.vtk",
         "aseg.final.13.vtk",
@@ -49,16 +46,14 @@ def test_files_exist_in_directory(sample_subjects_dir, sample_subject_id):
         "aseg.final.251_252_253_254_255.vtk",
         "aseg.final.7_8_16_46_47.vtk",
         "aseg.final.26.vtk",
-        "aseg.final.7.vtk",
+        "aseg.final.7_8.vtk",
         "aseg.final.28.vtk",
-        "aseg.final.8.vtk",
         "aseg.final.43_44_63.vtk",
         "lh.pial.vtk",
-        "aseg.final.4_5_14_24_31_43_44_63.vtk",
         "lh.white.vtk",
         "aseg.final.4_5_31.vtk",
         "rh.pial.vtk",
-        "aseg.final.46.vtk",
+        "aseg.final.46_47.vtk",
         "rh.white.vtk",
     ]
 
