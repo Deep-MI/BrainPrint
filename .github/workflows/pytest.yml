@@ -17,7 +17,7 @@ on:
 env:
   SUBJECTS_DIR: /home/runner/work/BrainPrint/BrainPrint/data
   SUBJECT_ID: test
-  DESTINATION_DIR: /home/runner/work/BrainPrint/BrainPrint/dat
+  DESTINATION_DIR: /home/runner/work/BrainPrint/BrainPrint/data
 
 jobs:
   pytest:
@@ -46,6 +46,12 @@ jobs:
         run: |
           python -m pip install --progress-bar off --upgrade pip setuptools wheel
           python -m pip install --progress-bar off .[test]
+      # For testing purposes and until the new lapy version is released,
+      # uninstall pypi package and reinstall from repo
+      - name: Get lapy from repo / branch
+        run: |
+          python -m pip uninstall lapy
+          python -m pip install git+https://github.com/deep-mi/lapy
       - name: Create data folders
         run: |
           mkdir -p data/test/mri
