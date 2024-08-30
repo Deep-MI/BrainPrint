@@ -26,19 +26,19 @@ classifiers = [
     'Operating System :: Unix',
     'Operating System :: MacOS',
     'Programming Language :: Python :: 3 :: Only',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Natural Language :: English',
     'License :: OSI Approved :: MIT License',
     'Intended Audience :: Science/Research',
 ]
 dependencies = [
-    'numpy',
+    'numpy>=1.21',
     'scipy!=1.13.0',
     'pandas',
-    'lapy >= 1.0.0, <2',
+    'lapy>=1.0.0',
     'psutil'
 ]
 
@@ -105,7 +105,7 @@ exclude = ['brainprint*tests']
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py310']
 include = '\.pyi?$'
 extend-exclude = '''
 (
@@ -122,7 +122,7 @@ extend-exclude = '''
 profile = 'black'
 multi_line_output = 3
 line_length = 88
-py_version = 38
+py_version = 310
 extend_skip_glob = [
     'setup.py',
     'data/*',
