@@ -11,12 +11,14 @@ on:
 #    paths:
 #      - '**.py'
   workflow_dispatch:
+    branches: [remove-freesurfer]
+
 
 env:
   SUBJECTS_DIR: /home/runner/work/brainprint-tests/brainprint-tests/data
   SUBJECT_ID: test
   DESTINATION_DIR: /home/runner/work/brainprint-tests/brainprint-tests/dat
-h
+
 jobs:
   pytest:
     timeout-minutes: 30
