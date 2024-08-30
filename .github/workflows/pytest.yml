@@ -50,7 +50,7 @@ jobs:
       # uninstall pypi package and reinstall from repo
       - name: Get lapy from repo / branch
         run: |
-          python -m pip uninstall lapy
+          python -m pip uninstall --yes lapy
           python -m pip install git+https://github.com/deep-mi/lapy
       - name: Create data folders
         run: |
