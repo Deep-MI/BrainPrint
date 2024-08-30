@@ -15,9 +15,9 @@ on:
 
 
 env:
-  SUBJECTS_DIR: /home/runner/work/brainprint-tests/brainprint-tests/data
+  SUBJECTS_DIR: /home/runner/work/BrainPrint/BrainPrint/data
   SUBJECT_ID: test
-  DESTINATION_DIR: /home/runner/work/brainprint-tests/brainprint-tests/dat
+  DESTINATION_DIR: /home/runner/work/BrainPrint/BrainPrint/dat
 
 jobs:
   pytest:
