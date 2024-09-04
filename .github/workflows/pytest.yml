@@ -3,16 +3,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
 on:
-#  pull_request:
-#    paths:
-#      - '**.py'
-#  push:
-#    branches: [main]
-#    paths:
-#      - '**.py'
+  pull_request:
+    paths:
+      - '**.py'
+  push:
+    branches: [main]
+    paths:
+      - '**.py'
   workflow_dispatch:
-    branches: [remove-freesurfer]
-
 
 env:
   SUBJECTS_DIR: /home/runner/work/BrainPrint/BrainPrint/data
@@ -46,12 +44,6 @@ jobs:
         run: |
           python -m pip install --progress-bar off --upgrade pip setuptools wheel
           python -m pip install --progress-bar off .[test]
-      # For testing purposes and until the new lapy version is released,
-      # uninstall pypi package and reinstall from repo
-      - name: Get lapy from repo / branch
-        run: |
-          python -m pip uninstall --yes lapy
-          python -m pip install git+https://github.com/deep-mi/lapy
       - name: Create data folders
         run: |
           mkdir -p data/test/mri
