@@ -1,15 +1,13 @@
 """
 Contains asymmetry estimation functionality.
 """
-from typing import Dict
-
 import numpy as np
 from lapy import shapedna
 
 
 def compute_asymmetry(
     eigenvalues, distance: str = "euc", skip_cortex: bool = False
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Compute lateral shape distances from BrainPrint analysis results.
 
@@ -24,7 +22,7 @@ def compute_asymmetry(
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         {left_label}_{right_label}, distance.
     """
     # Define structures
@@ -75,10 +73,8 @@ def compute_asymmetry(
         key = f"{left_label}_{right_label}"
         if has_nan:
             message = (
-                "NaNs found for {left_label} or {right_label}, "
-                "skipping asymmetry computation...".format(
-                    left_label=left_label, right_label=right_label
-                )
+                f"NaNs found for {left_label} or {right_label}, "
+                "skipping asymmetry computation..."
             )
             print(message)
             distances[key] = np.nan
