@@ -3,7 +3,6 @@ Utility module holding surface generation related functions.
 """
 import uuid
 from pathlib import Path
-from typing import Dict, List
 
 from lapy import TriaMesh
 
@@ -11,7 +10,7 @@ from .utils.utils import run_shell_command
 
 
 def create_aseg_surface(
-    subject_dir: Path, destination: Path, indices: List[int]
+    subject_dir: Path, destination: Path, indices: list[int]
 ) -> Path:
     """
     Generate a surface from the aseg and label files.
@@ -22,7 +21,7 @@ def create_aseg_surface(
         Path to the subject's directory.
     destination : Path
         Path to the destination directory where the surface will be saved.
-    indices : List[int]
+    indices : list[int]
         List of label indices to include in the surface generation.
 
     Returns
@@ -32,7 +31,7 @@ def create_aseg_surface(
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
     norm_path = subject_dir / "mri/norm.mgz"
-    temp_name = "temp/aseg.{uid}".format(uid=uuid.uuid4())
+    temp_name = f"temp/aseg.{uuid.uuid4()}"
     indices_mask = destination / f"{temp_name}.mgz"
     # binarize on selected labels (creates temp indices_mask)
     # always binarize first, otherwise pretess may scale aseg if labels are
@@ -58,7 +57,7 @@ def create_aseg_surface(
         run_shell_command(pretess_command)
 
     # runs marching cube to extract surface
-    surface_name = "{name}.surf".format(name=temp_name)
+    surface_name = f"{temp_name}.surf"
     surface_path = destination / surface_name
     extraction_template = "mri_mc {source} {label_value} {destination}"
     extraction_command = extraction_template.format(
@@ -80,7 +79,7 @@ def create_aseg_surface(
     return conversion_destination
 
 
-def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path]:
+def create_aseg_surfaces(subject_dir: Path, destination: Path) -> dict[str, Path]:
     """
     Create surfaces from FreeSurfer aseg labels.
 
@@ -93,7 +92,7 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path
 
     Returns
     -------
-    Dict[str, Path]
+    dict[str, Path]
         Dictionary of label names mapped to corresponding surface Path objects.
     """
     # Define aseg labels
@@ -145,7 +144,7 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path
     }
 
 
-def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, Path]:
+def create_cortical_surfaces(subject_dir: Path, destination: Path) -> dict[str, Path]:
     """
     Create cortical surfaces from FreeSurfer labels.
 
@@ -158,7 +157,7 @@ def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, 
 
     Returns
     -------
-    Dict[str, Path]
+    dict[str, Path]
         Dictionary mapping label names to associated surface Paths.
     """
     cortical_labels = {
@@ -178,7 +177,7 @@ def create_cortical_surfaces(subject_dir: Path, destination: Path) -> Dict[str, 
 
 def create_surfaces(
     subject_dir: Path, destination: Path, skip_cortex: bool = False
-) -> Dict[str, Path]:
+) -> dict[str, Path]:
     """
     Create surfaces based on FreeSurfer labels.
 
@@ -193,7 +192,7 @@ def create_surfaces(
 
     Returns
     -------
-    Dict[str, Path]
+    dict[str, Path]
         Dict mapping label names to the corresponding Path objects of created surfaces.
     """
     surfaces = create_aseg_surfaces(subject_dir, destination)
@@ -225,15 +224,11 @@ def read_vtk(path: Path):
     try:
         triangular_mesh = TriaMesh.read_vtk(path)
     except Exception:
-        message = "Failed to read VTK from the following path: {path}!".format(
-            path=path
-        )
-        raise RuntimeError(message)
+        message = f"Failed to read VTK from the following path: {path}!"
+        raise RuntimeError(message) from None
     else:
         if triangular_mesh is None:
-            message = "Failed to read VTK from the following path: {path}!".format(
-                path=path
-            )
+            message = f"Failed to read VTK from the following path: {path}!"
             raise RuntimeError(message)
         return triangular_mesh
 

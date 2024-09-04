@@ -5,7 +5,7 @@ Definition of the brainprint analysis execution functions..
 import shutil
 import warnings
 from pathlib import Path
-from typing import Dict, Tuple, Union
+from typing import Union
 
 import numpy as np
 from lapy import TriaMesh, shapedna
@@ -69,7 +69,7 @@ def compute_surface_brainprint(
     norm: str = "none",
     reweight: bool = False,
     use_cholmod: bool = False,
-) -> Tuple[np.ndarray, Union[np.ndarray, None]]:
+) -> tuple[np.ndarray, Union[np.ndarray, None]]:
     """
     Compute BrainPrint eigenvalues and eigenvectors for the given surface.
 
@@ -94,7 +94,7 @@ def compute_surface_brainprint(
 
     Returns
     -------
-    Tuple[np.ndarray, Union[np.ndarray, None]]
+    tuple[np.ndarray, Union[np.ndarray, None]]
         Eigenvalues, eigenvectors (if returned).
     """
     triangular_mesh = read_vtk(path)
@@ -126,19 +126,19 @@ def compute_surface_brainprint(
 
 
 def compute_brainprint(
-    surfaces: Dict[str, Path],
+    surfaces: dict[str, Path],
     keep_eigenvectors: bool = False,
     num: int = 50,
     norm: str = "none",
     reweight: bool = False,
     use_cholmod: bool = False,
-) -> Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None]]:
+) -> tuple[dict[str, np.ndarray], Union[dict[str, np.ndarray], None]]:
     """
     Compute ShapeDNA descriptors over several surfaces.
 
     Parameters
     ----------
-    surfaces : Dict[str, Path]
+    surfaces : dict[str, Path]
         Dictionary mapping from labels to *.vtk* paths.
     keep_eigenvectors : bool, optional
         Whether to also return eigenvectors or not, by default False.
@@ -155,7 +155,7 @@ def compute_brainprint(
 
     Returns
     -------
-    Tuple[Dict[str, np.ndarray], Union[Dict[str, np.ndarray], None]]
+    tuple[dict[str, np.ndarray], Union[dict[str, np.ndarray], None]]
         Surface label to eigenvalues, surface label to eigenvectors (if
         *keep_eigenvectors* is True).
     """
@@ -177,9 +177,9 @@ def compute_brainprint(
         except Exception as e:
             message = (
                 "BrainPrint analysis raised the following exception:\n"
-                "{exception}".format(exception=e)
+                f"{e}"
             )
-            warnings.warn(message)
+            warnings.warn(message, stacklevel = 2)
             eigenvalues[surface_label] = ["NaN"] * (num + 2)
         else:
             if len(surface_eigenvalues) == 0:
@@ -275,7 +275,7 @@ def run_brainprint(
             skip_cortex=skip_cortex,
         )
 
-    csv_name = "{subject_id}.brainprint.csv".format(subject_id=subject_id)
+    csv_name = f"{subject_id}.brainprint.csv"
     csv_path = destination / csv_name
     export_brainprint_results(csv_path, eigenvalues, eigenvectors, distances)
     if not keep_temp:
@@ -358,7 +358,7 @@ class Brainprint:
         if freesurfer_validation:
             test_freesurfer()
 
-    def run(self, subject_id: str, destination: Path = None) -> Dict[str, Path]:
+    def run(self, subject_id: str, destination: Path = None) -> dict[str, Path]:
         """
         Run Brainprint analysis for a specified subject.
 
@@ -371,7 +371,7 @@ class Brainprint:
 
         Returns
         -------
-        Dict[str, Path]
+        dict[str, Path]
             A dictionary containing paths to the generated analysis results.
         """
         self._eigenvalues = self._eigenvectors = self._distances = None
@@ -418,7 +418,7 @@ class Brainprint:
         -------
         None
         """
-        csv_name = "{subject_id}.brainprint.csv".format(subject_id=subject_id)
+        csv_name = f"{subject_id}.brainprint.csv"
         csv_path = destination / csv_name
         return export_brainprint_results(
             csv_path, self._eigenvalues, self._eigenvectors, self._distances

@@ -5,7 +5,6 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -34,11 +33,11 @@ def test_freesurfer() -> None:
     command = "mri_binarize -version"
     try:
         run_shell_command(command)
-    except FileNotFoundError:
+    except FileNotFoundError as err:
         raise RuntimeError(
             "Failed to run FreeSurfer command, please check the required binaries "
             "are included in your $PATH."
-        )
+        ) from err
 
 
 def run_shell_command(command: str, verbose: bool = False):
@@ -62,17 +61,15 @@ def run_shell_command(command: str, verbose: bool = False):
         return_code = subprocess.call(args)
     except Exception as e:
         message = (
-            "Failed to execute the following command:\n{command}\n"
-            "The following exception was raised:\n{exception}".format(
-                command=command, exception=e
-            )
+            f"Failed to execute the following command:\n{command}\n"
+            f"The following exception was raised:\n{e}"
         )
         print(message)
         raise
     if return_code != 0:
         message = (
-            "Execution of the following command:\n{command}\n"
-            "Returned non-zero exit code!".format(command=command)
+            f"Execution of the following command:\n{command}\n"
+            "Returned non-zero exit code!"
         )
         raise RuntimeError(message)
 
@@ -96,9 +93,7 @@ def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
     """
     subject_dir = Path(subjects_dir) / subject_id
     if not subject_dir.is_dir():
-        message = "FreeSurfer results directory at {path} does not exist!".format(
-            path=subject_dir
-        )
+        message = f"FreeSurfer results directory at {subject_dir} does not exist!"
         raise FileNotFoundError(message)
     return subject_dir
 
@@ -141,7 +136,7 @@ def export_brainprint_results(
     eigenvalues: np.ndarray,
     eigenvectors: np.ndarray = None,
     distances: np.ndarray = None,
-) -> Dict[str, Path]:
+) -> dict[str, Path]:
     """
     Writes the BrainPrint analysis results to CSV files.
 
@@ -167,7 +162,7 @@ def export_brainprint_results(
         eigenvectors_dir = destination.parent / "eigenvectors"
         eigenvectors_dir.mkdir(parents=True, exist_ok=True)
         for key, value in eigenvectors.items():
-            suffix = ".evecs-{key}.csv".format(key=key)
+            suffix = f".evecs-{key}.csv"
             name = destination.with_suffix(suffix).name
             vectors_destination = eigenvectors_dir / name
             pd.DataFrame(value).to_csv(
