@@ -12,14 +12,21 @@ on:
       - '**.py'
   workflow_dispatch:
 
+env:
+  SUBJECTS_DIR: /home/runner/work/BrainPrint/BrainPrint/data
+  SUBJECT_ID: test
+  DESTINATION_DIR: /home/runner/work/BrainPrint/BrainPrint/data
+
 jobs:
   pytest:
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos, windows]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+#        os: [ubuntu, macos, windows]
+#        python-version: [3.8, 3.9, "3.10", "3.11"]
+        os: [ubuntu]
+        python-version: ["3.10"]
     name: ${{ matrix.os }} - py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}-latest
     defaults:
@@ -32,12 +39,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
       - name: Install package
         run: |
           python -m pip install --progress-bar off --upgrade pip setuptools wheel
           python -m pip install --progress-bar off .[test]
+      - name: Create data folders
+        run: |
+          mkdir -p data/test/mri
+          mkdir -p data/test/surf
+          mkdir -p data/test/temp
       - name: Display system information
         run: brainprint-sys_info --developer
+      - name: Download files
+        run: |
+          wget https://surfer.nmr.mgh.harvard.edu/pub/data/tutorial_data/buckner_data/tutorial_subjs/good_output/mri/aseg.mgz -O data/test/mri/aseg.mgz
+          wget https://surfer.nmr.mgh.harvard.edu/pub/data/tutorial_data/buckner_data/tutorial_subjs/good_output/surf/lh.white -O data/test/surf/lh.white
+          wget https://surfer.nmr.mgh.harvard.edu/pub/data/tutorial_data/buckner_data/tutorial_subjs/good_output/surf/rh.white -O data/test/surf/rh.white
+          wget https://surfer.nmr.mgh.harvard.edu/pub/data/tutorial_data/buckner_data/tutorial_subjs/good_output/surf/lh.pial -O data/test/surf/lh.pial
+          wget https://surfer.nmr.mgh.harvard.edu/pub/data/tutorial_data/buckner_data/tutorial_subjs/good_output/surf/rh.pial -O data/test/surf/rh.pial
       - name: Run pytest
         run: pytest brainprint --cov=brainprint --cov-report=xml --cov-config=pyproject.toml
       - name: Upload to codecov

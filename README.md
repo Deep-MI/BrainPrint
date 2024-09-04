@@ -12,7 +12,7 @@ cortical parcellations or label files).
 
 ## Installation
 
-Use the following code to install the latest release of LaPy into your local
+Use the following code to install the latest release into your local
 Python package directory:
 
 `python3 -m pip install brainprint`
@@ -88,7 +88,14 @@ asymmetry calculation is performed and/or for the eigenvectors (CLI `--evecs` fl
 
 ## Changes
 
-There are some changes in functionality in comparison to the original [BrainPrint](https://github.com/Deep-MI/BrainPrint-legacy)
+Since version 0.5.0, some changes break compatibility with earlier versions (0.4.0 and lower) as well as the [original BrainPrint](https://github.com/Deep-MI/BrainPrint-legacy). These changes include:
+
+- for the creation of surfaces from voxel-based segmentations, we have replaced FreeSurfer's marching cube algorithm by scikit-image's marching cube algorithm. Similarly, other FreeSurfer binaries have been replaced by custom Python functions. As a result, a parallel FreeSurfer installation is no longer a requirement for running the brainprint software.
+- we have changed / removed the following composite structures from the brainprint shape descriptor: the left and right *striatum* (composite of caudate, putamen, and nucleus accumbens) and the left and right *ventricles* (composite of lateral, inferior lateral, 3rd ventricle, choroid plexus, and CSF) have been removed; the left and right *cerebellum-white-matter* and *cerebellum-cortex* have been merged into left and right *cerebellum*.
+
+As a result of these changes, numerical values for the brainprint shape descriptor that are obtained from version 0.5.0 and higher are expected to differ from earlier versions when applied to the same data, but should remain highly correlated with earlier results.
+
+There are some changes in version 0.4.0 (and lower) in functionality in comparison to the original [BrainPrint](https://github.com/Deep-MI/BrainPrint-legacy)
 scripts:
 
 - currently no support for tetrahedral meshes

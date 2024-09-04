@@ -1,6 +1,7 @@
 """
 Help text strings for the :mod:`brainprint.cli` module.
 """
+
 CLI_DESCRIPTION: str = (
     "This program conducts a brainprint analysis of FreeSurfer output."
 )
@@ -20,7 +21,9 @@ ASYM: str = "Switch on additional asymmetry calculation (default: off)"
 ASYM_DISTANCE: str = (
     "Distance measurement to use for asymmetry calculation (default: euc)"
 )
-CHOLMOD: str = "Use cholesky decomposition (faster) instead of LU decomposition (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
+CHOLMOD: str = (
+    "Use cholesky decomposition (faster) instead of LU decomposition (slower). May require manual install of scikit-sparse library. Default is LU decomposition."
+)
 KEEP_TEMP: str = (
     "Whether to keep the temporary files directory or not, by default False"
 )
@@ -44,14 +47,11 @@ Here is a list of structures and FreeSurfer aseg label ids:
 
 CorpusCallosum                  [251, 252, 253, 254, 255]
 Cerebellum                      [7, 8, 16, 46, 47]
-Ventricles                      [4, 5, 14, 24, 31, 43, 44, 63]
 3rd-Ventricle                   [14, 24]
 4th-Ventricle                   15
 Brain-Stem                      16
-Left-Striatum                   [11, 12, 26]
 Left-Lateral-Ventricle          [4, 5, 31]
-Left-Cerebellum-White-Matter    7
-Left-Cerebellum-Cortex          8
+Left-Cerebellum                 [7, 8]
 Left-Thalamus-Proper            10
 Left-Caudate                    11
 Left-Putamen                    12
@@ -60,10 +60,8 @@ Left-Hippocampus                17
 Left-Amygdala                   18
 Left-Accumbens-area             26
 Left-VentralDC                  28
-Right-Striatum                  [50, 51, 58]
 Right-Lateral-Ventricle         [43, 44, 63]
-Right-Cerebellum-White-Matter   46
-Right-Cerebellum-Cortex         47
+Right-Cerebellum                [46, 47]
 Right-Thalamus-Proper           49
 Right-Caudate                   50
 Right-Putamen                   51

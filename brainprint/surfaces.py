@@ -1,12 +1,14 @@
 """
 Utility module holding surface generation related functions.
 """
-import uuid
+import os
 from pathlib import Path
 
+import nibabel as nb
+import numpy as np
 from lapy import TriaMesh
-
-from .utils.utils import run_shell_command
+from scipy import sparse as sp
+from skimage.measure import marching_cubes
 
 
 def create_aseg_surface(
@@ -30,51 +32,76 @@ def create_aseg_surface(
         Path to the generated surface in VTK format.
     """
     aseg_path = subject_dir / "mri/aseg.mgz"
-    norm_path = subject_dir / "mri/norm.mgz"
-    temp_name = f"temp/aseg.{uuid.uuid4()}"
+    temp_name = "temp/aseg.{indices}".format(indices="_".join(indices))
     indices_mask = destination / f"{temp_name}.mgz"
-    # binarize on selected labels (creates temp indices_mask)
-    # always binarize first, otherwise pretess may scale aseg if labels are
-    # larger than 255 (e.g. aseg+aparc, bug in mri_pretess?)
-    binarize_template = "mri_binarize --i {source} --match {match} --o {destination}"
-    binarize_command = binarize_template.format(
-        source=aseg_path, match=" ".join(indices), destination=indices_mask
-    )
-    run_shell_command(binarize_command)
 
-    label_value = "1"
-    # if norm exist, fix label (pretess)
-    if norm_path.is_file():
-        pretess_template = (
-            "mri_pretess {source} {label_value} {norm_path} {destination}"
-        )
-        pretess_command = pretess_template.format(
-            source=indices_mask,
-            label_value=label_value,
-            norm_path=norm_path,
-            destination=indices_mask,
-        )
-        run_shell_command(pretess_command)
+    # binarize on selected labels (creates temp indices_mask)
+    aseg = nb.load(aseg_path)
+    indices_num = [int(x) for x in indices]
+    aseg_data_bin = np.isin(aseg.get_fdata(), indices_num).astype(np.float32)
+    aseg_bin = nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine)
+    nb.save(img=aseg_bin, filename=indices_mask)
+
+    # legacy code for applying mask smoothing
+    # from scipy import ndimage as sn
+    # k = 1.0 / np.sqrt(np.array([
+    #    [[3, 2, 3], [2, 1, 2], [3, 2, 3]],
+    #    [[2, 1, 2], [1, 1, 1], [2, 1, 1]],
+    #    [[3, 2, 3], [2, 1, 2], [3, 2, 3]],
+    # ]))
+    # aseg_data_bin = sn.convolve(aseg_data_bin, k)
+    # aseg_data_bin = np.round(aseg_data_bin / np.sum(k))
+    # nb.save(img=nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine), \
+    #         filename=str(indices_mask).replace(".mgz", "-filter.mgz"))
+
+    # legacy code for running FreeSurfer's mri_pretess
+    # import subprocess
+    # subprocess.run(["cp", str(indices_mask), \
+    #                 str(indices_mask).replace(".mgz", "-no_pretess.mgz")])
+    ##subprocess.run(["mri_pretess", \
+    ##                   str(indices_mask).replace(".mgz", "-no_pretess.mgz"), \
+    ##                   "pretess" , \
+    ##                   str(indices_mask).replace(".mgz", "-no_pretess.mgz"), \
+    ##                   str(indices_mask)])
+    ##subprocess.run(["mri_pretess", \
+    ##                   str(indices_mask).replace(".mgz", "-no_pretess.mgz"), \
+    ##                   "pretess" , \
+    ##                   str(subject_dir / "mri/norm.mgz"), str(indices_mask)])
+    # aseg_data_bin = nb.load(indices_mask).get_fdata()
 
     # runs marching cube to extract surface
-    surface_name = f"{temp_name}.surf"
-    surface_path = destination / surface_name
-    extraction_template = "mri_mc {source} {label_value} {destination}"
-    extraction_command = extraction_template.format(
-        source=indices_mask, label_value=label_value, destination=surface_path
+    vertices, trias, _, _ = marching_cubes(
+        volume=aseg_data_bin, level=0.5, allow_degenerate=False, method="lorensen"
     )
-    run_shell_command(extraction_command)
+
+    # convert to surface RAS
+    vertices = np.matmul(
+        aseg.header.get_vox2ras_tkr(),
+        np.append(vertices, np.ones((vertices.shape[0], 1)), axis=1).transpose(),
+    ).transpose()[:, 0:3]
+
+    # create tria mesh
+    aseg_mesh = TriaMesh(v=vertices, t=trias)
+
+    # keep largest connected component
+    comps = sp.csgraph.connected_components(aseg_mesh.adj_sym, directed=False)
+    if comps[0] > 1:
+        comps_largest = np.argmax(np.unique(comps[1], return_counts=True)[1])
+        vtcs_remove = np.where(comps[1] != comps_largest)
+        tria_keep = np.sum(np.isin(aseg_mesh.t, vtcs_remove), axis=1) == 0
+        aseg_mesh.t = aseg_mesh.t[tria_keep, :]
+
+    # remove free vertices
+    aseg_mesh.rm_free_vertices_()
 
     # convert to vtk
     relative_path = "surfaces/aseg.final.{indices}.vtk".format(
         indices="_".join(indices)
     )
+
     conversion_destination = destination / relative_path
-    conversion_template = "mris_convert {source} {destination}"
-    conversion_command = conversion_template.format(
-        source=surface_path, destination=conversion_destination
-    )
-    run_shell_command(conversion_command)
+    os.makedirs(os.path.dirname(conversion_destination), exist_ok=True)
+    aseg_mesh.write_vtk(filename=conversion_destination)
 
     return conversion_destination
 
@@ -98,25 +125,21 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> dict[str, Path
     # Define aseg labels
 
     # combined and individual aseg labels:
-    # - Left  Striatum: left  Caudate + Putamen + Accumbens
-    # - Right Striatum: right Caudate + Putamen + Accumbens
     # - CorpusCallosum: 5 subregions combined
     # - Cerebellum: brainstem + (left+right) cerebellum WM and GM
-    # - Ventricles: (left+right) lat.vent + inf.lat.vent + choroidplexus + 3rdVent + CSF
+    # - Left-Cerebellum: left cerebellum WM and GM
+    # - Right-Cerebellum: right cerebellum WM and GM
     # - Lateral-Ventricle: lat.vent + inf.lat.vent + choroidplexus
     # - 3rd-Ventricle: 3rd-Ventricle + CSF
 
     aseg_labels = {
         "CorpusCallosum": ["251", "252", "253", "254", "255"],
         "Cerebellum": ["7", "8", "16", "46", "47"],
-        "Ventricles": ["4", "5", "14", "24", "31", "43", "44", "63"],
         "3rd-Ventricle": ["14", "24"],
         "4th-Ventricle": ["15"],
         "Brain-Stem": ["16"],
-        "Left-Striatum": ["11", "12", "26"],
         "Left-Lateral-Ventricle": ["4", "5", "31"],
-        "Left-Cerebellum-White-Matter": ["7"],
-        "Left-Cerebellum-Cortex": ["8"],
+        "Left-Cerebellum": ["7", "8"],
         "Left-Thalamus-Proper": ["10"],
         "Left-Caudate": ["11"],
         "Left-Putamen": ["12"],
@@ -125,10 +148,8 @@ def create_aseg_surfaces(subject_dir: Path, destination: Path) -> dict[str, Path
         "Left-Amygdala": ["18"],
         "Left-Accumbens-area": ["26"],
         "Left-VentralDC": ["28"],
-        "Right-Striatum": ["50", "51", "58"],
         "Right-Lateral-Ventricle": ["43", "44", "63"],
-        "Right-Cerebellum-White-Matter": ["46"],
-        "Right-Cerebellum-Cortex": ["47"],
+        "Right-Cerebellum": ["46", "47"],
         "Right-Thalamus-Proper": ["49"],
         "Right-Caudate": ["50"],
         "Right-Putamen": ["51"],
@@ -249,5 +270,5 @@ def surf_to_vtk(source: Path, destination: Path) -> Path:
     Path
         Resulting *.vtk* file.
     """
-    TriaMesh.read_fssurf(source).write_vtk(destination)
+    TriaMesh.read_fssurf(source).write_vtk(str(destination))
     return destination

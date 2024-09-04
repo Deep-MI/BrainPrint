@@ -1,77 +1,11 @@
 """
 Utilities for the :mod:`brainprint` module.
 """
-import os
-import shlex
-import subprocess
+
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
-
-def validate_environment() -> None:
-    """
-    Checks whether required environment variables are set.
-    """
-    if not os.getenv("FREESURFER_HOME"):
-        raise RuntimeError(
-            "FreeSurfer root directory must be set as the $FREESURFER_HOME "
-            "environment variable!"
-        )
-
-
-def test_freesurfer() -> None:
-    """
-    Tests FreeSurfer binarize are accessible and executable.
-
-    Raises
-    ------
-    RuntimeError
-        Failed to execute test FreeSurfer command
-    """
-    command = "mri_binarize -version"
-    try:
-        run_shell_command(command)
-    except FileNotFoundError as err:
-        raise RuntimeError(
-            "Failed to run FreeSurfer command, please check the required binaries "
-            "are included in your $PATH."
-        ) from err
-
-
-def run_shell_command(command: str, verbose: bool = False):
-    """
-    Execute shell command.
-
-    Parameters
-    ----------
-    command : str
-        Shell command to be executed
-
-    Raises
-    ------
-    RuntimeError
-        Shell command execution failure
-    """
-    if verbose:
-        print(f"Executing command:\t{command}", end="\n")
-    args = shlex.split(command)
-    try:
-        return_code = subprocess.call(args)
-    except Exception as e:
-        message = (
-            f"Failed to execute the following command:\n{command}\n"
-            f"The following exception was raised:\n{e}"
-        )
-        print(message)
-        raise
-    if return_code != 0:
-        message = (
-            f"Execution of the following command:\n{command}\n"
-            "Returned non-zero exit code!"
-        )
-        raise RuntimeError(message)
 
 
 def validate_subject_dir(subjects_dir: Path, subject_id: str) -> Path:
