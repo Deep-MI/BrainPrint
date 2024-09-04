@@ -77,7 +77,7 @@ def test_brainprint_initialization(sample_subjects_dir, sample_subject_id):
     assert isinstance(result, dict)
 
     # Check if the values in the dict are of type Dict[str, Path]
-    for key, value in result.items():
+    for _key, value in result.items():
         assert isinstance(value, Path)
 
 

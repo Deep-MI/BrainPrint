@@ -3,7 +3,6 @@ Utility module holding surface generation related functions.
 """
 import os
 from pathlib import Path
-from scipy import sparse as sp
 
 import nibabel as nb
 import numpy as np
@@ -52,13 +51,22 @@ def create_aseg_surface(
     # ]))
     # aseg_data_bin = sn.convolve(aseg_data_bin, k)
     # aseg_data_bin = np.round(aseg_data_bin / np.sum(k))
-    # nb.save(img=nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine), filename=str(indices_mask).replace(".mgz", "-filter.mgz"))
+    # nb.save(img=nb.MGHImage(dataobj=aseg_data_bin, affine=aseg.affine), \
+    #         filename=str(indices_mask).replace(".mgz", "-filter.mgz"))
 
     # legacy code for running FreeSurfer's mri_pretess
     # import subprocess
-    # subprocess.run(["cp", str(indices_mask), str(indices_mask).replace(".mgz", "-no_pretess.mgz")])
-    ##subprocess.run(["mri_pretess", str(indices_mask).replace(".mgz", "-no_pretess.mgz"), "pretess" , str(indices_mask).replace(".mgz", "-no_pretess.mgz"), str(indices_mask)])
-    ##subprocess.run(["mri_pretess", str(indices_mask).replace(".mgz", "-no_pretess.mgz"), "pretess" , str(subject_dir / "mri/norm.mgz"), str(indices_mask)])
+    # subprocess.run(["cp", str(indices_mask), \
+    #                 str(indices_mask).replace(".mgz", "-no_pretess.mgz")])
+    ##subprocess.run(["mri_pretess", \
+    ##                   str(indices_mask).replace(".mgz", "-no_pretess.mgz"), \
+    ##                   "pretess" , \
+    ##                   str(indices_mask).replace(".mgz", "-no_pretess.mgz"), \
+    ##                   str(indices_mask)])
+    ##subprocess.run(["mri_pretess", \
+    ##                   str(indices_mask).replace(".mgz", "-no_pretess.mgz"), \
+    ##                   "pretess" , \
+    ##                   str(subject_dir / "mri/norm.mgz"), str(indices_mask)])
     # aseg_data_bin = nb.load(indices_mask).get_fdata()
 
     # runs marching cube to extract surface
