@@ -304,15 +304,15 @@ You may need to add your local Python package directory to your $PATH in order t
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">brainprint</span></code> can also be run within a pure Python environment, i.e. installed and imported as a Python package. E.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">brainprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">Brainprint</span>
 
-<span class="n">subjects_dir</span> <span class="o">=</span> <span class="s2">&quot;/path/to/freesurfer/subjects_dir/&quot;</span>
-<span class="n">subject_id</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
+<span class="n">subjects_dir</span> <span class="o">=</span> <span class="s2">"/path/to/freesurfer/subjects_dir/"</span>
+<span class="n">subject_id</span> <span class="o">=</span> <span class="s2">"42"</span>
 
 <span class="n">bp</span> <span class="o">=</span> <span class="n">Brainprint</span><span class="p">(</span><span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">asymmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_eigenvectors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="n">subject_id</span><span class="p">)</span>
 <span class="n">results</span>
-<span class="p">{</span><span class="s2">&quot;eigenvalues&quot;</span><span class="p">:</span> <span class="n">PosixPath</span><span class="p">(</span><span class="s2">&quot;/path/to/freesurfer/subjects_dir/subject_id/brainprint/subject_id.brainprint.csv&quot;</span><span class="p">),</span>
-<span class="s2">&quot;eigenvectors&quot;</span><span class="p">:</span> <span class="n">PosixPath</span><span class="p">(</span><span class="s2">&quot;/path/to/freesurfer/subjects_dir/subject_id/brainprint/eigenvectors&quot;</span><span class="p">),</span>
-<span class="s2">&quot;distances&quot;</span><span class="p">:</span> <span class="n">PosixPath</span><span class="p">(</span><span class="s2">&quot;/path/to/freesurfer/subjects_dir/subject_id/brainprint/subject_id.brainprint.asymmetry.csv&quot;</span><span class="p">)}</span>
+<span class="p">{</span><span class="s2">"eigenvalues"</span><span class="p">:</span> <span class="n">PosixPath</span><span class="p">(</span><span class="s2">"/path/to/freesurfer/subjects_dir/subject_id/brainprint/subject_id.brainprint.csv"</span><span class="p">),</span>
+<span class="s2">"eigenvectors"</span><span class="p">:</span> <span class="n">PosixPath</span><span class="p">(</span><span class="s2">"/path/to/freesurfer/subjects_dir/subject_id/brainprint/eigenvectors"</span><span class="p">),</span>
+<span class="s2">"distances"</span><span class="p">:</span> <span class="n">PosixPath</span><span class="p">(</span><span class="s2">"/path/to/freesurfer/subjects_dir/subject_id/brainprint/subject_id.brainprint.asymmetry.csv"</span><span class="p">)}</span>
 </pre></div>
 </div>
 </section>
